@@ -13,8 +13,8 @@ app.get("/", (req: Request, res: Response) => {
 
 app.get("/users", IndexController.getUser);
 
-app.listen(3000, () => {
-  console.log("Application started on port 3000!");
-});
+// app.listen(3000, () => {
+//   console.log("Application started on port 3000!");
+// });
 
 export default app;

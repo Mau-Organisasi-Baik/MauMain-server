@@ -16,3 +16,4 @@ export type UserLoginInput = {
   password: string;
 };
 
+export type UserRegisterInput = Omit<User, "_id">;
