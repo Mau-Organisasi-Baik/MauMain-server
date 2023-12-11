@@ -1,3 +1,6 @@
+import { configDotenv } from "dotenv";
+configDotenv();
+
 import express from "express";
 import { Request, Response } from "express";
 import IndexController from "./controllers";
@@ -13,3 +16,5 @@ app.get("/users", IndexController.getUser);
 app.listen(3000, () => {
   console.log("Application started on port 3000!");
 });
+
+export default app;
