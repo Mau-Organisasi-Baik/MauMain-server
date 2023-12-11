@@ -1,0 +1,38 @@
+[
+    {
+        "_id": 1,
+        "UserId": 1,
+        "User": {
+            "_id": 1,
+            "username": "ibra", 
+            "email": "warissoon@email.com",
+            "password": "TestAdmin"
+        },
+        "profilePictureUrl": "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
+        "exp": 1000
+    },
+    {
+        "_id": 2,
+        "UserId": 2,
+        "User": {
+            "_id": 2,
+            "username": "anakbaik",
+            "email": "anakbaik@email.com",
+            "password": "TestAdmin"
+        },
+        "profilePictureUrl": "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
+        "exp": 1000
+    },
+    {
+        "_id": 3,
+        "UserId": 3,
+        "User": {
+            "_id": 3,
+            "username": "testadmin",
+            "email": "admin@email.com",
+            "password": "TestAdmin"
+        },
+        "profilePictureUrl": "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
+        "exp": 1000
+    }
+]

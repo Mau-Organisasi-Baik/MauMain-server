@@ -1,0 +1,11 @@
+[
+    {
+        "_id": 1,
+        "SportTag": "Basket",
+        "GameType": "Competitive",
+        "Score": "33-2",
+        "InitPlayerId": 1,
+        "ScheduleId": 1,
+        "Date": "2023-12-18"
+    }
+]

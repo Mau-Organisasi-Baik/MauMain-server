@@ -1,0 +1,15 @@
+[
+    {
+        "_id": 1,
+        "UserId": 3,
+        "User": {
+            "username": "testadmin",
+            "email": "admin@email.com",
+            "password": "TestAdmin",
+            "role": "admin"
+        },
+        "name": "Lapangan Master",
+        "address": "Jl. Arteri Pd. Indah No.72, RT.5/RW.9, Kby. Lama Sel., Kec. Kby. Lama, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12240",
+        "coordinate": [-6.260474247708541, 106.78139793709433]
+    }
+]
