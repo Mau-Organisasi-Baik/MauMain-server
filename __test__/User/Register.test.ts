@@ -19,133 +19,445 @@ afterAll(() => {
   client.close();
 });
 
-
-
-
 describe("POST /register", () => {
   describe("Player Tests", () => {
     const role = "player";
 
     beforeAll(async () => {
-      const newUser: UserInput = {
+      await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+      await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+    });
+
+    afterEach(async () => {
+      await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+      await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+    });
+
+    it("should registers new user", async () => {
+      const userRegister: UserRegisterInput = {
         username: "test",
         email: "test@mail.com",
-        phoneNumber: "081212121212",
+        phoneNumber: "0812132323",
         role: role,
-        password: hash("12345678"),
-      };
-
-      await db.collection(USERS_COLLECTION_NAME).deleteMany({});
-      await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
-
-      const { insertedId } = await db.collection(USERS_COLLECTION_NAME).insertOne(newUser);
-
-      const newPlayer: PlayerInput = {
-        UserId: insertedId,
-        user: {
-          _id: insertedId,
-          ...newUser,
-        },
-        exp: 0,
-      };
-
-      await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer);
-    });
-
-    afterAll(async () => {
-      await db.collection(USERS_COLLECTION_NAME).deleteMany({});
-      await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
-    });
-
-    it("should logs user using username", async () => {
-      const usernameLogin: UserLoginInput = {
-        usernameOrMail: "test",
         password: "12345678",
       };
 
-      const response = await request(app).post("/login").send(usernameLogin);
+      const response = await request(app).post("/register").send(userRegister);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(response.body).toBeInstanceOf(Object);
-      expect(response.body).toHaveProperty("statusCode", 200);
-      expect(response.body).toHaveProperty("message", "User logged in successfully");
+      expect(response.body).toHaveProperty("statusCode", 201);
+      expect(response.body).toHaveProperty("message", "User registered successfully");
 
       expect(response.body).toHaveProperty("data", expect.any(Object));
       expect(response.body.data).toHaveProperty("access_token", expect.any(String));
       expect(response.body.data).toHaveProperty("username", "test");
       expect(response.body.data).toHaveProperty("role", role);
+
+      // check for new user and player registered
+      const users = await db.collection(USERS_COLLECTION_NAME).find<User>({}).toArray();
+      const players = await db.collection(PLAYERS_COLLECTION_NAME).find<Player>({}).toArray();
+
+      expect(users.length).toBe(players.length);
+      expect(users.length).toBe(1);
     });
 
-    it("should logs user using email", async () => {
-      const emailLogin: UserLoginInput = {
-        usernameOrMail: "test@mail.com",
+    it("should return error (400) when form not filled (username)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "username"> = {
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        role: role,
         password: "12345678",
       };
 
-      const response = await request(app).post("/login").send(emailLogin);
+      const response = await request(app).post("/register").send(unCompleteRegister);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
-      expect(response.body).toHaveProperty("statusCode", 200);
-      expect(response.body).toHaveProperty("message", "User logged in successfully");
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("username");
 
-      expect(response.body).toHaveProperty("data", expect.any(Object));
-      expect(response.body.data).toHaveProperty("access_token", expect.any(String));
-      expect(response.body.data).toHaveProperty("username", "test");
-      expect(response.body.data).toHaveProperty("role", role);
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (email)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "email"> = {
+        username: "test",
+        phoneNumber: "0812132323",
+        role: role,
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("email");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (phoneNumber)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "phoneNumber"> = {
+        username: "test",
+        email: "test@mail.com",
+        role: role,
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("phoneNumber");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (role)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "role"> = {
+        username: "test",
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("role");
+
+      expect(response.body).toHaveProperty("data", {});
     });
 
     it("should return error (400) when form not filled (password)", async () => {
-      const uncompleteLogin: Omit<UserLoginInput, "password"> = {
-        usernameOrMail: "test@mail.com",
+      const unCompleteRegister: Omit<UserRegisterInput, "password"> = {
+        username: "test",
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        role: role,
       };
 
-      const response = await request(app).post("/login").send(uncompleteLogin);
+      const response = await request(app).post("/register").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("password");
 
       expect(response.body).toHaveProperty("data", {});
     });
 
-    it("should return error (400) when form not filled (usernameOrMail)", async () => {
-      const uncompleteLogin: Omit<UserLoginInput, "usernameOrMail"> = {
-        password: "12345678",
+    it("should return error (400) when form not filled (multiple)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "password" | "username"> = {
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        role: role,
       };
 
-      const response = await request(app).post("/login").send(uncompleteLogin);
+      const response = await request(app).post("/register").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(2);
+      expect(response.body.filed[0]).toBe("username");
+      expect(response.body.filed[1]).toBe("password");
 
       expect(response.body).toHaveProperty("data", {});
     });
 
-    it("should return error (400) when using incorrect credentials", async () => {
-      const incorrectLogin: UserLoginInput = {
-        usernameOrMail: "test@mail.com",
-        password: "12345678",
-      };
+    describe("Duplicate Entries", () => {
+      beforeAll(async () => {
+        const newUser: UserInput = {
+          username: "test",
+          email: "test@mail.com",
+          phoneNumber: "081212121212",
+          role: role,
+          password: hash("12345678"),
+        };
 
-      const response = await request(app).post("/login").send(incorrectLogin);
+        await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+        await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
 
-      expect(response.status).toBe(400);
-      expect(response.body).toBeInstanceOf(Object);
-      expect(response.body).toHaveProperty("statusCode", 400);
-      expect(response.body).toHaveProperty("message", "Invalid username/email or password");
+        const { insertedId } = await db.collection(USERS_COLLECTION_NAME).insertOne(newUser);
 
-      expect(response.body).toHaveProperty("data", {});
+        const newPlayer: PlayerInput = {
+          UserId: insertedId,
+          user: {
+            _id: insertedId,
+            ...newUser,
+          },
+          exp: 0,
+        };
+
+        await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer);
+      });
+
+      afterAll(async () => {
+        await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+        await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+      });
+
+      it("should return error (400) when entry is duplicated (username)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test",
+          email: "test-abc@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
+          password: "12345678",
+        };
+
+        const response = await request(app).post("/register").send(duplicateRegister);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("statusCode", 400);
+        expect(response.body).toHaveProperty("message", "Username already used");
+        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body.filed).toHaveLength(1);
+        expect(response.body.filed[0]).toBe("username");
+
+        expect(response.body).toHaveProperty("data", {});
+      });
+
+      it("should return error (400) when entry is duplicated (both)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test-abc",
+          email: "test@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
+          password: "12345678",
+        };
+
+        const response = await request(app).post("/register").send(duplicateRegister);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("statusCode", 400);
+        expect(response.body).toHaveProperty("message", "email already used");
+        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body.filed).toHaveLength(1);
+        expect(response.body.filed[0]).toBe("email");
+
+        expect(response.body).toHaveProperty("data", {});
+      });
+
+      it("should return error (400) when entry is duplicated (email)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test",
+          email: "test@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
+          password: "12345678",
+        };
+
+        const response = await request(app).post("/register").send(duplicateRegister);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("statusCode", 400);
+        expect(response.body).toHaveProperty("message", "username & email already used");
+        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body.filed).toHaveLength(2);
+        expect(response.body.filed[0]).toBe("username");
+        expect(response.body.filed[0]).toBe("email");
+
+        expect(response.body).toHaveProperty("data", {});
+      });
     });
   });
 
   describe("Field Test", () => {
     const role = "field";
 
-    describe("POST /login", () => {
+    beforeAll(async () => {
+      await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+      await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+    });
+
+    afterEach(async () => {
+      await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+      await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+    });
+
+    it("should registers new user", async () => {
+      const userRegister: UserRegisterInput = {
+        username: "test",
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        role: role,
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(userRegister);
+
+      expect(response.status).toBe(201);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 201);
+      expect(response.body).toHaveProperty("message", "User registered successfully");
+
+      expect(response.body).toHaveProperty("data", expect.any(Object));
+      expect(response.body.data).toHaveProperty("access_token", expect.any(String));
+      expect(response.body.data).toHaveProperty("username", "test");
+      expect(response.body.data).toHaveProperty("role", role);
+
+      // check for new user and player registered
+      const users = await db.collection(USERS_COLLECTION_NAME).find<User>({}).toArray();
+      const players = await db.collection(FIELDS_COLLECTION_NAME).find<Player>({}).toArray();
+
+      expect(users.length).toBe(players.length);
+      expect(users.length).toBe(1);
+    });
+
+    it("should return error (400) when form not filled (username)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "username"> = {
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        role: role,
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("username");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (email)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "email"> = {
+        username: "test",
+        phoneNumber: "0812132323",
+        role: role,
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("email");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (phoneNumber)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "phoneNumber"> = {
+        username: "test",
+        email: "test@mail.com",
+        role: role,
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("phoneNumber");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (role)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "role"> = {
+        username: "test",
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        password: "12345678",
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("role");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (password)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "password"> = {
+        username: "test",
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        role: role,
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(1);
+      expect(response.body.filed[0]).toBe("password");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    it("should return error (400) when form not filled (multiple)", async () => {
+      const unCompleteRegister: Omit<UserRegisterInput, "password" | "username"> = {
+        email: "test@mail.com",
+        phoneNumber: "0812132323",
+        role: role,
+      };
+
+      const response = await request(app).post("/register").send(unCompleteRegister);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body).toHaveProperty("statusCode", 400);
+      expect(response.body).toHaveProperty("message", "Please Fill the required field");
+      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body.filed).toHaveLength(2);
+      expect(response.body.filed[0]).toBe("username");
+      expect(response.body.filed[1]).toBe("password");
+
+      expect(response.body).toHaveProperty("data", {});
+    });
+
+    describe("Duplicate Entries", () => {
       beforeAll(async () => {
         const newUser: UserInput = {
           username: "test",
@@ -160,102 +472,86 @@ describe("POST /register", () => {
 
         const { insertedId } = await db.collection(USERS_COLLECTION_NAME).insertOne(newUser);
 
-        const newField: FieldInput = {
+        const newPlayer: PlayerInput = {
           UserId: insertedId,
           user: {
             _id: insertedId,
             ...newUser,
           },
+          exp: 0,
         };
 
-        await db.collection(FIELDS_COLLECTION_NAME).insertOne(newField);
+        await db.collection(FIELDS_COLLECTION_NAME).insertOne(newPlayer);
       });
 
       afterAll(async () => {
+        await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
         await db.collection(USERS_COLLECTION_NAME).deleteMany({});
-        await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
       });
 
-      it("should logs user using username", async () => {
-        const usernameLogin: UserLoginInput = {
-          usernameOrMail: "test",
+      it("should return error (400) when entry is duplicated (username)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test",
+          email: "test-abc@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
           password: "12345678",
         };
 
-        const response = await request(app).post("/login").send(usernameLogin);
-
-        expect(response.status).toBe(200);
-        expect(response.body).toBeInstanceOf(Object);
-        expect(response.body).toHaveProperty("statusCode", 200);
-        expect(response.body).toHaveProperty("message", "User logged in successfully");
-
-        expect(response.body).toHaveProperty("data", expect.any(Object));
-        expect(response.body.data).toHaveProperty("access_token", expect.any(String));
-        expect(response.body.data).toHaveProperty("username", "test");
-        expect(response.body.data).toHaveProperty("role", role);
-      });
-
-      it("should logs user using email", async () => {
-        const emailLogin: UserLoginInput = {
-          usernameOrMail: "test@mail.com",
-          password: "12345678",
-        };
-
-        const response = await request(app).post("/login").send(emailLogin);
-
-        expect(response.status).toBe(200);
-        expect(response.body).toBeInstanceOf(Object);
-        expect(response.body).toHaveProperty("statusCode", 200);
-        expect(response.body).toHaveProperty("message", "User logged in successfully");
-
-        expect(response.body).toHaveProperty("data", expect.any(Object));
-        expect(response.body.data).toHaveProperty("access_token", expect.any(String));
-        expect(response.body.data).toHaveProperty("username", "test");
-        expect(response.body.data).toHaveProperty("role", role);
-      });
-
-      it("should return error (400) when form not filled (password)", async () => {
-        const uncompleteLogin: Omit<UserLoginInput, "password"> = {
-          usernameOrMail: "test@mail.com",
-        };
-
-        const response = await request(app).post("/login").send(uncompleteLogin);
+        const response = await request(app).post("/register").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
-        expect(response.body).toHaveProperty("message", "Please Fill the required field");
+        expect(response.body).toHaveProperty("message", "Username already used");
+        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body.filed).toHaveLength(1);
+        expect(response.body.filed[0]).toBe("username");
 
         expect(response.body).toHaveProperty("data", {});
       });
 
-      it("should return error (400) when form not filled (usernameOrMail)", async () => {
-        const uncompleteLogin: Omit<UserLoginInput, "usernameOrMail"> = {
+      it("should return error (400) when entry is duplicated (both)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test-abc",
+          email: "test@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
           password: "12345678",
         };
 
-        const response = await request(app).post("/login").send(uncompleteLogin);
+        const response = await request(app).post("/register").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
-        expect(response.body).toHaveProperty("message", "Please Fill the required field");
+        expect(response.body).toHaveProperty("message", "email already used");
+        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body.filed).toHaveLength(1);
+        expect(response.body.filed[0]).toBe("email");
 
         expect(response.body).toHaveProperty("data", {});
       });
 
-      it("should return error (400) when using incorrect credentials", async () => {
-        const incorrectLogin: UserLoginInput = {
-          usernameOrMail: "test@mail.com",
+      it("should return error (400) when entry is duplicated (email)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test",
+          email: "test@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
           password: "12345678",
         };
 
-        const response = await request(app).post("/login").send(incorrectLogin);
+        const response = await request(app).post("/register").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
-        expect(response.body).toHaveProperty("message", "Invalid username/email or password");
+        expect(response.body).toHaveProperty("message", "username & email already used");
+        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body.filed).toHaveLength(2);
+        expect(response.body.filed[0]).toBe("username");
+        expect(response.body.filed[0]).toBe("email");
 
         expect(response.body).toHaveProperty("data", {});
       });
