@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import request from "supertest";
 import { FieldInput, PlayerInput, UserInput, UserLoginInput } from "../../types/inputs";
 import { hashPass as hash } from "../../src/helpers/bcrypt";
@@ -432,5 +432,142 @@ describe("PUT /profile", () => {
       expect(response.body).toHaveProperty("message", "Invalid token");
       expect(response.body).toHaveProperty("data", {});
     });
+  });
+});
+
+describe("GET /profile/:playerId", () => {
+  let player1ID: ObjectId;
+  let player2ID: ObjectId;
+
+  let token: string;
+
+  beforeAll(async () => {
+    await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+
+    // seeds 2 players and their profiles
+    const newUserPlayer: UserInput = {
+      username: "player",
+      email: "player@mail.com",
+      phoneNumber: "081212121212",
+      role: "player",
+      password: hash("12345678"),
+    };
+
+    const { insertedId: playerId } = await db.collection(USERS_COLLECTION_NAME).insertOne(newUserPlayer);
+
+    const newPlayer: Omit<ValidPlayer, "_id"> = {
+      UserId: playerId,
+      user: {
+        _id: playerId,
+        ...newUserPlayer,
+      },
+      exp: 0,
+      name: "player1",
+      profilePictureUrl: "player1.com",
+    };
+
+    const insertedPlayer1 = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer);
+    player1ID = insertedPlayer1.insertedId;
+
+    const newUserPlayer2: UserInput = {
+      username: "player2",
+      email: "player2@mail.com",
+      phoneNumber: "081212121212",
+      role: "player",
+      password: hash("12345678"),
+    };
+
+    const { insertedId: playerId2 } = await db.collection(USERS_COLLECTION_NAME).insertOne(newUserPlayer2);
+
+    const newPlayer2: Omit<ValidPlayer, "_id"> = {
+      UserId: playerId,
+      user: {
+        _id: playerId2,
+        ...newUserPlayer,
+      },
+      exp: 0,
+      name: "player2",
+      profilePictureUrl: "player2.com",
+    };
+
+    const insertedPlayer2 = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer2);
+    player2ID = insertedPlayer2.insertedId;
+  });
+
+  afterAll(async () => {
+    await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+  });
+
+  beforeAll(async () => {
+    const playerLogin: UserLoginInput = {
+      usernameOrMail: "player2",
+      password: "12345678",
+    };
+
+    const response = await request(app).post("/login").send(playerLogin);
+    token = response.body.data.access_token;
+  });
+
+  it("should get player profile", async () => {
+    const targetId = player1ID.toString();
+
+    const response = await request(app)
+      .get("/profile/" + targetId)
+      .set("Authorization", `Bearer ${token}`)
+      .set("Content-Type", "application/json");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeInstanceOf(Object);
+    expect(response.body).toHaveProperty("statusCode", 200);
+    expect(response.body).toHaveProperty("message", "Player profile retrieved successfully");
+    expect(response.body).toHaveProperty("data", {
+      name: "player1",
+      profilePictureUrl: "player1.com",
+      exp: 0,
+    });
+  });
+
+  it("should return error (403) when form not using headers", async () => {
+    const targetId = player1ID.toString();
+
+    const response = await request(app)
+      .get("/profile/" + targetId)
+      .set("Content-Type", "application/json");
+
+    expect(response.status).toBe(403);
+    expect(response.body).toBeInstanceOf(Object);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Invalid token");
+    expect(response.body).toHaveProperty("data", {});
+  });
+
+  it("should return error (403) when form using invalid token", async () => {
+    const targetId = player1ID.toString();
+
+    const response = await request(app)
+      .get("/profile/" + targetId)
+      .set("Content-Type", "application/json");
+
+    expect(response.status).toBe(403);
+    expect(response.body).toBeInstanceOf(Object);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Invalid token");
+    expect(response.body).toHaveProperty("data", {});
+  });
+
+  it("should return error (404) when player not found", async () => {
+    const unknownPlayerId = "ABASJNDKASJNDKLJANSDKJN"
+
+    const response = await request(app)
+      .get("/profile/" + unknownPlayerId)
+      .set("Content-Type", "application/json");
+
+    expect(response.status).toBe(404);
+    expect(response.body).toBeInstanceOf(Object);
+    expect(response.body).toHaveProperty("statusCode", 404);
+    expect(response.body).toHaveProperty("message", "Player not found");
+    expect(response.body).toHaveProperty("data", {});
   });
 });

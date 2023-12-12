@@ -53,6 +53,7 @@ _Field_
 ### Player endpoints:
 
 - `PUT /profile`
+- `GET /profile/:playerId`
 
 ### Field endpoints:
 
@@ -177,7 +178,7 @@ Description:
 
 ```json
 {
-  "Authorization": "Bearer [token]",
+  "Authorization": "Bearer [token]"
 }
 ```
 
@@ -211,12 +212,70 @@ _Response (400 - Bad Request)_
 }
 ```
 
-_Response (401 - Forbidden)_
+_Response (403 - Forbidden)_
 
 ```json
 {
   "statusCode": 403,
   "message": "Invalid token",
+  "data": {}
+}
+```
+
+### 2. GET /profile/:playerId
+
+Description:
+
+- Get player profile
+
+- headers:
+
+```json
+{
+  "Authorization": "Bearer [token]"
+}
+```
+
+- parameters:
+
+```json
+{
+  "playerId": "string"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Player profile retrieved successfully",
+  "data": {
+    "user": {
+      "name": "string",
+      "profilePictureUrl": "string",
+      "exp": "number",
+    }
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Player not found",
   "data": {}
 }
 ```
