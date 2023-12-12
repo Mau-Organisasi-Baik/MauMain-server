@@ -1,3 +1,6 @@
+import { configDotenv } from "dotenv";
+configDotenv();
+
 import { Db, ObjectId } from "mongodb";
 import request from "supertest";
 import { FieldInput, PlayerInput, UserInput, UserLoginInput } from "../../types/inputs";
@@ -558,7 +561,7 @@ describe("GET /profile/:playerId", () => {
   });
 
   it("should return error (404) when player not found", async () => {
-    const unknownPlayerId = "ABASJNDKASJNDKLJANSDKJN"
+    const unknownPlayerId = "ABASJNDKASJNDKLJANSDKJN";
 
     const response = await request(app)
       .get("/profile/" + unknownPlayerId)
