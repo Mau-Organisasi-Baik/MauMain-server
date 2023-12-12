@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { client } from "../../config/db"
 import { Db } from "mongodb";
 import { FieldInput, PlayerInput, UserLoginInput, UserRegisterInput } from "types/inputs";
-import { FIELDS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
+import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { comparePass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
 import { LoginSuccess } from "types/response";
@@ -65,7 +65,6 @@ export default class UserController {
     static async userRegister(req: Request, res: Response, next: NextFunction) {
         
         try {
-            console.log(req.body)
             const { username, email, phoneNumber, password, role }: UserRegisterInput = req.body;
             let errorInputField = []
             if(!username) {
@@ -90,14 +89,14 @@ export default class UserController {
             const userValidation = await db.collection(USERS_COLLECTION_NAME).findOne({ $or: [{ email: email }, { username: username }] });
 
             let errorUniqueField = [];
-            if(userValidation && userValidation.email === email) {
-                errorUniqueField.push("email");
-            }
             if(userValidation && userValidation.username === username) {
                 errorUniqueField.push("username");
             }
+            if(userValidation && userValidation.email === email) {
+                errorUniqueField.push("email");
+            }
             if(errorUniqueField.length > 0) {
-                throw { name: "UniqueError", statusCode: 400, message: `${errorUniqueField.join("/")} already used`};
+                throw { name: "UniqueError", statusCode: 400, message: `${errorUniqueField.join(" & ")} already used`, fields: errorUniqueField };
             }
             let userInfo = {
                 username: username, 
@@ -127,7 +126,7 @@ export default class UserController {
                     },
                     exp: 0
                 }
-                const registerAdmin = await db.collection(USERS_COLLECTION_NAME).insertOne(playerInfo);
+                const registerAdmin = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);
             }
 
             const access_token = createToken({

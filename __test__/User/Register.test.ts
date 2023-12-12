@@ -28,7 +28,7 @@ describe("POST /register", () => {
       await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
     });
 
-    afterEach(async () => {
+    afterAll(async () => {
       await db.collection(USERS_COLLECTION_NAME).deleteMany({});
       await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
     });
@@ -234,7 +234,7 @@ describe("POST /register", () => {
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
-        expect(response.body).toHaveProperty("message", "Username already used");
+        expect(response.body).toHaveProperty("message", "username already used");
         expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(1);
         expect(response.body.fields[0]).toBe("username");
@@ -243,6 +243,29 @@ describe("POST /register", () => {
       });
 
       it("should return error (400) when entry is duplicated (both)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test",
+          email: "test@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
+          password: "12345678",
+        };
+
+        const response = await request(app).post("/register").send(duplicateRegister);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("statusCode", 400);
+        expect(response.body).toHaveProperty("message", "username & email already used");
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
+        expect(response.body.fields).toHaveLength(2);
+        expect(response.body.fields[0]).toBe("username");
+        expect(response.body.fields[1]).toBe("email");
+
+        expect(response.body).toHaveProperty("data", {});
+      });
+
+      it("should return error (400) when entry is duplicated (email)", async () => {
         const duplicateRegister: UserRegisterInput = {
           username: "test-abc",
           email: "test@mail.com",
@@ -263,29 +286,6 @@ describe("POST /register", () => {
 
         expect(response.body).toHaveProperty("data", {});
       });
-
-      it("should return error (400) when entry is duplicated (email)", async () => {
-        const duplicateRegister: UserRegisterInput = {
-          username: "test",
-          email: "test@mail.com",
-          phoneNumber: "0812132323",
-          role: role,
-          password: "12345678",
-        };
-
-        const response = await request(app).post("/register").send(duplicateRegister);
-
-        expect(response.status).toBe(400);
-        expect(response.body).toBeInstanceOf(Object);
-        expect(response.body).toHaveProperty("statusCode", 400);
-        expect(response.body).toHaveProperty("message", "username & email already used");
-        expect(response.body).toHaveProperty("fields", expect.any(Array));
-        expect(response.body.fields).toHaveLength(2);
-        expect(response.body.fields[0]).toBe("username");
-        expect(response.body.fields[0]).toBe("email");
-
-        expect(response.body).toHaveProperty("data", {});
-      });
     });
   });
 
@@ -297,7 +297,7 @@ describe("POST /register", () => {
       await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
     });
 
-    afterEach(async () => {
+    afterAll(async () => {
       await db.collection(USERS_COLLECTION_NAME).deleteMany({});
       await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
     });
@@ -505,7 +505,7 @@ describe("POST /register", () => {
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
-        expect(response.body).toHaveProperty("message", "Username already used");
+        expect(response.body).toHaveProperty("message", "username already used");
         expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(1);
         expect(response.body.fields[0]).toBe("username");
@@ -514,28 +514,6 @@ describe("POST /register", () => {
       });
 
       it("should return error (400) when entry is duplicated (both)", async () => {
-        const duplicateRegister: UserRegisterInput = {
-          username: "test-abc",
-          email: "test@mail.com",
-          phoneNumber: "0812132323",
-          role: role,
-          password: "12345678",
-        };
-
-        const response = await request(app).post("/register").send(duplicateRegister);
-
-        expect(response.status).toBe(400);
-        expect(response.body).toBeInstanceOf(Object);
-        expect(response.body).toHaveProperty("statusCode", 400);
-        expect(response.body).toHaveProperty("message", "email already used");
-        expect(response.body).toHaveProperty("fields", expect.any(Array));
-        expect(response.body.fields).toHaveLength(1);
-        expect(response.body.fields[0]).toBe("email");
-
-        expect(response.body).toHaveProperty("data", {});
-      });
-
-      it("should return error (400) when entry is duplicated (email)", async () => {
         const duplicateRegister: UserRegisterInput = {
           username: "test",
           email: "test@mail.com",
@@ -553,6 +531,28 @@ describe("POST /register", () => {
         expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(2);
         expect(response.body.fields[0]).toBe("username");
+        expect(response.body.fields[1]).toBe("email");
+
+        expect(response.body).toHaveProperty("data", {});
+      });
+
+      it("should return error (400) when entry is duplicated (email)", async () => {
+        const duplicateRegister: UserRegisterInput = {
+          username: "test-mail",
+          email: "test@mail.com",
+          phoneNumber: "0812132323",
+          role: role,
+          password: "12345678",
+        };
+
+        const response = await request(app).post("/register").send(duplicateRegister);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body).toHaveProperty("statusCode", 400);
+        expect(response.body).toHaveProperty("message", "email already used");
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
+        expect(response.body.fields).toHaveLength(1);
         expect(response.body.fields[0]).toBe("email");
 
         expect(response.body).toHaveProperty("data", {});
