@@ -562,6 +562,7 @@ describe("GET /profile/:playerId", () => {
 
     const response = await request(app)
       .get("/profile/" + unknownPlayerId)
+      .set("Authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json");
 
     expect(response.status).toBe(404);
