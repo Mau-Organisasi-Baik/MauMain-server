@@ -22,6 +22,7 @@ app.get("/users", IndexController.getUser);
 
 app.post("/login", UserController.userLogin);
 
+app.post("/register", UserController.userRegister);
 
 
 
