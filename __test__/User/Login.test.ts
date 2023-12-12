@@ -124,7 +124,7 @@ describe("POST /login", () => {
     it("should return error (400) when using incorrect credentials", async () => {
       const incorrectLogin: UserLoginInput = {
         usernameOrMail: "test@mail.com",
-        password: "12345678",
+        password: "123456789",
       };
 
       const response = await request(app).post("/login").send(incorrectLogin);
@@ -242,7 +242,7 @@ describe("POST /login", () => {
     it("should return error (400) when using incorrect credentials", async () => {
       const incorrectLogin: UserLoginInput = {
         usernameOrMail: "test@mail.com",
-        password: "12345678",
+        password: "123456789",
       };
 
       const response = await request(app).post("/login").send(incorrectLogin);
