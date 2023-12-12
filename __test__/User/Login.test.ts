@@ -75,7 +75,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("username");
 
@@ -96,7 +96,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("email");
 
@@ -117,7 +117,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("phoneNumber");
 
@@ -138,7 +138,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("role");
 
@@ -159,7 +159,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("password");
 
@@ -179,7 +179,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(2);
       expect(response.body.fields[0]).toBe("username");
       expect(response.body.fields[1]).toBe("password");
@@ -234,7 +234,7 @@ describe("POST /login", () => {
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "Username already used");
-        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(1);
         expect(response.body.fields[0]).toBe("username");
 
@@ -256,7 +256,7 @@ describe("POST /login", () => {
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "email already used");
-        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(1);
         expect(response.body.fields[0]).toBe("email");
 
@@ -278,7 +278,7 @@ describe("POST /login", () => {
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "username & email already used");
-        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(2);
         expect(response.body.fields[0]).toBe("username");
         expect(response.body.fields[0]).toBe("email");
@@ -288,7 +288,7 @@ describe("POST /login", () => {
     });
   });
 
-  describe("Field Test", () => {
+  describe("field Test", () => {
     const role = "field";
 
     beforeAll(async () => {
@@ -344,7 +344,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("username");
 
@@ -365,7 +365,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("email");
 
@@ -386,7 +386,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("phoneNumber");
 
@@ -407,7 +407,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("role");
 
@@ -428,7 +428,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(1);
       expect(response.body.fields[0]).toBe("password");
 
@@ -448,7 +448,7 @@ describe("POST /login", () => {
       expect(response.body).toBeInstanceOf(Object);
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
-      expect(response.body).toHaveProperty("field", expect.any(Array));
+      expect(response.body).toHaveProperty("fields", expect.any(Array));
       expect(response.body.fields).toHaveLength(2);
       expect(response.body.fields[0]).toBe("username");
       expect(response.body.fields[1]).toBe("password");
@@ -503,7 +503,7 @@ describe("POST /login", () => {
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "Username already used");
-        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(1);
         expect(response.body.fields[0]).toBe("username");
 
@@ -525,7 +525,7 @@ describe("POST /login", () => {
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "email already used");
-        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(1);
         expect(response.body.fields[0]).toBe("email");
 
@@ -547,7 +547,7 @@ describe("POST /login", () => {
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "username & email already used");
-        expect(response.body).toHaveProperty("field", expect.any(Array));
+        expect(response.body).toHaveProperty("fields", expect.any(Array));
         expect(response.body.fields).toHaveLength(2);
         expect(response.body.fields[0]).toBe("username");
         expect(response.body.fields[0]).toBe("email");
