@@ -17,3 +17,13 @@ export type UserLoginInput = {
 };
 
 export type UserRegisterInput = Omit<User, "_id">;
+
+export interface Player {
+  _id: ObjectId;
+  UserId: ObjectId;
+  user: User;
+  name: string;
+  profilePictureUrl: string;
+  exp: number;
+}
+
