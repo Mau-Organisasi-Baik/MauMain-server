@@ -55,6 +55,10 @@ _Field_
 - `PUT /profile`
 - `GET /profile/:playerId`
 
+#### Explore endpoints:
+
+- `GET /fields/explore`
+
 ### Field endpoints:
 
 - `PUT /profile`
@@ -168,7 +172,9 @@ _Response (400 - Bad Request)_
 
 ## Player Endpoints
 
-### 1. PUT /profile
+### Profile Routes
+
+#### 1. PUT /profile
 
 Description:
 
@@ -222,7 +228,7 @@ _Response (403 - Forbidden)_
 }
 ```
 
-### 2. GET /profile/:playerId
+#### 2. GET /profile/:playerId
 
 Description:
 
@@ -254,7 +260,7 @@ _Response (200 - OK)_
     "user": {
       "name": "string",
       "profilePictureUrl": "string",
-      "exp": "number",
+      "exp": "number"
     }
   }
 }
@@ -279,7 +285,74 @@ _Response (404 - Not found)_
   "data": {}
 }
 ```
+
+### Explore Routes
+
+#### 1. GET /fields/explore
+
+Description:
+
+- Fetch field list around user with current user coordinates
+
+- headers:
+
+```json
+{
+  "Authorization": "Bearer [token]"
+}
 ```
+
+- parameters:
+
+```json
+{
+  "latitude": "number (required)",
+  "longitude": "number (required)"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "OK!",
+  "data": {
+    "fields": [
+      {
+        "_id": "ObjectId",
+        "name": "string, required",
+        "address": "string",
+        "coordinates": "number[]",
+        "tags": "string[]",
+        "photoUrls": "string[]"
+      }, ...
+    ]
+  }
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Invalid coordinates",
+  "fields": ["longitude" | "latitude"],
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
 
 ## Field Endpoints
 
