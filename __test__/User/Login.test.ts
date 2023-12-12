@@ -76,8 +76,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("username");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("username");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -97,8 +97,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("email");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("email");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -118,8 +118,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("phoneNumber");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("phoneNumber");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -139,8 +139,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("role");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("role");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -160,8 +160,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("password");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("password");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -180,9 +180,9 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(2);
-      expect(response.body.field[0]).toBe("username");
-      expect(response.body.field[1]).toBe("password");
+      expect(response.body.fields).toHaveLength(2);
+      expect(response.body.fields[0]).toBe("username");
+      expect(response.body.fields[1]).toBe("password");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -235,8 +235,8 @@ describe("POST /login", () => {
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "Username already used");
         expect(response.body).toHaveProperty("field", expect.any(Array));
-        expect(response.body.field).toHaveLength(1);
-        expect(response.body.field[0]).toBe("username");
+        expect(response.body.fields).toHaveLength(1);
+        expect(response.body.fields[0]).toBe("username");
 
         expect(response.body).toHaveProperty("data", {});
       });
@@ -257,8 +257,8 @@ describe("POST /login", () => {
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "email already used");
         expect(response.body).toHaveProperty("field", expect.any(Array));
-        expect(response.body.field).toHaveLength(1);
-        expect(response.body.field[0]).toBe("email");
+        expect(response.body.fields).toHaveLength(1);
+        expect(response.body.fields[0]).toBe("email");
 
         expect(response.body).toHaveProperty("data", {});
       });
@@ -279,9 +279,9 @@ describe("POST /login", () => {
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "username & email already used");
         expect(response.body).toHaveProperty("field", expect.any(Array));
-        expect(response.body.field).toHaveLength(2);
-        expect(response.body.field[0]).toBe("username");
-        expect(response.body.field[0]).toBe("email");
+        expect(response.body.fields).toHaveLength(2);
+        expect(response.body.fields[0]).toBe("username");
+        expect(response.body.fields[0]).toBe("email");
 
         expect(response.body).toHaveProperty("data", {});
       });
@@ -345,8 +345,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("username");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("username");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -366,8 +366,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("email");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("email");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -387,8 +387,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("phoneNumber");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("phoneNumber");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -408,8 +408,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("role");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("role");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -429,8 +429,8 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(1);
-      expect(response.body.field[0]).toBe("password");
+      expect(response.body.fields).toHaveLength(1);
+      expect(response.body.fields[0]).toBe("password");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -449,9 +449,9 @@ describe("POST /login", () => {
       expect(response.body).toHaveProperty("statusCode", 400);
       expect(response.body).toHaveProperty("message", "Please Fill the required field");
       expect(response.body).toHaveProperty("field", expect.any(Array));
-      expect(response.body.field).toHaveLength(2);
-      expect(response.body.field[0]).toBe("username");
-      expect(response.body.field[1]).toBe("password");
+      expect(response.body.fields).toHaveLength(2);
+      expect(response.body.fields[0]).toBe("username");
+      expect(response.body.fields[1]).toBe("password");
 
       expect(response.body).toHaveProperty("data", {});
     });
@@ -504,8 +504,8 @@ describe("POST /login", () => {
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "Username already used");
         expect(response.body).toHaveProperty("field", expect.any(Array));
-        expect(response.body.field).toHaveLength(1);
-        expect(response.body.field[0]).toBe("username");
+        expect(response.body.fields).toHaveLength(1);
+        expect(response.body.fields[0]).toBe("username");
 
         expect(response.body).toHaveProperty("data", {});
       });
@@ -526,8 +526,8 @@ describe("POST /login", () => {
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "email already used");
         expect(response.body).toHaveProperty("field", expect.any(Array));
-        expect(response.body.field).toHaveLength(1);
-        expect(response.body.field[0]).toBe("email");
+        expect(response.body.fields).toHaveLength(1);
+        expect(response.body.fields[0]).toBe("email");
 
         expect(response.body).toHaveProperty("data", {});
       });
@@ -548,9 +548,9 @@ describe("POST /login", () => {
         expect(response.body).toHaveProperty("statusCode", 400);
         expect(response.body).toHaveProperty("message", "username & email already used");
         expect(response.body).toHaveProperty("field", expect.any(Array));
-        expect(response.body.field).toHaveLength(2);
-        expect(response.body.field[0]).toBe("username");
-        expect(response.body.field[0]).toBe("email");
+        expect(response.body.fields).toHaveLength(2);
+        expect(response.body.fields[0]).toBe("username");
+        expect(response.body.fields[0]).toBe("email");
 
         expect(response.body).toHaveProperty("data", {});
       });
