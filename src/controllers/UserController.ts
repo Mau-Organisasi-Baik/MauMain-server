@@ -7,12 +7,17 @@ import { comparePass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
 import { LoginSuccess } from "types/response";
 
-let DATABASE_NAME = process.env.DATABASE_NAME_TEST;
+// let DATABASE_NAME = process.env.DATABASE_NAME_TEST;
 
-const db: Db = client.db(DATABASE_NAME);
+// const db: Db = client.db(DATABASE_NAME);
 
 export default class UserController {
     static async userLogin(req: Request, res: Response, next: NextFunction) {
+        let DATABASE_NAME = process.env.DATABASE_NAME;
+        if(process.env.NODE_ENV) {
+            DATABASE_NAME = process.env.DATABASE_NAME_TEST;
+        }
+        const db: Db = client.db(DATABASE_NAME);
         try {
             const { usernameOrMail, password }: UserLoginInput = req.body;
             let errorInputField = [];
@@ -56,6 +61,11 @@ export default class UserController {
         }
     }
     static async userRegister(req: Request, res: Response, next: NextFunction) {
+        let DATABASE_NAME = process.env.DATABASE_NAME;
+        if(process.env.NODE_ENV) {
+            DATABASE_NAME = process.env.DATABASE_NAME_TEST;
+        }
+        const db: Db = client.db(DATABASE_NAME);
         try {
             console.log(req.body)
             const { username, email, phoneNumber, password, role }: UserRegisterInput = req.body;
