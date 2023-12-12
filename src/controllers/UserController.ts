@@ -5,6 +5,7 @@ import { UserLoginInput, UserRegisterInput } from "types/user";
 import { FIELDS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { comparePass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
+import { LoginSuccess } from "types/response";
 
 let DATABASE_NAME = process.env.DATABASE_NAME_TEST;
 
@@ -48,7 +49,7 @@ export default class UserController {
                     username: userByEmailOrUsername.username,
                     role: userByEmailOrUsername.role
                 }
-            });
+            } as LoginSuccess);
         }
         catch(error) {
             next(error);
@@ -126,7 +127,7 @@ export default class UserController {
                     username: userInfo.username,
                     role: userInfo.role
                 }
-            });
+            } as LoginSuccess);
         }
         catch(error) {
             next(error);
