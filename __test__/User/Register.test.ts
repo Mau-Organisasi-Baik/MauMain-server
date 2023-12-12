@@ -9,7 +9,7 @@ import { Player, User } from "../../types/user";
 import { UserRegisterInput, UserLoginInput, UserInput, PlayerInput, FieldInput } from "../../types/inputs";
 
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
-import { hashPass as hash } from "src/helpers/bcrypt";
+import { hashPass as hash } from "../../src/helpers/bcrypt";
 
 const DATABASE_NAME = process.env.DATABASE_NAME_TEST;
 
