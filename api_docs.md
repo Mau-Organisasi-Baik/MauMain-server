@@ -58,6 +58,8 @@ _Field_
 #### Explore endpoints:
 
 - `GET /fields/explore`
+- `GET /fields/:id`
+
 
 ### Field endpoints:
 
@@ -353,6 +355,46 @@ _Response (403 - Forbidden)_
 }
 ```
 
+#### 2. GET /fields/:fieldId
+
+Description:
+
+- Get Field details from field ID
+
+- 
+
+```json
+{
+  "Authorization": "Bearer [token]"
+}
+```
+
+- parameters:
+
+```json
+{
+  "fieldId": "string"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Field detail retrieved successfully",
+  "data": {
+    "field": {
+      "_id": "ObjectId",
+      "name": "string",
+      "address": "string",
+      "coordinates": "number[]",
+      "tags": "string[]",
+      "photoUrls": "string[]"
+    }
+  }
+}
+```
 
 ## Field Endpoints
 

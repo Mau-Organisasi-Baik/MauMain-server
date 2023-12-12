@@ -114,7 +114,7 @@ describe("GET /fields/explore", () => {
     expect(response.body).toHaveProperty("data", expect(Object));
     expect(response.body.data).toHaveProperty("fields", expect(Array));
     expect(response.body.data.fields).toHaveLength(2);
-    expect(response.body.data.field[0]).toEqual({
+    expect(response.body.data.fields[0]).toEqual({
       _id: "657883d6f24dc965d131a8c9",
       name: "test_field",
       address: "test_field_street",
@@ -122,7 +122,7 @@ describe("GET /fields/explore", () => {
       tags: ["basket", "soccer"],
       photoUrls: ["1.com", "11.com"],
     });
-    expect(response.body.data.field[1]).toEqual({
+    expect(response.body.data.fields[1]).toEqual({
       _id: "657883e2f24dc965d131a8cb",
       name: "test_field_2",
       address: "test_field_2_street",
@@ -194,5 +194,50 @@ describe("GET /fields/explore", () => {
     expect(response.body.fields[0]).toBe("latitude");
     expect(response.body.fields[1]).toBe("longitude");
     expect(response.body).toHaveProperty("data", {});
+  });
+});
+
+describe("GET /fields/:fieldId", () => {
+  let token: string;
+
+  beforeAll(async () => {
+    await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+
+    await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playerDummy);
+    await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldDummy);
+
+    const playerLogin: UserLoginInput = {
+      usernameOrMail: "test",
+      password: "12345678",
+    };
+    const response = await request(app).post("/login").send(playerLogin);
+    token = response.body.data.access_token;
+  });
+
+  afterAll(async () => {
+    await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+    await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+  });
+
+  it("should get selected field", async () => {
+    const selectedFieldId = "657883d6f24dc965d131a8c9";
+    const response = await request(app).get(`/field/${selectedFieldId}`).set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("statusCode", 200);
+    expect(response.body).toHaveProperty("message", "Field detail retrieved successfully");
+    expect(response.body).toHaveProperty("data", expect(Object));
+    expect(response.body.data).toHaveProperty("field", expect(Object));
+    expect(response.body.data.field).toEqual({
+      _id: "657883d6f24dc965d131a8c9",
+      name: "test_field",
+      address: "test_field_street",
+      coordinates: [10, 100],
+      tags: ["basket", "soccer"],
+      photoUrls: ["1.com", "11.com"],
+    });
   });
 });
