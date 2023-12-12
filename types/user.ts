@@ -9,21 +9,28 @@ export interface User {
   password: string;
 }
 
-export type UserInput = Omit<User, "_id">;
-
-export type UserLoginInput = {
-  usernameOrMail: string;
-  password: string;
-};
-
-export type UserRegisterInput = Omit<User, "_id">;
-
 export interface Player {
   _id: ObjectId;
   UserId: ObjectId;
   user: User;
-  name: string;
-  profilePictureUrl: string;
   exp: number;
 }
 
+export interface ValidPlayer extends Player {
+  name: string;
+  profilePictureUrl: string;
+}
+
+export interface Field {
+  _id: ObjectId;
+  UserId: ObjectId;
+  user: User;
+}
+
+export interface ValidField extends Field {
+  name: string;
+  address: string;
+  coordinates: number[];
+  tags: string[];
+  PhotoUrls: string[];
+}
