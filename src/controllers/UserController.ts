@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { client } from "../../config/db"
 import { Db } from "mongodb";
-import { UserLoginInput, UserRegisterInput } from "types/inputs";
+import { FieldInput, PlayerInput, UserLoginInput, UserRegisterInput } from "types/inputs";
 import { FIELDS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { comparePass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
 import { LoginSuccess } from "types/response";
+import { Field } from "types/user";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if(process.env.NODE_ENV) {
@@ -92,7 +93,7 @@ export default class UserController {
             if(userValidation && userValidation.email === email) {
                 errorUniqueField.push("email");
             }
-            if(userValidation && userValidation.username === password) {
+            if(userValidation && userValidation.username === username) {
                 errorUniqueField.push("username");
             }
             if(errorUniqueField.length > 0) {
@@ -107,18 +108,27 @@ export default class UserController {
             } as UserRegisterInput
             const registeredUser = await db.collection(USERS_COLLECTION_NAME).insertOne(userInfo);
 
-            // if(userInfo.role === "field") {
-            //     let fieldInfo = {
-
-            //     }
-            //     const registerAdmin = await db.collection(FIELDS_COLLECTION_NAME).insertOne(fieldInfo);
-            // }
-            // else if(userInfo.role === "player") {
-            //     let playerInfo = {
-
-            //     }
-            //     const registerAdmin = await db.collection(USERS_COLLECTION_NAME).insertOne(playerInfo);
-            // }
+            if(userInfo.role === "field") {
+                let fieldInfo: FieldInput = {
+                    UserId: registeredUser.insertedId,
+                    user: {
+                        _id: registeredUser.insertedId,
+                        ...userInfo
+                    }
+                }
+                const registerAdmin = await db.collection(FIELDS_COLLECTION_NAME).insertOne(fieldInfo);
+            }
+            else if(userInfo.role === "player") {
+                let playerInfo: PlayerInput = {
+                    UserId: registeredUser.insertedId,
+                    user: {
+                        _id: registeredUser.insertedId,
+                        ...userInfo
+                    },
+                    exp: 0
+                }
+                const registerAdmin = await db.collection(USERS_COLLECTION_NAME).insertOne(playerInfo);
+            }
 
             const access_token = createToken({
                 _id: String(registeredUser.insertedId),
