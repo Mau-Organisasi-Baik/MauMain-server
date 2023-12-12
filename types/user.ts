@@ -16,10 +16,12 @@ export interface Player {
   exp: number;
 }
 
-export interface ValidPlayer extends Player {
+export interface PlayerProfile {
   name: string;
   profilePictureUrl: string;
 }
+
+export interface ValidPlayer extends Player, PlayerProfile {}
 
 export interface Field {
   _id: ObjectId;
@@ -27,10 +29,12 @@ export interface Field {
   user: User;
 }
 
-export interface ValidField extends Field {
+export interface FieldProfile {
   name: string;
   address: string;
   coordinates: number[];
   tags: string[];
-  PhotoUrls: string[];
+  photoUrls: string[];
 }
+
+export interface ValidField extends Field, FieldProfile {}

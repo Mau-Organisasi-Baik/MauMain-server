@@ -19,6 +19,29 @@ _Users_
 - password: string, required
 ```
 
+_Players_
+
+```
+- _id: ObjectId
+- UserId: ObjectId
+- User: User
+- name: string, required
+- profilePictureUrl: string
+- exp: number
+```
+
+_Field_
+
+```
+- _id: ObjectId
+- UserId: number
+- User: User
+- name: string, required
+- address: string
+- coordinates: number[]
+- tags: string[]
+- photos: string[]
+```
 
 ## Endpoints :
 
@@ -27,9 +50,19 @@ _Users_
 - `POST /login`
 - `POST /register`
 
+### Player endpoints:
+
+- `PUT /profile`
+
+### Field endpoints:
+
+- `PUT /profile`
+
 # Routes
 
-## 1. POST /login
+## Public endpoints:
+
+### 1. POST /login
 
 Description:
 
@@ -78,7 +111,7 @@ _Response (400 - Bad Request)_
 }
 ```
 
-## 2. POST /register
+### 2. POST /register
 
 Description:
 
@@ -132,4 +165,100 @@ _Response (400 - Bad Request)_
 }
 ```
 
+## Player Endpoints
+
+### 1. PUT /profile
+
+Description:
+
+- Renews player profile
+
+- headers:
+
+```json
+{
+  "Authorization": "Bearer [token]",
+}
+```
+
+- body:
+
+```json
+{
+  "name": "string (required)",
+  "profilePictureUrl": "string (required)"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Player profile updated successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Please Fill the required field",
+  "fields": ["name" | "profilePictureUrl"],
+  "data": {}
+}
+```
+
+_Response (401 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+```
+
+## Field Endpoints
+
+### 1. POST /profile
+
+Description:
+
+- Renews field profile
+
+- body:
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Player profile updated successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Please Fill the required field",
+  "fields": ["name" | "address" | "coordinates" | "tags" | "photoUrls" ],
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
 ```
