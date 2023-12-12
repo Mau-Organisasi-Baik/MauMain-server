@@ -3,13 +3,12 @@ configDotenv();
 
 import { Db, ObjectId } from "mongodb";
 import request from "supertest";
-import { FieldInput, PlayerInput, UserInput, UserLoginInput } from "../../types/inputs";
+import { UserLoginInput } from "../../types/inputs";
 import { hashPass as hash } from "../../src/helpers/bcrypt";
 import { client } from "../../config/db";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
-import { Field, FieldProfile, Player, PlayerProfile, ValidField, ValidPlayer } from "../../types/user";
+import { ValidField, ValidPlayer } from "../../types/user";
 import app from "../../src";
-import { ServerResponse } from "types/response";
 
 const DATABASE_NAME = process.env.DATABASE_NAME_TEST;
 
@@ -28,7 +27,7 @@ const playerDummy: ValidPlayer[] = [
       username: "test",
       email: "test@mail.com",
       phoneNumber: "081212121212",
-      password: "12345678",
+      password: hash("12345678"),
       role: "player",
     },
     name: "test",
@@ -46,7 +45,7 @@ const fieldDummy: ValidField[] = [
       username: "test_field",
       email: "test_field@mail.com",
       phoneNumber: "081212121212",
-      password: "12345678",
+      password: hash("12345678"),
       role: "field",
     },
     address: "test_field_street",
@@ -63,7 +62,7 @@ const fieldDummy: ValidField[] = [
       username: "test_field_2",
       email: "test_field_2@mail.com",
       phoneNumber: "081212121212",
-      password: "12345678",
+      password: hash("12345678"),
       role: "field",
     },
     address: "test_field_2_street",

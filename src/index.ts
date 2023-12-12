@@ -11,7 +11,7 @@ import UserController from "./controllers/UserController";
 const app = express();
 
 app.use(cors());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
@@ -23,12 +23,6 @@ app.get("/users", IndexController.getUser);
 app.post("/login", UserController.userLogin);
 
 app.post("/register", UserController.userRegister);
-
-
-
-app.listen(3001, () => {
-  console.log("Application started on port 3001!");
-});
 
 app.use(errorHandler);
 
