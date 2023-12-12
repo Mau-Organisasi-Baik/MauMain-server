@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { client } from "../../config/db"
 import { Db } from "mongodb";
-import { UserLoginInput, UserRegisterInput } from "types/user";
+import { UserLoginInput, UserRegisterInput } from "types/inputs";
 import { FIELDS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { comparePass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
