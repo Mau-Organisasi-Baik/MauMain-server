@@ -4,7 +4,7 @@ import {v2 as cloudinary} from 'cloudinary';
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { randomUUID } from "crypto";
-import { PLAYERS_COLLECTION_NAME } from "../../config/names";
+import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME } from "../../config/names";
 import { Player, PlayerProfile } from "../../types/user";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
@@ -69,6 +69,49 @@ export default class PublicController {
                 message: "Player profile retrieved successfully",
                 data: {
                     user: profile
+                }
+            });
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+    static async getLocation(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const latitude = req.query.latitude;
+            const longitude = req.query.longitude;
+
+            let errorInputField = [];
+            if(!longitude) {
+                errorInputField.push("longitude");
+            }
+            if(!latitude) {
+                errorInputField.push("latitude");
+            }
+            if(errorInputField.length > 0) {
+                throw { name: "InvalidCoordinates", statusCode: 400, fields: errorInputField }
+            }
+
+            const fields = await db.collection(FIELDS_COLLECTION_NAME).find({}).toArray();
+
+            let fieldsAroundUser = [];
+            for(let i = 0; i < fields.length; i++) {
+                let earthRadius = 6371;
+                let field = fields[i];
+                let x = (field.coordinates[1] - Number(longitude)) * Math.cos( (Number(latitude) + field.coordinates[0]) / 2 );
+                let y = (field.coordinates[1] - Number(latitude));
+                let distance = Math.sqrt((x * x) + (y * y)) * earthRadius;
+
+                if(distance <= 10) {
+                    fieldsAroundUser.push(field);
+                }
+            }
+
+            return res.status(200).json({
+                statusCode: 200,
+                message: "OK!",
+                data: {
+                    fields: fieldsAroundUser
                 }
             });
         }

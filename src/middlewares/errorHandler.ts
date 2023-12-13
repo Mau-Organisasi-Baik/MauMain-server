@@ -7,6 +7,9 @@ export function errorHandler(error, req: Request, res: Response, next: NextFunct
         case "InvalidInput":
             res.status(error.statusCode).json({ statusCode: error.statusCode, fields: error.fields, message: "Please Fill the required field", data: {} } as ErrorResponse);
             break;
+        case "InvalidCoordinates":
+            res.status(error.statusCode).json({ statusCode: error.statusCode, fields: error.fields, message: "Invalid coordinates", data: {} } as ErrorResponse);
+            break;
         case "InvalidLogin":
             res.status(error.statusCode).json({ statusCode: error.statusCode, message: "Invalid username/email or password", data: {} } as ErrorResponse);
             break;

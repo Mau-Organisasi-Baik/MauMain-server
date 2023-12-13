@@ -29,7 +29,9 @@ app.use(authentication);
 
 app.put("/profile", playerAuthorization, upload.single("profilePictureUrl"), PublicController.createProfile);
 
-app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile)
+app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile);
+
+app.get("/fields/explore", playerAuthorization, PublicController.getLocation);
 
 app.use(errorHandler);
 
