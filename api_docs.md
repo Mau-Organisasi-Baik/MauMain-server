@@ -66,6 +66,7 @@ _Field_
 - `GET /reservations/:id`
 - `POST /reservations/:id`
 - `PUT /reservations/:id/join`
+- `PUT /reservations/:id/leave`
 
 ### Field endpoints:
 
@@ -670,10 +671,11 @@ Description:
 
 - parameters:
 
-````json
+```json
 {
   "reservationId": "string"
 }
+```
 
 _Response (200 - OK)_
 
@@ -701,6 +703,78 @@ _Response (403 - Forbidden)_
 {
   "statusCode": 403,
   "message": "Reservation full",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation already playing / ended",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+### 7. PUT /reservation/reservationId/leave
+
+Description:
+
+- leave user from selected reservation
+- (note) resets a reservation into empty when there are no users in reservation
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- parameters:
+
+````json
+{
+  "reservationId": "string"
+}
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Left successfully from reservation",
+  "data": {}
+}
+````
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Not joined before",
   "data": {}
 }
 ```

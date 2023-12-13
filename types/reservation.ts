@@ -29,7 +29,7 @@ export interface PlayingReservation extends BaseReservation {
   type: ReservationGameType;
 }
 
-interface EndedReservation extends BaseReservation {
+export interface EndedReservation extends BaseReservation {
   status: "ended";
   tag: tag;
 }

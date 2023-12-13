@@ -8,7 +8,14 @@ import { client } from "../../config/db";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import app from "../../src";
 import { fieldsDummy, playerLoginDummy, playersDummy, reservationsDummy, schedulesDummyField1, tagsDummy, usersDummy } from "../dummyDatas";
-import { PlayingReservation, ReservationGameType, UpcomingReservation } from "../../types/reservation";
+import {
+  EmptyReservation,
+  EndedCasualReservation,
+  EndedReservation,
+  PlayingReservation,
+  ReservationGameType,
+  UpcomingReservation,
+} from "../../types/reservation";
 import { tag } from "../../types/tag";
 import { mongoObjectId } from "../helper";
 
@@ -719,6 +726,275 @@ describe("EDIT /reservation/reservationId", () => {
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
     expect(response.body).toHaveProperty("message", "Invalid token");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<UpcomingReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(1);
+  });
+});
+
+describe("PUT /reservation/reservationId/leave", () => {
+  let token: string;
+  beforeAll(async () => {
+    await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+
+    await db.collection(USERS_COLLECTION_NAME).insertMany(usersDummy);
+    await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playersDummy);
+    await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldsDummy);
+
+    const playerLogin: UserLoginInput = {
+      usernameOrMail: playerLoginDummy[0].usernameOrMail,
+      password: playerLoginDummy[0].password,
+    };
+
+    const response = await request(app).post("/login").send(playerLogin);
+    token = response.body.data.access_token;
+  });
+
+  afterAll(async () => {
+    await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+    await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
+    await db.collection(USERS_COLLECTION_NAME).deleteMany({});
+  });
+
+  // todo: 200, leave
+  it("should leave the selected reservation", async () => {
+    const selectedReservation: UpcomingReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[0], playersDummy[1]],
+      schedule: schedulesDummyField1[0],
+      status: "upcoming",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}/leave`;
+
+    const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("statusCode", 200);
+    expect(response.body).toHaveProperty("message", "Left successfully from reservation");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<UpcomingReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(1);
+  });
+
+  // todo: 200, leave and empty
+  it("should leave the selected reservation and reset into empty state", async () => {
+    const selectedReservation: UpcomingReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[0]],
+      schedule: schedulesDummyField1[0],
+      status: "upcoming",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}/leave`;
+
+    const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("statusCode", 200);
+    expect(response.body).toHaveProperty("message", "Left successfully from reservation");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<EmptyReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(0);
+    expect(updatedReservation.status).toBe("empty");
+  });
+
+  // todo: 403, not joined before
+  it("should return error(403) when user have not joined before", async () => {
+    const selectedReservation: UpcomingReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[1]],
+      schedule: schedulesDummyField1[0],
+      status: "upcoming",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}/leave`;
+
+    const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Not joined before");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<UpcomingReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(1);
+  });
+
+  // todo: 403, already playing
+  it("should return error(403) when user have not joined before (playing)", async () => {
+    const selectedReservation: PlayingReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[0]],
+      schedule: schedulesDummyField1[0],
+      status: "playing",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}/leave`;
+
+    const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Reservation already playing / ended");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<PlayingReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(1);
+  });
+
+  // todo: 403, already playing
+  it("should return error(403) when user have not joined before (playing)", async () => {
+    const selectedReservation: EndedCasualReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[0]],
+      schedule: schedulesDummyField1[0],
+      status: "ended",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}/leave`;
+
+    const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Reservation already playing / ended");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<EndedReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(1);
+  });
+
+  // todo: 403, no token
+  it("should return error(403) when no token passed", async () => {
+    const selectedReservation: UpcomingReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[0], playersDummy[1]],
+      schedule: schedulesDummyField1[0],
+      status: "upcoming",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}/leave`;
+
+    const response = await request(app).put(url);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Invalid token");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<UpcomingReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(1);
+  });
+
+  // todo: 403, invalid token
+  it("should return error(403) when invalid token passed", async () => {
+    const selectedReservation: UpcomingReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[0], playersDummy[1]],
+      schedule: schedulesDummyField1[0],
+      status: "upcoming",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}/leave`;
+
+    const invalidToken = "sakdnklasn123kme23klm4l";
+    const response = await request(app).put(url).set("authorization", `Bearer ${invalidToken}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Invalid token");
+    expect(response.body).toHaveProperty("data", {});
+
+    const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<UpcomingReservation>({
+      _id: selectedReservation._id,
+    });
+
+    expect(updatedReservation).toHaveProperty("players", expect.any(Array));
+    expect(updatedReservation.players).toHaveLength(1);
+  });
+
+  // todo: 404, not found
+  it("should leave the selected reservation", async () => {
+    const selectedReservation: UpcomingReservation = {
+      _id: new ObjectId(mongoObjectId()),
+      date: "2023-12-18",
+      fieldId: fieldsDummy[0]._id,
+      players: [playersDummy[0], playersDummy[1]],
+      schedule: schedulesDummyField1[0],
+      status: "upcoming",
+      tag: tagsDummy[1],
+      type: "casual",
+    };
+
+    const url = `/reservations/${selectedReservation._id.toString()}123123/leave`;
+
+    const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("statusCode", 404);
+    expect(response.body).toHaveProperty("message", "Reservation not found");
     expect(response.body).toHaveProperty("data", {});
 
     const updatedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<UpcomingReservation>({
