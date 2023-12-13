@@ -226,7 +226,7 @@ describe("POST /reservation/:reservationId", () => {
       type: selectedType,
     };
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("statusCode", 201);
@@ -255,7 +255,7 @@ describe("POST /reservation/:reservationId", () => {
       type: selectedType,
     };
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("statusCode", 201);
@@ -283,7 +283,7 @@ describe("POST /reservation/:reservationId", () => {
       type: selectedType,
     };
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -312,7 +312,7 @@ describe("POST /reservation/:reservationId", () => {
       tagId: selectedTag._id.toString(),
     };
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -337,7 +337,7 @@ describe("POST /reservation/:reservationId", () => {
       tagId: selectedTag._id.toString(),
     };
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -366,7 +366,7 @@ describe("POST /reservation/:reservationId", () => {
       type: selectedType,
     };
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -389,7 +389,7 @@ describe("POST /reservation/:reservationId", () => {
 
     const competitiveReservationInput = {};
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -423,7 +423,7 @@ describe("POST /reservation/:reservationId", () => {
     });
     const url = `/reservations/${wrongReservation._id.toString()}`;
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -442,7 +442,7 @@ describe("POST /reservation/:reservationId", () => {
       type: selectedType,
     };
 
-    const response = await request(app).get(url).send(competitiveReservationInput);
+    const response = await request(app).post(url).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -463,7 +463,7 @@ describe("POST /reservation/:reservationId", () => {
       type: selectedType,
     };
 
-    const response = await request(app).get(url).set("authorization", `Bearer ${invalidToken}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${invalidToken}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -483,7 +483,7 @@ describe("POST /reservation/:reservationId", () => {
     };
 
     const url = `/reservations/291837hjb12jh3`;
-    const response = await request(app).get(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
+    const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(404);
     expect(response.body).toBeInstanceOf(Object);
