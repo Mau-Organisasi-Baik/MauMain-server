@@ -42,7 +42,10 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(userRegister);
+      const response = await request(app)
+        .post("/register")
+        .set("Content-Type", "application/json")
+        .send(userRegister);
 
       expect(response.status).toBe(201);
       expect(response.body).toBeInstanceOf(Object);
@@ -70,7 +73,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -91,7 +94,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -112,7 +115,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -133,7 +136,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -154,7 +157,7 @@ describe("POST /register", () => {
         role: role,
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -174,7 +177,7 @@ describe("POST /register", () => {
         role: role,
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -229,7 +232,7 @@ describe("POST /register", () => {
           password: "12345678",
         };
 
-        const response = await request(app).post("/register").send(duplicateRegister);
+        const response = await request(app).post("/register").set("Content-Type", "application/json").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
@@ -251,7 +254,7 @@ describe("POST /register", () => {
           password: "12345678",
         };
 
-        const response = await request(app).post("/register").send(duplicateRegister);
+        const response = await request(app).post("/register").set("Content-Type", "application/json").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
@@ -274,7 +277,7 @@ describe("POST /register", () => {
           password: "12345678",
         };
 
-        const response = await request(app).post("/register").send(duplicateRegister);
+        const response = await request(app).post("/register").set("Content-Type", "application/json").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
@@ -311,7 +314,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(userRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(userRegister);
 
       expect(response.status).toBe(201);
       expect(response.body).toBeInstanceOf(Object);
@@ -339,7 +342,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -360,7 +363,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -381,7 +384,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -402,7 +405,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -423,7 +426,7 @@ describe("POST /register", () => {
         role: role,
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -443,7 +446,7 @@ describe("POST /register", () => {
         role: role,
       };
 
-      const response = await request(app).post("/register").send(unCompleteRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(unCompleteRegister);
 
       expect(response.status).toBe(400);
       expect(response.body).toBeInstanceOf(Object);
@@ -498,9 +501,7 @@ describe("POST /register", () => {
           password: "12345678",
         };
 
-        const response = await request(app).post("/register").send(duplicateRegister);
-        
-
+        const response = await request(app).post("/register").set("Content-Type", "application/json").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
@@ -522,7 +523,7 @@ describe("POST /register", () => {
           password: "12345678",
         };
 
-        const response = await request(app).post("/register").send(duplicateRegister);
+        const response = await request(app).post("/register").set("Content-Type", "application/json").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
@@ -545,7 +546,7 @@ describe("POST /register", () => {
           password: "12345678",
         };
 
-        const response = await request(app).post("/register").send(duplicateRegister);
+        const response = await request(app).post("/register").set("Content-Type", "application/json").send(duplicateRegister);
 
         expect(response.status).toBe(400);
         expect(response.body).toBeInstanceOf(Object);
