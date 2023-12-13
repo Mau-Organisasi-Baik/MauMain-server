@@ -3,7 +3,7 @@ import { client } from "../../config/db"
 import { Db } from "mongodb";
 import { FieldInput, PlayerInput, UserLoginInput, UserRegisterInput } from "types/inputs";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
-import { comparePass } from "../helpers/bcrypt";
+import { comparePass, hashPass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
 import { LoginSuccess } from "types/response";
 import { Field } from "types/user";
@@ -102,7 +102,7 @@ export default class UserController {
                 username: username, 
                 email: email, 
                 phoneNumber: phoneNumber,
-                password: password, 
+                password: hashPass(password), 
                 role: role
             } as UserRegisterInput
             const registeredUser = await db.collection(USERS_COLLECTION_NAME).insertOne(userInfo);
@@ -115,7 +115,7 @@ export default class UserController {
                         ...userInfo
                     }
                 }
-                const registerAdmin = await db.collection(FIELDS_COLLECTION_NAME).insertOne(fieldInfo);
+                const registerField = await db.collection(FIELDS_COLLECTION_NAME).insertOne(fieldInfo);
             }
             else if(userInfo.role === "player") {
                 let playerInfo: PlayerInput = {
@@ -126,7 +126,7 @@ export default class UserController {
                     },
                     exp: 0
                 }
-                const registerAdmin = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);
+                const registerPlayer = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);
             }
 
             const access_token = createToken({

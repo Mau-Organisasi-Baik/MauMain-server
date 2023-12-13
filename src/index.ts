@@ -7,22 +7,29 @@ import { Request, Response } from "express";
 import IndexController from "./controllers";
 import { errorHandler } from "./middlewares/errorHandler";
 import UserController from "./controllers/UserController";
+import { authentication } from "./middlewares/authentication";
+import PublicController from "./controllers/PublicController";
+import { fieldAuthorization, playerAuthorization } from "./middlewares/authorization";
+import multer from "multer";
 
 const app = express();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Application works!");
-});
-
-app.get("/users", IndexController.getUser);
-
 app.post("/login", UserController.userLogin);
 
 app.post("/register", UserController.userRegister);
+
+app.use(authentication);
+
+app.put("/profile", playerAuthorization, upload.single("profilePictureUrl"), PublicController.createProfile);
+
+app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile)
 
 app.use(errorHandler);
 
