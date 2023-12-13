@@ -65,6 +65,7 @@ _Field_
 - `GET /fields/:id/reservations`
 - `GET /reservations/:id`
 - `POST /reservations/:id`
+- `PUT /reservations/:id/join`
 
 ### Field endpoints:
 
@@ -586,7 +587,7 @@ Description:
 
 - body:
 
-````json
+```json
 {
   "tagId": "string (required)",
   "type": "competitive" | "casual" "(required)",
@@ -600,7 +601,7 @@ _Response (201 - Created)_
   "message": "Reservation made successfully",
   "data": {}
 }
-```
+````
 
 _Response (400 - Bad Request)_
 
@@ -653,8 +654,88 @@ _Response (404 - Not found)_
 }
 ```
 
+### 6. PUT /reservation/reservationId/join
 
-```## Field Endpoints
+Description:
+
+- Get make reservation from empty and change the reservation content
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- parameters:
+
+````json
+{
+  "reservationId": "string"
+}
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Joined successfully into reservation",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Already joined",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation full",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation already playing / ended",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+## Field Endpoints
 
 ### 1. POST /profile
 

@@ -1,4 +1,6 @@
 import { ObjectId } from "mongodb";
+import { Schedule } from "./schedule";
+import { tag } from "./tag";
 
 export interface User {
   _id: ObjectId;
@@ -9,6 +11,7 @@ export interface User {
   password: string;
 }
 
+// todo: tambahkan history
 export interface Player {
   _id: ObjectId;
   UserId: ObjectId;
@@ -27,13 +30,14 @@ export interface Field {
   _id: ObjectId;
   UserId: ObjectId;
   user: User;
+  schedules: Schedule[];
 }
 
 export interface FieldProfile {
   name: string;
   address: string;
   coordinates: number[];
-  tags: string[];
+  tags: tag[];
   photoUrls: string[];
 }
 

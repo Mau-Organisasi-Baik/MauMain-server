@@ -1,7 +1,9 @@
 import { ObjectId } from "mongodb";
 import { Player, User, ValidField, ValidPlayer } from "../types/user";
 import { hashPass } from "../src/helpers/bcrypt";
-import { Reservation } from "types/reservation";
+import { EmptyReservation, Reservation, UpcomingReservation } from "types/reservation";
+import { Schedule } from "types/schedule";
+import { UserLoginInput } from "types/inputs";
 
 var mongoObjectId = function () {
   var timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
@@ -14,6 +16,25 @@ var mongoObjectId = function () {
       .toLowerCase()
   );
 };
+
+export const playerLoginDummy: UserLoginInput[] = [
+  { usernameOrMail: "ibra", password: "TestAdmin" },
+  { usernameOrMail: "anakbaik", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik2", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik3", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik4", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik5", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik6", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik7", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik8", password: "TestAdmin" },
+  { usernameOrMail: "temanbaik9", password: "TestAdmin" },
+];
+
+export const fieldLoginDummy: UserLoginInput[] = [
+  { usernameOrMail: "testadmin", password: "TestAdmin" },
+  { usernameOrMail: "testadmin2", password: "TestAdmin" },
+];
 
 export const usersDummy: User[] = [
   {
@@ -237,51 +258,28 @@ export const tagsDummy: tag[] = [
   },
 ];
 
-export const fieldsDummy: ValidField[] = [
+export const schedulesDummyField1: Schedule[] = [
   {
     _id: new ObjectId(mongoObjectId()),
-    UserId: usersDummy[2]._id,
-    user: usersDummy[2],
-    name: "Futsal Court Cilandak Sport Centre",
-    address: "Jl. TB Simatupang No.Kav. 17, Cilandak Bar., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12430",
-    coordinates: [-6.2898551, 106.8002198],
-    photoUrls: [
-      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
-      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
-      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
-    ],
-    tags: [
-      // tags[1]
-    ],
+    TimeStart: "T18:00:00.000Z",
+    TimeEnd: "T19:00:00.000Z",
+    repeat: true,
   },
   {
     _id: new ObjectId(mongoObjectId()),
-    UserId: usersDummy[3]._id,
-    user: usersDummy[3],
-    name: "Basket Court Lapangan Banteng",
-    address: "Jl. Lap. Banteng Barat No.3, RW.4, Ps. Baru, Kecamatan Sawah Besar, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10710",
-    coordinates: [-6.1703204, 106.8309775],
-    photoUrls: [
-      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
-      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
-      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
-    ],
-    tags: [
-      // todo: perbaiki ini
-      // tags[0],
-      // tags[1]
-    ],
+    TimeStart: "T19:30:00.000Z",
+    TimeEnd: "T20:30:00.000Z",
+    repeat: false,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    TimeStart: "T21:00:00.000Z",
+    TimeEnd: "T22:30:00.000Z",
+    repeat: true,
   },
 ];
 
-interface Schedule {
-  _id: ObjectId;
-  TimeStart: string;
-  TimeEnd: string;
-  repeat: boolean;
-}
-
-export const schedulesDummy: Schedule[] = [
+export const schedulesDummyField2: Schedule[] = [
   {
     _id: new ObjectId(mongoObjectId()),
     TimeStart: "T18:00:00.000Z",
@@ -302,7 +300,40 @@ export const schedulesDummy: Schedule[] = [
   },
 ];
 
-export const reservationsDummy: Reservation[] = [
+export const fieldsDummy: ValidField[] = [
+  {
+    _id: new ObjectId(mongoObjectId()),
+    UserId: usersDummy[2]._id,
+    user: usersDummy[2],
+    name: "Futsal Court Cilandak Sport Centre",
+    address: "Jl. TB Simatupang No.Kav. 17, Cilandak Bar., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12430",
+    coordinates: [-6.2898551, 106.8002198],
+    photoUrls: [
+      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
+    ],
+    tags: [tagsDummy[1]],
+    schedules: schedulesDummyField1,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    UserId: usersDummy[3]._id,
+    user: usersDummy[3],
+    name: "Basket Court Lapangan Banteng",
+    address: "Jl. Lap. Banteng Barat No.3, RW.4, Ps. Baru, Kecamatan Sawah Besar, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10710",
+    coordinates: [-6.1703204, 106.8309775],
+    photoUrls: [
+      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
+    ],
+    tags: [tagsDummy[0], tagsDummy[1]],
+    schedules: schedulesDummyField2,
+  },
+];
+
+export const normalReservations: Reservation[] = [
   {
     _id: new ObjectId(mongoObjectId()),
     fieldId: fieldsDummy[0]._id,
@@ -310,7 +341,7 @@ export const reservationsDummy: Reservation[] = [
     type: "competitive",
     score: "33-2",
     status: "ended",
-    schedule: schedulesDummy[0],
+    schedule: fieldsDummy[0].schedules[0],
     date: "2023-12-18",
     players: [...playersDummy.slice(0, 8)],
   },
@@ -320,26 +351,40 @@ export const reservationsDummy: Reservation[] = [
     tag: tagsDummy[0],
     type: "casual",
     status: "playing",
-    schedule: schedulesDummy[1],
+    schedule: fieldsDummy[1].schedules[1],
     date: "2023-12-18",
     players: [...playersDummy.slice(0, 3), playersDummy[8], ...playersDummy.slice(5, 7), playersDummy[4]],
-  },
-  {
-    _id: new ObjectId(mongoObjectId()),
-    fieldId: fieldsDummy[0]._id,
-    status: "empty",
-    schedule: schedulesDummy[2],
-    date: "2023-12-18",
-    players: [],
   },
   {
     _id: new ObjectId(mongoObjectId()),
     fieldId: fieldsDummy[1]._id,
-    tag: tagsDummy[0],
+    tag: tagsDummy[1],
     type: "casual",
     status: "upcoming",
-    schedule: schedulesDummy[2],
+    schedule: fieldsDummy[1].schedules[2],
     date: "2023-12-18",
-    players: [...playersDummy.slice(0, 3), playersDummy[8], ...playersDummy.slice(5, 7), playersDummy[4]],
+    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
   },
 ];
+
+const emptyReservations: EmptyReservation = {
+  _id: new ObjectId(mongoObjectId()),
+  fieldId: fieldsDummy[0]._id,
+  status: "empty",
+  schedule: fieldsDummy[0].schedules[1],
+  date: "2023-12-18",
+  players: [],
+};
+
+const fullReservation: UpcomingReservation = {
+  _id: new ObjectId(mongoObjectId()),
+  fieldId: fieldsDummy[1]._id,
+  tag: tagsDummy[0],
+  type: "casual",
+  status: "upcoming",
+  schedule: fieldsDummy[1].schedules[1],
+  date: "2023-12-18",
+  players: [...playersDummy.slice(0, 10)],
+};
+
+export const reservationsDummy: Reservation[] = [...normalReservations, emptyReservations, fullReservation];
