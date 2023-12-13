@@ -1,28 +1,46 @@
 import { ObjectId } from "mongodb";
-import { Player, ValidPlayer } from "./user";
+import { ValidPlayer } from "./user";
+import { tag } from "./tag";
+import { Schedule } from "./schedule";
 
-interface tag {
-  _id: ObjectId;
-  name: string;
-  limit: number;
-}
-
-interface Schedule {
-  _id: ObjectId;
-  TimeStart: string;
-  TimeEnd: string;
-  repeat: boolean;
-}
-
-export interface Reservation {
+export interface BaseReservation {
   _id: ObjectId;
   fieldId: ObjectId;
-  tag?: tag;
-  type?: "competitive" | "casual" | "";
-  score?: string;
-  status?: "upcoming" | "playing" | "ended";
-  initPlayer?: Player;
   schedule: Schedule;
   date: string;
   players: Omit<ValidPlayer, "user">[];
 }
+
+export type ReservationGameType = "competitive" | "casual";
+
+export interface EmptyReservation extends BaseReservation {
+  status: "empty";
+}
+
+export interface UpcomingReservation extends BaseReservation {
+  status: "upcoming";
+  tag: tag;
+  type: ReservationGameType;
+}
+
+export interface PlayingReservation extends BaseReservation {
+  status: "playing";
+  tag: tag;
+  type: ReservationGameType;
+}
+
+interface EndedReservation extends BaseReservation {
+  status: "ended";
+  tag: tag;
+}
+
+export interface EndedCompetitiveReservation extends EndedReservation {
+  type: "competitive";
+  score: string;
+}
+
+export interface EndedCasualReservation extends EndedReservation {
+  type: "casual";
+}
+
+export type Reservation = EmptyReservation | UpcomingReservation | PlayingReservation | EndedCasualReservation | EndedCompetitiveReservation;

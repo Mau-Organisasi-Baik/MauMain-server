@@ -15,7 +15,7 @@ export type FieldInput = Omit<Field, "_id">;
 export type PlayerProfileInput = PlayerProfile;
 export type FieldProfileInput = FieldProfile;
 
-interface ExploreFieldInput {
-  latitude: number;
-  longitude: number;
+export interface ReservationInput {
+  tagId: string;
+  type: "competitive" | "casual";
 }

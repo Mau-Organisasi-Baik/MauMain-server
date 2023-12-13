@@ -437,9 +437,9 @@ _Response (200 - OK)_
           "name": "string",
           "limit": 10,
         },
-        "type?": "competitive" | "casual" | "",
+        "type?": "competitive" | "casual",
         "score?": "string",
-        "status?": "upcoming" | "playing" | "ended",
+        "status": "empty" | "upcoming" | "playing" | "ended",
         "schedule": {
           "_id": "string",
           "TimeStart": "string",
@@ -481,7 +481,86 @@ _Response (404 - Not found)_
 }
 ```
 
-## Field Endpoints
+### 4. GET /reservations/:reservationId
+
+Description:
+
+- Get selected reservation
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- parameters:
+
+```json
+{
+  "reservationId": "string"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Reservation retrieved successfully",
+  "data": {
+    "reservation": {
+      "_id": "string",
+      "fieldId": "ObjectId",
+      "tag?": {
+        "_id": "string",
+        "name": "string",
+        "limit": 10,
+      },
+      "type?": "competitive" | "casual",
+      "score?": "string",
+      "status": "empty" | "upcoming" | "playing" | "ended",
+      "schedule": {
+        "_id": "string",
+        "TimeStart": "string",
+        "TimeEnd": "string",
+      },
+      "date": "string",
+      "players": [
+        {
+          "_id": "string",
+          "userId": "string",
+          "profilePictureUrl": "string",
+          "exp": "number",
+          "name": "string",
+        }
+      ],
+    }
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
 
 ### 1. POST /profile
 
