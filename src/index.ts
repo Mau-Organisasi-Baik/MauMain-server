@@ -8,7 +8,7 @@ import IndexController from "./controllers";
 import { errorHandler } from "./middlewares/errorHandler";
 import UserController from "./controllers/UserController";
 import { authentication } from "./middlewares/authentication";
-import PlayerController from "./controllers/PlayerController";
+import PublicController from "./controllers/PublicController";
 import { fieldAuthorization, playerAuthorization } from "./middlewares/authorization";
 import multer from "multer";
 
@@ -27,7 +27,9 @@ app.post("/register", UserController.userRegister);
 
 app.use(authentication);
 
-app.put("/profile", playerAuthorization, upload.single("profilePictureUrl"), PlayerController.createPlayerProfile);
+app.put("/profile", playerAuthorization, upload.single("profilePictureUrl"), PublicController.createProfile);
+
+app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile)
 
 app.use(errorHandler);
 

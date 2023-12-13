@@ -1,11 +1,11 @@
 import { client } from "../../config/db";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import {v2 as cloudinary} from 'cloudinary';
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { randomUUID } from "crypto";
 import { PLAYERS_COLLECTION_NAME } from "../../config/names";
-import { PlayerProfile } from "../../types/user";
+import { Player, PlayerProfile } from "../../types/user";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if(process.env.NODE_ENV) {
@@ -19,8 +19,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET
 });
 
-export default class PlayerController {
-    static async createPlayerProfile(req: UserRequest, res: Response, next: NextFunction) {
+export default class PublicController {
+    static async createProfile(req: UserRequest, res: Response, next: NextFunction) {
         try {
             const { name } = req.body;
             let errorInputField = [] as string[];
@@ -53,6 +53,26 @@ export default class PlayerController {
             } as ServerResponse);
         }
         catch(error){
+            next(error);
+        }
+    }
+    static async getProfile(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const { playerId } = req.params;
+            
+            const profile = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: new ObjectId(playerId) }) as Player;
+            if(!profile) {
+                throw { name: "DataNotFound", field: "Player" };
+            }
+            return res.status(200).json({
+                statusCode: 200,
+                message: "Player profile retrieved successfully",
+                data: {
+                    user: profile
+                }
+            });
+        }
+        catch(error) {
             next(error);
         }
     }
