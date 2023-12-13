@@ -119,4 +119,26 @@ export default class PublicController {
             next(error);
         }
     }
+    static async getFieldById(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const { fieldId } = req.params;
+
+            const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: new ObjectId(fieldId) });
+
+            if(!field) {
+                throw { name: "DataNotFound", field: "Field" };
+            }
+
+            return res.status(200).json({
+                statusCode: 200,
+                message: "Player profile retrieved successfully",
+                data: {
+                    field: field
+                }
+            });
+        }
+        catch(error) {
+            next(error);
+        }
+    }
 }
