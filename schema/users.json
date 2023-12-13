@@ -20,7 +20,7 @@
         "username": "testadmin",
         "email": "admin@email.com",
         "password": "TestAdmin",
-        "role": "admin",
+        "role": "field",
         "phoneNumber": "+6281570001329"
     }
 ]

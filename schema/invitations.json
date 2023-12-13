@@ -1,24 +1,24 @@
 [
-    {
-        "_id": 1,
-        "inviterId": 1,
-        "inviter": {
-            "_id": 1,
-            "username": "ibra",
-            "email": "warissoon@email.com",
-            "password": "TestAdmin",
-            "role": "player", 
-            "phoneNumber": "+6281570000000"
-        },
-        "inviteeId": 2,
-        "Invitee": {
-            "_id": 3,
-            "username": "anakbaik",
-            "email": "anakbaik@email.com",
-            "password": "TestAdmin",
-            "role": "player",
-            "phoneNumber": "+6281570001000"
-        },
-        "ReservationId": 1
-    }
+  {
+    "_id": 1,
+    "inviterId": 1,
+    "inviter": {
+      "_id": 1,
+      "username": "ibra",
+      "email": "warissoon@email.com",
+      "password": "TestAdmin",
+      "role": "player",
+      "phoneNumber": "+6281570000000"
+    },
+    "inviteeId": 2,
+    "Invitee": {
+      "_id": 3,
+      "username": "anakbaik",
+      "email": "anakbaik@email.com",
+      "password": "TestAdmin",
+      "role": "player",
+      "phoneNumber": "+6281570001000"
+    },
+    "ReservationId": 1
+  }
 ]

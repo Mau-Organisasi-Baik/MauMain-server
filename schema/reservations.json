@@ -1,11 +1,63 @@
 [
-    {
-        "_id": 1,
-        "SportTag": "Basket",
-        "GameType": "Competitive",
-        "Score": "33-2",
-        "InitPlayerId": 1,
-        "ScheduleId": 1,
-        "Date": "2023-12-18"
-    }
+  {
+    "_id": 1,
+    "FieldId": 1,
+    "tag": {
+      "_id": 1,
+      "name": "Futsal",
+      "limit": 10
+    },
+    "type": "competitive",
+    "score": "33-2",
+    "isEnded": true,
+    "initPlayerId": 1,
+    "schedule": {
+      "_id": 1,
+      "TimeStart": "T18:00:00.000Z",
+      "TimeEnd": "T18:00:00.000Z",
+      "repeat": true
+    },
+    "date": "2023-12-18",
+    "players": [1, 2, 3]
+  },
+  {
+    "_id": 2,
+    "FieldId": 1,
+    "tag": {
+      "_id": 1,
+      "name": "Basketball",
+      "limit": 10
+    },
+    "type": "casual",
+    "score": "",
+    "isEnded": false,
+    "initPlayerId": 2,
+    "schedule": {
+      "_id": 2,
+      "TimeStart": "T19:00:00.000Z",
+      "TimeEnd": "T19:00:00.000Z",
+      "repeat": true
+    },
+    "date": "2023-12-18"
+  },
+  {
+    "_id": 3,
+    "FieldId": 1,
+    "tag": {
+      "_id": 1,
+      "name": "Basketball",
+      "limit": 10
+    },
+    "type": "casual",
+    "score": "",
+    "isEnded": false,
+    "initPlayerId": 2,
+    "schedule": {
+      "_id": 2,
+      "TimeStart": "T20:00:00.000Z",
+      "TimeEnd": "T20:00:00.000Z",
+      "repeat": true
+    },
+    "date": "2023-12-18"
+  }
 ]
