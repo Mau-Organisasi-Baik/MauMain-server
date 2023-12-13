@@ -10,6 +10,10 @@ export function errorHandler(error, req: Request, res: Response, next: NextFunct
         case "InvalidLogin":
             res.status(error.statusCode).json({ statusCode: error.statusCode, message: "Invalid username/email or password", data: {} } as ErrorResponse);
             break;
+        case "Forbidden":
+        case "InvalidToken": 
+            res.status(error.statusCode).json({ statusCode: error.statusCode, message: "Invalid token", data: {} } as ErrorResponse);
+            break;2
         case "UniqueError":
             res.status(error.statusCode).json({ statusCode: error.statusCode, fields: error.fields, message: error.message, data: {} } as ErrorResponse);
             break;
