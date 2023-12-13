@@ -115,7 +115,7 @@ export default class UserController {
                         ...userInfo
                     }
                 }
-                const registerAdmin = await db.collection(FIELDS_COLLECTION_NAME).insertOne(fieldInfo);
+                const registerField = await db.collection(FIELDS_COLLECTION_NAME).insertOne(fieldInfo);
             }
             else if(userInfo.role === "player") {
                 let playerInfo: PlayerInput = {
@@ -126,7 +126,7 @@ export default class UserController {
                     },
                     exp: 0
                 }
-                const registerAdmin = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);
+                const registerPlayer = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);
             }
 
             const access_token = createToken({
