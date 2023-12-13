@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { Player, User, ValidField, ValidPlayer } from "../types/user";
 import { hashPass } from "../src/helpers/bcrypt";
+import { Reservation } from "types/reservation";
 
 var mongoObjectId = function () {
   var timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
@@ -301,22 +302,10 @@ export const schedulesDummy: Schedule[] = [
   },
 ];
 
-interface Reservation {
-  _id: ObjectId;
-  fieldId: ObjectId;
-  tag?: tag;
-  type?: "competitive" | "casual" | "";
-  score?: string;
-  status?: "upcoming" | "playing" | "ended";
-  schedule: Schedule;
-  date: string;
-  players: Omit<ValidPlayer, "user">[];
-}
-
 export const reservationsDummy: Reservation[] = [
   {
     _id: new ObjectId(mongoObjectId()),
-    fieldId: new ObjectId(1),
+    fieldId: fieldsDummy[0]._id,
     tag: tagsDummy[1],
     type: "competitive",
     score: "33-2",
@@ -327,10 +316,9 @@ export const reservationsDummy: Reservation[] = [
   },
   {
     _id: new ObjectId(mongoObjectId()),
-    fieldId: new ObjectId(2),
+    fieldId: fieldsDummy[1]._id,
     tag: tagsDummy[0],
     type: "casual",
-    score: "",
     status: "playing",
     schedule: schedulesDummy[1],
     date: "2023-12-18",
@@ -338,11 +326,20 @@ export const reservationsDummy: Reservation[] = [
   },
   {
     _id: new ObjectId(mongoObjectId()),
-    fieldId: new ObjectId(1),
-    tag: tagsDummy[0],
-    status: "upcoming",
+    fieldId: fieldsDummy[0]._id,
+    status: "empty",
     schedule: schedulesDummy[2],
     date: "2023-12-18",
     players: [],
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    fieldId: fieldsDummy[1]._id,
+    tag: tagsDummy[0],
+    type: "casual",
+    status: "upcoming",
+    schedule: schedulesDummy[2],
+    date: "2023-12-18",
+    players: [...playersDummy.slice(0, 3), playersDummy[8], ...playersDummy.slice(5, 7), playersDummy[4]],
   },
 ];

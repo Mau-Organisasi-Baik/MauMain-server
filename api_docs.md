@@ -63,6 +63,8 @@ _Field_
 #### Reservation endpoints:
 
 - `GET /fields/:id/reservations`
+- `GET /reservations/:id`
+- `POST /reservations/:id`
 
 ### Field endpoints:
 
@@ -561,6 +563,98 @@ _Response (404 - Not found)_
 }
 ```
 
+### 5. POST /reservations/:reservationId
+
+Description:
+
+- Get make reservation from empty and change the reservation content
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- parameters:
+
+````json
+{
+  "reservationId": "string"
+}
+
+- body:
+
+````json
+{
+  "tagId": "string (required)",
+  "type": "competitive" | "casual" "(required)",
+}
+
+_Response (201 - Created)_
+
+```json
+{
+  "statusCode": 201,
+  "message": "Reservation made successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Please fill the required field",
+  "fields": ["tag" | "type"],
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 409,
+  "message": "Invalid [tag | type]",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation already made before",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+
+```## Field Endpoints
 
 ### 1. POST /profile
 
