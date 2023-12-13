@@ -60,6 +60,9 @@ _Field_
 - `GET /fields/explore`
 - `GET /fields/:id`
 
+#### Reservation endpoints:
+
+- `GET /fields/:id/reservations`
 
 ### Field endpoints:
 
@@ -186,7 +189,7 @@ Description:
 
 ```json
 {
-  "Authorization": "Bearer [token]"
+  "authorization": "Bearer [token]"
 }
 ```
 
@@ -240,7 +243,7 @@ Description:
 
 ```json
 {
-  "Authorization": "Bearer [token]"
+  "authorization": "Bearer [token]"
 }
 ```
 
@@ -282,7 +285,7 @@ _Response (404 - Not found)_
 
 ```json
 {
-  "statusCode": 403,
+  "statusCode": 404,
   "message": "Player not found",
   "data": {}
 }
@@ -300,7 +303,7 @@ Description:
 
 ```json
 {
-  "Authorization": "Bearer [token]"
+  "authorization": "Bearer [token]"
 }
 ```
 
@@ -322,7 +325,7 @@ _Response (200 - OK)_
   "data": {
     "fields": [
       {
-        "_id": "ObjectId",
+        "_id": "string",
         "name": "string, required",
         "address": "string",
         "coordinates": "number[]",
@@ -361,11 +364,11 @@ Description:
 
 - Get Field details from field ID
 
-- 
+- headers
 
 ```json
 {
-  "Authorization": "Bearer [token]"
+  "authorization": "Bearer [token]"
 }
 ```
 
@@ -385,7 +388,7 @@ _Response (200 - OK)_
   "message": "Field detail retrieved successfully",
   "data": {
     "field": {
-      "_id": "ObjectId",
+      "_id": "string",
       "name": "string",
       "address": "string",
       "coordinates": "number[]",
@@ -393,6 +396,88 @@ _Response (200 - OK)_
       "photoUrls": "string[]"
     }
   }
+}
+```
+
+### 3. GET /fields/:id/reservations
+
+Description:
+
+- Get all reservations in selected field
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- parameters:
+
+```json
+{
+  "fieldId": "string"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Field reservations retrieved successfully",
+  "data": {
+    "reservations": [
+      {
+        "_id": "string",
+        "fieldId": "ObjectId",
+        "tag?": {
+          "_id": "string",
+          "name": "string",
+          "limit": 10,
+        },
+        "type?": "competitive" | "casual" | "",
+        "score?": "string",
+        "status?": "upcoming" | "playing" | "ended",
+        "schedule": {
+          "_id": "string",
+          "TimeStart": "string",
+          "TimeEnd": "string",
+        },
+        "date": "string",
+        "players": [
+          {
+            "_id": "string",
+            "userId": "string",
+            "profilePictureUrl": "string",
+            "exp": "number",
+            "name": "string",
+          }
+        ],
+      }
+    ]
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Field not found",
+  "data": {}
 }
 ```
 
@@ -405,6 +490,16 @@ Description:
 - Renews field profile
 
 - body:
+
+```json
+{
+  "name": "string (required)",
+  "address": "string (required)",
+  "coordinates": "number[] (required)",
+  "tags": "string[] (required)",
+  "photoUrls": "string[] (required)"
+}
+```
 
 _Response (200 - OK)_
 
