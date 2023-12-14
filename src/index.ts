@@ -40,7 +40,9 @@ app.get("/fields/:fieldId/reservations", playerAuthorization, ReservationControl
 
 app.get("/reservations/:reservationId", playerAuthorization, ReservationController.getReservationById);
 
-app.post("/reservations/:reservationId", playerAuthorization)
+app.post("/reservations/:reservationId", playerAuthorization, ReservationController.postReservation);
+
+app.put("/reservation/:reservationId/join", playerAuthorization, ReservationController.joinReservation);
 
 app.use(errorHandler);
 

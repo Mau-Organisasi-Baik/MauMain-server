@@ -3,8 +3,8 @@ import { Db, ObjectId } from "mongodb";
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../config/names";
-import { Player, PlayerProfile, User, ValidField } from "../../types/user";
-import { BaseReservation, Reservation, UpcomingReservation } from "../../types/reservation";
+import { Player, PlayerProfile, User, ValidField, ValidPlayer } from "../../types/user";
+import { BaseReservation, EmptyReservation, Reservation, UpcomingReservation } from "../../types/reservation";
 import { tag } from "../../types/tag";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
@@ -102,6 +102,51 @@ export default class ReservationController {
             res.status(201).json({
                 statusCode: 201,
                 message: "Reservation made successfully",
+                data: {}
+            } as ServerResponse);
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+    static async joinReservation(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const { reservationId } = req.params;
+            const { _id } = req.user
+
+            const targetReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne({ _id: new Object(reservationId) }) as Reservation;
+
+            if(!targetReservation) {
+                throw { name: "DataNotFound", field: "Reservation" };
+            }
+
+            let userValidation = false
+            targetReservation.players.forEach((player) => {
+                if(player.UserId === new ObjectId(_id)) {
+                    userValidation = true;
+                }
+            });
+            if(userValidation) {
+                throw { name: "AlreadyJoined" };
+            }
+            if(targetReservation.status !== "upcoming") {
+                throw { name: "AlreadyStartedOrEnded" };
+            }
+            if(targetReservation.players.length === targetReservation.tag.limit) {
+                throw { name: "AlreadyFull" };
+            }
+
+            const playerProfile = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ UserId: new ObjectId(_id) }) as Omit<ValidPlayer, "user">;
+
+            const reservationn = await db.collection(RESERVATION_COLLECTION_NAME).updateOne({ _id: new ObjectId(reservationId) }, {
+                $push: {
+                    players: playerProfile,
+                }
+            });
+
+            res.status(200).json({
+                statusCode: 200,
+                message: "Joined successfully into reservation",
                 data: {}
             } as ServerResponse);
         }
