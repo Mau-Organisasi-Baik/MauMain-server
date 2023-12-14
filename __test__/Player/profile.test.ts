@@ -184,7 +184,7 @@ describe("POST /profile", () => {
 // todo: PUT /profile
 
 // todo: GET /profile/:playerId
-describe.only("GET /profile/:playerId", () => {
+describe("GET /profile/:playerId", () => {
   let player1ID: ObjectId;
   let player2ID: ObjectId;
 

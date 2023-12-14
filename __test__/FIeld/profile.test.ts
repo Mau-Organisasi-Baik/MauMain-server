@@ -20,7 +20,7 @@ afterAll(() => {
   client.close();
 });
 
-describe.only("POST /profile", () => {
+describe("POST /profile", () => {
   let token: string;
 
   beforeEach(async () => {
