@@ -10,6 +10,7 @@ import { PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/nam
 import { ValidPlayer } from "../../types/user";
 import app from "../../src";
 import { playerImageBuffer } from "../images";
+import { mongoObjectId } from "../helper";
 
 const DATABASE_NAME = process.env.DATABASE_NAME_TEST;
 
@@ -309,7 +310,7 @@ describe("GET /profile/:playerId", () => {
   });
 
   it("should return error (404) when player not found", async () => {
-    const unknownPlayerId = "ABASJNDKASJNDKLJANSDKJN";
+    const unknownPlayerId = mongoObjectId();
 
     const response = await request(app)
       .get("/profile/" + unknownPlayerId)

@@ -101,7 +101,7 @@ describe("GET /fields/:fieldId/reservations", () => {
   });
 
   it("should return error (404) when field is not found", async () => {
-    const response = await request(app).get(`/field/samdlkamsd23123/reservations`);
+    const response = await request(app).get(`/field/${mongoObjectId()}/reservations`);
 
     expect(response.status).toBe(404);
     expect(response.body).toBeInstanceOf(Object);
@@ -177,7 +177,7 @@ describe("GET /reservation/:reservationId", () => {
   });
 
   it("should return error (404) when reservation is not found", async () => {
-    const response = await request(app).get(`/field/samdlkamsd23123/reservations`);
+    const response = await request(app).get(`/field/${mongoObjectId()}/reservations`);
 
     expect(response.status).toBe(404);
     expect(response.body).toBeInstanceOf(Object);
@@ -489,7 +489,7 @@ describe("POST /reservation/:reservationId", () => {
       type: selectedType,
     };
 
-    const url = `/reservations/291837hjb12jh3`;
+    const url = `/reservations/${mongoObjectId()}`;
     const response = await request(app).post(url).set("authorization", `Bearer ${token}`).send(competitiveReservationInput);
 
     expect(response.status).toBe(404);
@@ -728,7 +728,7 @@ describe("EDIT /reservation/reservationId", () => {
     };
     await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
-    const url = `/reservations/${selectedReservation._id.toString()}12/join`;
+    const url = `/reservations/${mongoObjectId()}/join`;
     const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(403);
@@ -1004,7 +1004,7 @@ describe("PUT /reservation/reservationId/leave", () => {
     };
     await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
-    const url = `/reservations/${selectedReservation._id.toString()}123123/leave`;
+    const url = `/reservations/${mongoObjectId()}/leave`;
 
     const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
 
