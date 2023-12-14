@@ -809,6 +809,288 @@ _Response (404 - Not found)_
 }
 ```
 
+### Friends Routes
+
+#### 1. GET /friends
+
+Description:
+
+- Get all friends (non-pending) of logged in user
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Friend list retrieved successfully",
+  "data": {
+    "friends": [
+      {
+        "_id": "string",
+        "name": "string"
+      },...
+    ]
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 2. POST /friends
+
+Description:
+
+- Send friend request
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- body
+
+```json
+{
+  "targetPlayerId": "string"
+}
+```
+
+_Response (201 - Created)_
+
+```json
+{
+  "statusCode": 201,
+  "message": "Friend request sent successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Can't send friend request to yourself",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Already friends",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Already requesting",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Player not found",
+  "data": {}
+}
+```
+
+#### 3. GET /friends/pending
+
+Description:
+
+- Send friend request
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Pending friend request retrieved successfully",
+  "data": {
+    "pendings": [
+      {
+        "_id": "string",
+        "name": "string"
+      },
+      ...
+    ]
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 4. PUT /friends/:friendsId/accept
+
+Description:
+
+- Accept friend request
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- parameters
+
+```json
+{
+  "friendsId": "string (required)"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Friend request accepted successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Already accepted",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Friend request not found",
+  "data": {}
+}
+```
+
+#### 5. DELETE /friends/:friendsId/reject
+
+Description:
+
+- Reject friend request
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- parameters
+
+```json
+{
+  "friendsId": "string (required)"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Friend request rejected successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Friend request not found",
+  "data": {}
+}
+```
+
+
 ## Field Endpoints
 
 ### 1. POST /profile
