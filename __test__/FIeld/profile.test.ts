@@ -20,7 +20,7 @@ afterAll(() => {
   client.close();
 });
 
-describe("POST /profile", () => {
+describe.only("POST /profile", () => {
   let token: string;
 
   beforeEach(async () => {
@@ -77,7 +77,10 @@ describe("POST /profile", () => {
       .set("Content-Type", "application/json")
       .attach("photos", fieldImageBuffers[0])
       .attach("photos", fieldImageBuffers[1])
-      .send(fieldProfile);
+      .field("name", fieldProfile["name"])
+      .field("address", fieldProfile["address"])
+      .field("coordinates", fieldProfile["coordinates"])
+      .field("tagIds", fieldProfile["tagIds"]);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Object);
@@ -105,7 +108,9 @@ describe("POST /profile", () => {
       .set("Authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
       .attach("photos", fieldImageBuffers[0])
-      .send(fieldProfile);
+      .field("address", fieldProfile["address"])
+      .field("coordinates", fieldProfile["coordinates"])
+      .field("tagIds", fieldProfile["tagIds"]);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -128,7 +133,9 @@ describe("POST /profile", () => {
       .post("/profile")
       .set("Authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .send(fieldProfile)
+      .field("name", fieldProfile["name"])
+      .field("coordinates", fieldProfile["coordinates"])
+      .field("tagIds", fieldProfile["tagIds"])
       .attach("photos", fieldImageBuffers[0]);
 
     expect(response.status).toBe(400);
@@ -152,7 +159,9 @@ describe("POST /profile", () => {
       .post("/profile")
       .set("Authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .send(fieldProfile)
+      .field("name", fieldProfile["name"])
+      .field("address", fieldProfile["address"])
+      .field("tagIds", fieldProfile["tagIds"])
       .attach("photos", fieldImageBuffers[0]);
 
     expect(response.status).toBe(400);
@@ -177,8 +186,10 @@ describe("POST /profile", () => {
       .post("/profile")
       .set("Authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      // .attach("photos", fieldImageBuffers[0])
-      .send(fieldProfile);
+      .field("name", fieldProfile["name"])
+      .field("address", fieldProfile["address"])
+      .field("coordinates", fieldProfile["coordinates"])
+      .field("tagIds", fieldProfile["tagIds"]);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -201,7 +212,9 @@ describe("POST /profile", () => {
       .post("/profile")
       .set("Authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .send(fieldProfile)
+      .field("name", fieldProfile["name"])
+      .field("address", fieldProfile["address"])
+      .field("coordinates", fieldProfile["coordinates"])
       .attach("photos", fieldImageBuffers[0]);
 
     expect(response.status).toBe(400);
@@ -224,7 +237,8 @@ describe("POST /profile", () => {
       .post("/profile")
       .set("Authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .send(fieldProfile)
+      .field("name", fieldProfile["name"])
+      .field("coordinates", fieldProfile["coordinates"])
       .attach("photos", fieldImageBuffers[0]);
 
     expect(response.status).toBe(400);
@@ -249,8 +263,12 @@ describe("POST /profile", () => {
     const response = await request(app)
       .post("/profile")
       .set("Content-Type", "application/json")
-      .send(fieldProfile)
+      .field("name", fieldProfile["name"])
+      .field("address", fieldProfile["address"])
+      .field("coordinates", fieldProfile["coordinates"])
+      .field("tagIds", fieldProfile["tagIds"])
       .attach("photos", fieldImageBuffers[0]);
+
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -272,7 +290,10 @@ describe("POST /profile", () => {
       .post("/profile")
       .set("Authorization", `Bearer ${invalidToken}`)
       .set("Content-Type", "application/json")
-      .send(fieldProfile)
+      .field("name", fieldProfile["name"])
+      .field("address", fieldProfile["address"])
+      .field("coordinates", fieldProfile["coordinates"])
+      .field("tagIds", fieldProfile["tagIds"])
       .attach("photos", fieldImageBuffers[0]);
 
     expect(response.status).toBe(403);
@@ -282,3 +303,5 @@ describe("POST /profile", () => {
     expect(response.body).toHaveProperty("data", {});
   });
 });
+
+// todo: /profile/me
