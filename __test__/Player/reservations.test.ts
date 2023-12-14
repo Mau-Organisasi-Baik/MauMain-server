@@ -539,6 +539,8 @@ describe("EDIT /reservation/reservationId", () => {
       type: "casual",
     };
 
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
+
     const url = `/reservations/${selectedReservation._id.toString()}/join`;
 
     const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
@@ -568,6 +570,7 @@ describe("EDIT /reservation/reservationId", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/join`;
 
@@ -598,6 +601,7 @@ describe("EDIT /reservation/reservationId", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/join`;
 
@@ -628,6 +632,7 @@ describe("EDIT /reservation/reservationId", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/join`;
 
@@ -658,6 +663,7 @@ describe("EDIT /reservation/reservationId", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/join`;
 
@@ -688,6 +694,7 @@ describe("EDIT /reservation/reservationId", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/join`;
 
@@ -719,6 +726,7 @@ describe("EDIT /reservation/reservationId", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}12/join`;
     const response = await request(app).put(url).set("authorization", `Bearer ${token}`);
@@ -775,6 +783,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/leave`;
 
@@ -805,6 +814,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/leave`;
 
@@ -836,6 +846,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/leave`;
 
@@ -866,6 +877,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/leave`;
 
@@ -896,6 +908,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/leave`;
 
@@ -926,6 +939,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/leave`;
 
@@ -956,6 +970,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}/leave`;
 
@@ -987,6 +1002,7 @@ describe("PUT /reservation/reservationId/leave", () => {
       tag: tagsDummy[1],
       type: "casual",
     };
+    await db.collection(RESERVATION_COLLECTION_NAME).insertOne(selectedReservation);
 
     const url = `/reservations/${selectedReservation._id.toString()}123123/leave`;
 
