@@ -183,7 +183,7 @@ _Response (400 - Bad Request)_
 
 ### Profile Routes
 
-#### 1. PUT /profile
+#### 1. POST /profile
 
 Description:
 
@@ -202,7 +202,7 @@ Description:
 ```json
 {
   "name": "string (required)",
-  "profilePictureUrl": "string (required)"
+  "photo": "File (required)"
 }
 ```
 
@@ -222,7 +222,7 @@ _Response (400 - Bad Request)_
 {
   "statusCode": 400,
   "message": "Please Fill the required field",
-  "fields": ["name" | "profilePictureUrl"],
+  "fields": ["name" | "photo"],
   "data": {}
 }
 ```
@@ -824,10 +824,12 @@ Description:
   "name": "string (required)",
   "address": "string (required)",
   "coordinates": "number[] (required)",
-  "tags": "string[] (required)",
-  "photoUrls": "string[] (required)"
+  "tagIds": "string[] (required)",
+  "photos": "file[] (required)"
 }
 ```
+
+
 
 _Response (200 - OK)_
 
