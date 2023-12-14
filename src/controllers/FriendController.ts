@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
-import { Friend } from "types/friend";
-import { FriendRequestInput } from "types/inputs";
+import { Friend } from "../../types/friend";
+import { FriendRequestInput } from "../../types/inputs";
 
 const sampleFriendInstance: Friend = {
   _id: new ObjectId("abc"),

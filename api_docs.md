@@ -49,6 +49,7 @@ _Field_
 
 - `POST /login`
 - `POST /register`
+- `GET /tags`
 
 ### Player endpoints:
 
@@ -176,6 +177,30 @@ _Response (400 - Bad Request)_
   "message": "[username | email] already used",
   "fields": ["username" | "email"],
   "data": {}
+}
+```
+
+### 3. GET /tags
+
+Description:
+
+- Retrieves all tags available
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Tags retrieved successfully",
+  "data": {
+    "tags": [
+      {
+        "_id": "string",
+        "name": "string",
+        "limit": "number",
+      }, ...
+    ]
+  }
 }
 ```
 
@@ -1097,7 +1122,7 @@ _Response (404 - Not found)_
 
 Description:
 
-- Renews field profile
+- insert field profile for first time
 
 - body:
 
@@ -1110,8 +1135,6 @@ Description:
   "photos": "file[] (required)"
 }
 ```
-
-
 
 _Response (200 - OK)_
 
