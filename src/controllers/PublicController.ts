@@ -54,7 +54,9 @@ export default class PublicController {
                     data: {},
                 } as ServerResponse);
             }
-            // c
+            else if(req.user.role === "field") {
+                
+            }
         }
         catch(error){
             next(error);
@@ -138,30 +140,6 @@ export default class PublicController {
                 message: "Player profile retrieved successfully",
                 data: {
                     field: field
-                }
-            } as ServerResponse);
-        }
-        catch(error) {
-            next(error);
-        }
-    }
-    static async getFieldReservations(req: UserRequest, res: Response, next: NextFunction) {
-        try {
-            const { fieldId } = req.params;
-            
-            const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: new ObjectId(fieldId) });
-
-            if(!field) {
-                throw { name: "DataNotFound", field: "Field" };
-            }
-
-            const reservations = await db.collection(RESERVATION_COLLECTION_NAME).find({ fieldId: field._id }).toArray() as Reservation[];
-
-            return res.status(200).json({
-                statusCode: 200,
-                message: "Field reservations retrieved successfully",
-                data: {
-                    reservations: reservations
                 }
             } as ServerResponse);
         }

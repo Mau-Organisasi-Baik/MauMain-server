@@ -113,7 +113,9 @@ export default class UserController {
                     user: {
                         _id: registeredUser.insertedId,
                         ...userInfo
-                    }
+                    },
+                    schedules: [],
+                    
                 }
                 const registerField = await db.collection(FIELDS_COLLECTION_NAME).insertOne(fieldInfo);
             }

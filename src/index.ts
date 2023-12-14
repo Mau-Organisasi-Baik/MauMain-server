@@ -11,6 +11,7 @@ import { authentication } from "./middlewares/authentication";
 import PublicController from "./controllers/PublicController";
 import { fieldAuthorization, playerAuthorization } from "./middlewares/authorization";
 import multer from "multer";
+import ReservationController from "./controllers/ReservationController";
 
 const app = express();
 
@@ -35,7 +36,11 @@ app.get("/fields/explore", playerAuthorization, PublicController.getLocation);
 
 app.get("/fields/:fieldId", playerAuthorization, PublicController.getFieldById);
 
-app.get("/fields/:fieldId/reservations", playerAuthorization, PublicController.getFieldReservations);
+app.get("/fields/:fieldId/reservations", playerAuthorization, ReservationController.getFieldReservations);
+
+app.get("/reservations/:reservationId", playerAuthorization, ReservationController.getReservationById);
+
+app.post("/reservations")
 
 app.use(errorHandler);
 
