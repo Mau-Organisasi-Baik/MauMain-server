@@ -4,9 +4,9 @@ import {v2 as cloudinary} from 'cloudinary';
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { randomUUID } from "crypto";
-import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME } from "../../config/names";
+import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../config/names";
 import { Player, PlayerProfile, User } from "../../types/user";
-import { Reservation } from "types/reservation";
+
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if(process.env.NODE_ENV) {
@@ -55,7 +55,7 @@ export default class PublicController {
                 } as ServerResponse);
             }
             else if(req.user.role === "field") {
-                
+
             }
         }
         catch(error){

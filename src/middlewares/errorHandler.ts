@@ -17,6 +17,8 @@ export function errorHandler(error, req: Request, res: Response, next: NextFunct
         case "InvalidToken": 
             res.status(error.statusCode).json({ statusCode: error.statusCode, message: "Invalid token", data: {} } as ErrorResponse);
             break;
+        case "AlreadyMade":
+            res.status(403).json({ statusCode: 403, message: `${error.field} already made before`, data: {} });
         case "DataNotFound":
             res.status(404).json({ statusCode: 404, message: `${error.field} not found`, data: {} } as ErrorResponse);
             break;
