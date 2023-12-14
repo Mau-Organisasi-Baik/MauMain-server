@@ -327,6 +327,7 @@ _Response (404 - Not found)_
 Description:
 
 - Fetch field list around user with current user coordinates
+- Fetch field by type if available
 
 - headers:
 
@@ -341,7 +342,8 @@ Description:
 ```json
 {
   "latitude": "number (required)",
-  "longitude": "number (required)"
+  "longitude": "number (required)",
+  "tag": "string (required)"
 }
 ```
 
@@ -355,11 +357,9 @@ _Response (200 - OK)_
     "fields": [
       {
         "_id": "string",
-        "name": "string, required",
+        "name": "string",
         "address": "string",
         "coordinates": "number[]",
-        "tags": "string[]",
-        "photoUrls": "string[]"
       }, ...
     ]
   }
@@ -428,7 +428,29 @@ _Response (200 - OK)_
 }
 ```
 
-### 3. GET /fields/:id/reservations
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Field not found",
+  "data": {}
+}
+```
+
+### Reservation Routes
+
+#### 1. GET /fields/:id/reservations
 
 Description:
 
@@ -510,7 +532,7 @@ _Response (404 - Not found)_
 }
 ```
 
-### 4. GET /reservations/:reservationId
+#### 2. GET /reservations/:reservationId
 
 Description:
 
@@ -590,7 +612,7 @@ _Response (404 - Not found)_
 }
 ```
 
-### 5. POST /reservations/:reservationId
+#### 3. POST /reservations/:reservationId
 
 Description:
 
@@ -680,7 +702,7 @@ _Response (404 - Not found)_
 }
 ```
 
-### 6. PUT /reservation/reservationId/join
+#### 4. PUT /reservation/reservationId/join
 
 Description:
 
@@ -762,7 +784,7 @@ _Response (404 - Not found)_
 }
 ```
 
-### 7. PUT /reservation/reservationId/leave
+#### 5. PUT /reservation/reservationId/leave
 
 Description:
 
@@ -1152,7 +1174,7 @@ _Response (400 - Bad Request)_
 {
   "statusCode": 400,
   "message": "Please Fill the required field",
-  "fields": ["name" | "address" | "coordinates" | "tags" | "photoUrls" ],
+  "fields": ["name" | "address" | "coordinates" | "tagIds" | "photos" ],
   "data": {}
 }
 ```

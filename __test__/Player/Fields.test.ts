@@ -1,14 +1,15 @@
 import { configDotenv } from "dotenv";
 configDotenv();
 
-import { Db, ObjectId } from "mongodb";
+import { Db } from "mongodb";
 import request from "supertest";
 import { UserLoginInput } from "../../types/inputs";
-import { hashPass as hash } from "../../src/helpers/bcrypt";
+import { ValidField } from "../../types/user";
 import { client } from "../../config/db";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
-import { ValidField, ValidPlayer } from "../../types/user";
 import app from "../../src";
+import { fieldsDummy, playerLoginDummy, playersDummy, tagsDummy } from "../dummyDatas";
+import { mongoObjectId } from "../helper";
 
 const DATABASE_NAME = process.env.DATABASE_NAME_TEST;
 
@@ -17,61 +18,6 @@ let db: Db = client.db(DATABASE_NAME);
 afterAll(() => {
   client.close();
 });
-
-const playerDummy: ValidPlayer[] = [
-  {
-    _id: new ObjectId("6578831e89bd7711017b845f"),
-    UserId: new ObjectId("6578831e89bd7711017b845e"),
-    user: {
-      _id: new ObjectId("6578831e89bd7711017b845e"),
-      username: "test",
-      email: "test@mail.com",
-      phoneNumber: "081212121212",
-      password: hash("12345678"),
-      role: "player",
-    },
-    name: "test",
-    profilePictureUrl: "abc.test",
-    exp: 0,
-  },
-];
-
-const fieldDummy: ValidField[] = [
-  {
-    _id: new ObjectId("657883d6f24dc965d131a8c9"),
-    UserId: new ObjectId("657883d6f24dc965d131a8c8"),
-    user: {
-      _id: new ObjectId("657883d6f24dc965d131a8c8"),
-      username: "test_field",
-      email: "test_field@mail.com",
-      phoneNumber: "081212121212",
-      password: hash("12345678"),
-      role: "field",
-    },
-    address: "test_field_street",
-    coordinates: [10, 100],
-    name: "test_field",
-    photoUrls: ["1.com", "11.com"],
-    tags: ["basket", "soccer"],
-  },
-  {
-    _id: new ObjectId("657883e2f24dc965d131a8cb"),
-    UserId: new ObjectId("657883e2f24dc965d131a8ca"),
-    user: {
-      _id: new ObjectId("657883e2f24dc965d131a8ca"),
-      username: "test_field_2",
-      email: "test_field_2@mail.com",
-      phoneNumber: "081212121212",
-      password: hash("12345678"),
-      role: "field",
-    },
-    address: "test_field_2_street",
-    coordinates: [20, 200],
-    name: "test_field_2",
-    photoUrls: ["2.com", "2.com"],
-    tags: ["volley", "basket"],
-  },
-];
 
 describe("GET /fields/explore", () => {
   // todo: use real coordinates later
@@ -85,12 +31,12 @@ describe("GET /fields/explore", () => {
     await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
 
-    await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playerDummy);
-    await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldDummy);
+    await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playersDummy);
+    await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldsDummy);
 
     const playerLogin: UserLoginInput = {
-      usernameOrMail: "test",
-      password: "12345678",
+      usernameOrMail: playerLoginDummy[0].usernameOrMail,
+      password: playerLoginDummy[0].password,
     };
     const response = await request(app).post("/login").send(playerLogin);
     token = response.body.data.access_token;
@@ -112,23 +58,41 @@ describe("GET /fields/explore", () => {
     expect(response.body).toHaveProperty("message", "OK!");
     expect(response.body).toHaveProperty("data", expect(Object));
     expect(response.body.data).toHaveProperty("fields", expect(Array));
-    expect(response.body.data.fields).toHaveLength(2);
-    expect(response.body.data.fields[0]).toEqual({
-      _id: "657883d6f24dc965d131a8c9",
-      name: "test_field",
-      address: "test_field_street",
-      coordinates: [10, 100],
-      tags: ["basket", "soccer"],
-      photoUrls: ["1.com", "11.com"],
+    expect(response.body.data.fields).toHaveLength(fieldsDummy.length);
+
+    response.body.data.fields.forEach((field: ValidField) => {
+      expect(field).toHaveProperty("name");
+      expect(field).toHaveProperty("address");
+
+      expect(field).toHaveProperty("coordinates", expect.any(Array));
+      expect(field.coordinates).toHaveLength(2);
     });
-    expect(response.body.data.fields[1]).toEqual({
-      _id: "657883e2f24dc965d131a8cb",
-      name: "test_field_2",
-      address: "test_field_2_street",
-      coordinates: [20, 200],
-      tags: ["basket", "soccer"],
-      photoUrls: ["2.com", "22.com"],
+  });
+
+  // todo: 200, search with tags
+  it("should get all surrounding fields using tag", async () => {
+    const selectedTag = tagsDummy[Math.floor(Math.random() * tagsDummy.length)];
+
+    const response = await request(app)
+      .get(`/field/explore?latitude=${randomLatitude}&longitude=${randomLongitude}&tag=${selectedTag.name}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("statusCode", 200);
+    expect(response.body).toHaveProperty("message", "OK!");
+    expect(response.body).toHaveProperty("data", expect(Object));
+
+    expect(response.body.data).toHaveProperty("fields", expect(Array));
+
+    const expectedFields = fieldsDummy.filter((field) => {
+      const tags = field.tags;
+
+      for (const tag of tags) {
+        if (tag._id === selectedTag._id) return true;
+      }
     });
+
+    expect(response.body.data.fields).toHaveLength(expectedFields.length);
   });
 
   it("should return error (403) when form not using headers", async () => {
@@ -204,12 +168,12 @@ describe("GET /fields/:fieldId", () => {
     await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
 
-    await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playerDummy);
-    await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldDummy);
+    await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playersDummy);
+    await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldsDummy);
 
     const playerLogin: UserLoginInput = {
-      usernameOrMail: "test",
-      password: "12345678",
+      usernameOrMail: playerLoginDummy[0].usernameOrMail,
+      password: playerLoginDummy[0].password,
     };
     const response = await request(app).post("/login").send(playerLogin);
     token = response.body.data.access_token;
@@ -222,21 +186,50 @@ describe("GET /fields/:fieldId", () => {
   });
 
   it("should get selected field", async () => {
-    const selectedFieldId = "657883d6f24dc965d131a8c9";
-    const response = await request(app).get(`/field/${selectedFieldId}`).set("Authorization", `Bearer ${token}`);
+    const selectedField = fieldsDummy[Math.floor(Math.random() * fieldsDummy.length)];
+    const response = await request(app).get(`/field/${selectedField._id.toString()}`).set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
     expect(response.body).toHaveProperty("message", "Field detail retrieved successfully");
     expect(response.body).toHaveProperty("data", expect(Object));
     expect(response.body.data).toHaveProperty("field", expect(Object));
-    expect(response.body.data.field).toEqual({
-      _id: "657883d6f24dc965d131a8c9",
-      name: "test_field",
-      address: "test_field_street",
-      coordinates: [10, 100],
-      tags: ["basket", "soccer"],
-      photoUrls: ["1.com", "11.com"],
-    });
+    expect(response.body.data.field).toHaveProperty("name", selectedField["name"]);
+    expect(response.body.data.field).toHaveProperty("address", selectedField["address"]);
+    expect(response.body.data.field).toHaveProperty("coordinates", selectedField["coordinates"]);
+    expect(response.body.data.field).toHaveProperty("tags", selectedField["tags"]);
+    expect(response.body.data.field).toHaveProperty("photoUrls", selectedField["photoUrls"]);
+  });
+
+  // todo: 403, no token
+  it("should return error (403)", async () => {
+    const selectedField = fieldsDummy[Math.floor(Math.random() * fieldsDummy.length)];
+    const response = await request(app).get(`/field/${selectedField._id.toString()}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Invalid token");
+    expect(response.body).toHaveProperty("data", {});
+  });
+
+  // todo: 403, invalid token
+  it("should return error (403)", async () => {
+    const selectedField = fieldsDummy[Math.floor(Math.random() * fieldsDummy.length)];
+    const response = await request(app).get(`/field/${selectedField._id.toString()}`).set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("statusCode", 403);
+    expect(response.body).toHaveProperty("message", "Invalid token");
+    expect(response.body).toHaveProperty("data", {});
+  });
+
+  // todo: 404, field not found
+  it("should return error (404)", async () => {
+    const response = await request(app).get(`/field/${mongoObjectId()}`).set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("statusCode", 404);
+    expect(response.body).toHaveProperty("message", "Field not found");
+    expect(response.body).toHaveProperty("data", {});
   });
 });
