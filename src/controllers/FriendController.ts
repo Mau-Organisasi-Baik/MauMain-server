@@ -108,6 +108,17 @@ export class FriendController {
 
   static async getFriendRequests(req: UserRequest, res: Response, next: NextFunction) {
     try {
+      const { playerId } = req.user;
+
+      const friendRequest = await db.collection(FRIENDS_COLLECTION_NAME).find<Friend>({ $and: [{ user2: playerId }, { isPending: true }] }).toArray();
+
+      return res.status(200).json({ 
+        statusCode: 200,
+        message: "Pending friend request retrieved successfully",
+        data: {
+          pending: friendRequest
+        }
+      });
       // todo: endpoint: POST /friends/pending
       // todo (main): get all pending friend request to logged player
       // todo: 200, pending friend list
