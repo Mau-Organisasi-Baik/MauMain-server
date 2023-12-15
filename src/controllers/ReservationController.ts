@@ -4,7 +4,7 @@ import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../config/names";
 import { Player, PlayerProfile, User, ValidField, ValidPlayer } from "../../types/user";
-import { BaseReservation, EmptyReservation, Reservation, UpcomingReservation } from "../../types/reservation";
+import { Reservation } from "../../types/reservation";
 import { tag } from "../../types/tag";
 import { ReservationInput } from "../../types/inputs";
 import { Schedule } from "types/schedule";
@@ -139,16 +139,13 @@ export default class ReservationController {
       if (userValidation) {
         throw { name: "AlreadyJoined" };
       }
-      if (targetReservation.status !== "upcoming") {
-        throw { name: "AlreadyStartedOrEnded" };
-      }
       if (targetReservation.players.length === targetReservation.tag.limit) {
         throw { name: "AlreadyFull" };
       }
 
       const playerProfile = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ UserId: new ObjectId(_id) })) as Omit<ValidPlayer, "user">;
 
-      const reservationn = await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
+      await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
         { _id: new ObjectId(reservationId) },
         {
           $push: {
@@ -176,9 +173,7 @@ export default class ReservationController {
       if (!targetReservation) {
         throw { name: "DataNotFound", field: "Reservation" };
       }
-      if (targetReservation.status !== "upcoming") {
-        throw { name: "AlreadyStartedOrEnded" };
-      }
+
       let userValidation = false;
       targetReservation.players.forEach((player) => {
         if (player.UserId === new Object(_id)) {
@@ -188,7 +183,7 @@ export default class ReservationController {
       if (!userValidation) {
         throw { name: "NotJoined" };
       }
-      const reservationn = await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
+      await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
         { _id: new ObjectId(reservationId) },
         {
           $pull: {

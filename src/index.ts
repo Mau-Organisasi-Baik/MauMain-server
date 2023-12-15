@@ -12,6 +12,7 @@ import PublicController from "./controllers/PublicController";
 import { fieldAuthorization, playerAuthorization } from "./middlewares/authorization";
 import multer from "multer";
 import ReservationController from "./controllers/ReservationController";
+import router from "./router";
 
 const app = express();
 
@@ -28,6 +29,8 @@ app.post("/register", UserController.userRegister);
 
 app.use(authentication);
 
+app.use(router);
+
 app.post("/profile", upload.array("photos"), PublicController.createProfile);
 
 app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile);
@@ -37,14 +40,6 @@ app.get("/fields/explore", playerAuthorization, PublicController.getLocation);
 app.get("/fields/:fieldId", playerAuthorization, PublicController.getFieldById);
 
 app.get("/fields/:fieldId/reservations", playerAuthorization, ReservationController.getFieldReservations);
-
-app.get("/reservations/:reservationId", playerAuthorization, ReservationController.getReservationById);
-
-app.post("/reservations/:reservationId", playerAuthorization, ReservationController.postReservation);
-
-app.put("/reservation/:reservationId/join", playerAuthorization, ReservationController.joinReservation);
-
-app.put("/reservation/:reservationId/leave", playerAuthorization, ReservationController.leaveReservation);
 
 app.use(errorHandler);
 

@@ -13,9 +13,9 @@ export interface BaseReservation {
 
 export type ReservationGameType = "competitive" | "casual";
 
-export interface EmptyReservation extends BaseReservation {
-  status: "empty";
-}
+// export interface EmptyReservation extends BaseReservation {
+//   status: "empty";
+// }
 
 export interface UpcomingReservation extends BaseReservation {
   status: "upcoming";
@@ -23,11 +23,11 @@ export interface UpcomingReservation extends BaseReservation {
   type: ReservationGameType;
 }
 
-export interface PlayingReservation extends BaseReservation {
-  status: "playing";
-  tag: tag;
-  type: ReservationGameType;
-}
+// export interface PlayingReservation extends BaseReservation {
+//   status: "playing";
+//   tag: tag;
+//   type: ReservationGameType;
+// }
 
 export interface EndedReservation extends BaseReservation {
   status: "ended";
@@ -43,4 +43,5 @@ export interface EndedCasualReservation extends EndedReservation {
   type: "casual";
 }
 
-export type Reservation = EmptyReservation | UpcomingReservation | PlayingReservation | EndedCasualReservation | EndedCompetitiveReservation;
+// export type Reservation = EmptyReservation | UpcomingReservation | PlayingReservation | EndedCasualReservation | EndedCompetitiveReservation;
+export type Reservation = UpcomingReservation | EndedCasualReservation | EndedCompetitiveReservation;
