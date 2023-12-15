@@ -106,6 +106,8 @@ export default class ReservationController {
         players: [],
         schedule: selectedSchedule,
         status: "upcoming",
+        tag,
+        type: type,
       };
 
       const reservation = await db.collection(RESERVATION_COLLECTION_NAME).insertOne(newReservationObj);
