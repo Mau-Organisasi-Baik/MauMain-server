@@ -13,6 +13,7 @@ import { fieldAuthorization, playerAuthorization } from "./middlewares/authoriza
 import multer from "multer";
 import ReservationController from "./controllers/ReservationController";
 import router from "./router";
+import { TagController } from "./controllers/TagController";
 
 const app = express();
 
@@ -26,6 +27,8 @@ app.use(express.json());
 app.post("/login", UserController.userLogin);
 
 app.post("/register", UserController.userRegister);
+
+app.get("/tags", TagController.getTags);
 
 app.use(authentication);
 
