@@ -19,6 +19,19 @@ export function errorHandler(error, req: Request, res: Response, next: NextFunct
             break;
         case "AlreadyMade":
             res.status(403).json({ statusCode: 403, message: `${error.field} already made before`, data: {} });
+            break;
+        case "AlreadyJoined":
+            res.status(403).json({ statusCode: 403, message: `Already joined`, data: {} } as ErrorResponse);
+            break;
+        case "AlreadyFull":
+            res.status(403).json({ statusCode: 403, message: `Reservation full`, data: {} } as ErrorResponse);
+            break;
+        case "AlreadyStartedOrEnded":
+            res.status(403).json({ statusCode: 403, message: `Reservation already playing / ended`, data: {} } as ErrorResponse);
+            break;
+        case "NotJoined":
+            res.status(403).json({ statusCode: 403, message: `Not joined before`, data: {} } as ErrorResponse);
+            break;
         case "DataNotFound":
             res.status(404).json({ statusCode: 404, message: `${error.field} not found`, data: {} } as ErrorResponse);
             break;

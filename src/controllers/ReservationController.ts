@@ -144,9 +144,48 @@ export default class ReservationController {
                 }
             });
 
-            res.status(200).json({
+            return res.status(200).json({
                 statusCode: 200,
                 message: "Joined successfully into reservation",
+                data: {}
+            } as ServerResponse);
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+    static async leaveReservation(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const { reservationId } = req.params;
+            const { _id } = req.user;
+
+            const targetReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne({ _id: new ObjectId(reservationId) }) as Reservation;
+
+            if(!targetReservation) {
+                throw { name: "DataNotFound", field: "Reservation" };
+            }
+            if(targetReservation.status !== "upcoming") {
+                throw { name: "AlreadyStartedOrEnded" };
+            }
+            let userValidation = false
+            targetReservation.players.forEach((player) => {
+                if(player.UserId === new Object(_id)) {
+                    userValidation = true;
+                }
+            });
+            if(!userValidation) {
+                throw { name: "NotJoined" };
+            }
+            const reservationn = await db.collection(RESERVATION_COLLECTION_NAME).updateOne({ _id: new ObjectId(reservationId) }, {
+                $pull: {
+                    players: {
+                        UserId: new ObjectId(_id)
+                    }
+                }
+            });
+            return res.status(200).json({
+                statusCode: 200,
+                message: "Left successfully from reservation",
                 data: {}
             } as ServerResponse);
         }
