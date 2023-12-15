@@ -5,8 +5,8 @@ import { FieldInput, PlayerInput, UserLoginInput, UserRegisterInput } from "type
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { comparePass, hashPass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
-import { LoginSuccess } from "types/response";
-import { Field } from "types/user";
+import { LoginSuccess } from "../../types/response";
+import { Field, Player } from "../../types/user";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if(process.env.NODE_ENV) {
@@ -42,11 +42,28 @@ export default class UserController {
             if(!passwordValidation) {
                 throw { name: "InvalidLogin", statusCode: 400 };
             }
-            const access_token = createToken({
-                _id: String(userByEmailOrUsername._id),
-                username: userByEmailOrUsername.username,
-                role: userByEmailOrUsername.role
-            });
+
+
+            let access_token: string;
+
+            if(userByEmailOrUsername.role === "player") {
+                const player = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ UserId: userByEmailOrUsername._id }) as Player;
+                access_token = createToken({
+                    _id: String(userByEmailOrUsername._id),
+                    username: userByEmailOrUsername.username,
+                    role: userByEmailOrUsername.role,
+                    playerId: String(player._id)
+                });
+            }
+            if(userByEmailOrUsername.role === "field") {
+                const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ UserId: userByEmailOrUsername._id }) as Field;
+                access_token = createToken({
+                    _id: String(userByEmailOrUsername._id),
+                    username: userByEmailOrUsername.username,
+                    role: userByEmailOrUsername.role,
+                    fieldId: String(field._id)
+                });
+            }
 
             return res.status(200).json({
                 statusCode: 200,
@@ -131,11 +148,26 @@ export default class UserController {
                 const registerPlayer = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);
             }
 
-            const access_token = createToken({
-                _id: String(registeredUser.insertedId),
-                username: userInfo.username,
-                role: userInfo.role
-            });
+            let access_token: string;
+
+            if(userInfo.role === "player") {
+                const player = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ UserId: registeredUser.insertedId }) as Player;
+                access_token = createToken({
+                    _id: String(registeredUser.insertedId),
+                    username: userInfo.username,
+                    role: userInfo.role,
+                    playerId: String(player._id)
+                });
+            }
+            if(userInfo.role === "field") {
+                const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ UserId: registeredUser.insertedId }) as Field;
+                access_token = createToken({
+                    _id: String(registeredUser.insertedId),
+                    username: userInfo.username,
+                    role: userInfo.role,
+                    fieldId: String(field._id)
+                });
+            }
 
             return res.status(201).json({
                 statusCode: 201,

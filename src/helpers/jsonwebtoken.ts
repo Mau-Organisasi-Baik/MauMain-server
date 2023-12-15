@@ -5,7 +5,9 @@ const secret = process.env.JWT_SECRET as jwt.Secret;
 type Payload = {
     _id: string,
     username: string,
-    role: string
+    role: string,
+    fieldId?: string,
+    playerId?: string
 }
 
 export function createToken(payload: Payload):string {
