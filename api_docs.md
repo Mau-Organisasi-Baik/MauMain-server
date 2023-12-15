@@ -39,8 +39,15 @@ _Field_
 - name: string, required
 - address: string
 - coordinates: number[]
-- tags: string[]
+- tags: tag[]
 - photos: string[]
+```
+
+_Friend_
+
+```
+- _id: ObjectId
+- user1:
 ```
 
 ## Endpoints :
@@ -53,7 +60,9 @@ _Field_
 
 ### Player endpoints:
 
+- `POST /profile`
 - `PUT /profile`
+- `GET /profile/me`
 - `GET /profile/:playerId`
 
 #### Explore endpoints:
@@ -69,8 +78,18 @@ _Field_
 - `PUT /reservations/:id/join`
 - `PUT /reservations/:id/leave`
 
+#### Chat / notification endpoints
+
+- `GET /friends`
+- `POST /friends`
+- `GET /friends/pending`
+- `GET /notifications`
+- `POST /invite`
+
 ### Field endpoints:
 
+- `POST /profile`
+- `GET /profile/me`
 - `PUT /profile`
 
 # Routes
@@ -316,6 +335,99 @@ _Response (404 - Not found)_
 {
   "statusCode": 404,
   "message": "Player not found",
+  "data": {}
+}
+```
+
+#### 3. PUT /profile
+
+Description:
+
+- Renews player profile
+
+- headers:
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- body:
+
+```json
+{
+  "name": "string (required)",
+  "photo": "File (required)"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Player profile updated successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Please Fill any field field",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 4. GET /profile/me
+
+Description:
+
+- Get profile of current logged in user
+
+- headers:
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Player profile retrieved successfully",
+  "data": {
+    "user": {
+      "name": "string",
+      "profilePictureUrl": "string",
+      "exp": "number"
+    }
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
   "data": {}
 }
 ```
@@ -626,17 +738,12 @@ Description:
 }
 ```
 
-- parameters:
+- body:
 
 ````json
 {
-  "reservationId": "string"
-}
-
-- body:
-
-```json
-{
+  "fieldId": "string (required)",
+  "scheduleId": "string (required)",
   "tagId": "string (required)",
   "type": "competitive" | "casual" "(required)",
 }
@@ -657,7 +764,7 @@ _Response (400 - Bad Request)_
 {
   "statusCode": 400,
   "message": "Please fill the required field",
-  "fields": ["tag" | "type"],
+  "fields": ["tag" | "type" | "schedule"],
   "data": {}
 }
 ```
@@ -697,7 +804,7 @@ _Response (404 - Not found)_
 ```json
 {
   "statusCode": 404,
-  "message": "Reservation not found",
+  "message": "Schedule not found",
   "data": {}
 }
 ```
@@ -1137,10 +1244,17 @@ _Response (404 - Not found)_
 }
 ```
 
+#### 6. GET /invite
+
+#### 7. POST /invite
+
+#### 8. PUT /notification
 
 ## Field Endpoints
 
-### 1. POST /profile
+### Profile Routes
+
+#### 1. POST /profile
 
 Description:
 
@@ -1188,3 +1302,7 @@ _Response (403 - Forbidden)_
   "data": {}
 }
 ```
+
+#### 2. PUT /profile
+
+#### 3. GET /profile/me

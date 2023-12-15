@@ -30,4 +30,6 @@ export type FriendRequestInput = {
 export interface ReservationInput {
   tagId: string;
   type: "competitive" | "casual";
+  fieldId: string;
+  scheduleId: string;
 }
