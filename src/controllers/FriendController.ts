@@ -172,6 +172,21 @@ export class FriendController {
 
   static async rejectFriendRequest(req: UserRequest, res: Response, next: NextFunction) {
     try {
+      const { friendId } = req.params;
+      
+      const friendRequest = await db.collection(FRIENDS_COLLECTION_NAME).findOne({ _id: new ObjectId(friendId) }) as Friend;
+
+      if(!friendRequest) {
+        throw { name: "DataNotFound", field: "Friend request" };
+      }
+
+      const acceptFriendRequest = await db.collection(FRIENDS_COLLECTION_NAME).deleteOne({ _id: new ObjectId(friendId) });
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: "Friend request rejected successfully",
+        data: {}
+      });
       // todo: endpoint: DELETE /friends/:friendsId/reject
       // todo (main): reject friend request by friends ID
       // todo: 200, rejected
