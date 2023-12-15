@@ -4,10 +4,11 @@ import { v2 as cloudinary } from "cloudinary";
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { randomUUID } from "crypto";
-import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../config/names";
-import { FieldProfile, Player, PlayerProfile, User, ValidField } from "../../types/user";
+import { FIELDS_COLLECTION_NAME, INVITATIONS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../config/names";
+import { FieldProfile, Player, PlayerProfile, User, ValidField, ValidPlayer } from "../../types/user";
 import { FieldInput } from "../../types/inputs";
 import { tag } from "../../types/tag";
+import { Invite } from "../../types/invite";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
@@ -141,6 +142,26 @@ export default class PublicController {
       });
     } catch (error) {
       next(error);
+    }
+  }
+  static async getInvitation(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+        const { playerId } = req.user;
+
+        const playerProfile = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: playerId }) as ValidPlayer;
+        
+        const invitations = await db.collection(INVITATIONS_COLLECTION_NAME).find<Invite>({ inviteeId : { _id: playerId, name: playerProfile.name }}).toArray();
+
+        return res.status(200).json({
+            statusCode: 200,
+            message: "Invitation requests retrieved successfully",
+            data: {
+                invitations: invitations
+            }
+        } as ServerResponse);
+    }
+    catch(error) {
+        next(error);
     }
   }
 }

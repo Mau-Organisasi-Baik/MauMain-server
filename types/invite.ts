@@ -7,7 +7,7 @@ export interface UserInvite {
 
 export interface Invite {
   _id: ObjectId;
-  userId1: UserInvite;
-  userId2: UserInvite;
+  inviterId: UserInvite;
+  inviteeId: UserInvite;
   reservationId: ObjectId;
 }
