@@ -132,6 +132,31 @@ export class FriendController {
 
   static async acceptFriendRequest(req: UserRequest, res: Response, next: NextFunction) {
     try {
+      const { friendId } = req.params;
+      
+      const friendRequest = await db.collection(FRIENDS_COLLECTION_NAME).findOne({ _id: new ObjectId(friendId) }) as Friend;
+
+      if(!friendRequest) {
+        throw { name: "DataNotFound", field: "Friend request" };
+      }
+
+      if(!friendRequest.isPending) {
+        throw { name: "AlreadyAccepted" };
+      }
+
+      const acceptFriendRequest = await db.collection(FRIENDS_COLLECTION_NAME).updateOne(
+        { _id: new ObjectId(friendId) }, 
+        {
+          $set: {
+            isPending: true
+          }
+      });
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: "Friend request accepted successfully",
+        data: {}
+      });
       // todo: endpoint: PUT /friends/:friendsId/pending
       // todo (main): accept friend request by friends ID
       // todo: 200, accept friend request
