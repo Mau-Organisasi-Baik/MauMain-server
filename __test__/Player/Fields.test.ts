@@ -51,7 +51,7 @@ describe("GET /fields/explore", () => {
   it("should get all surrounding fields", async () => {
     const response = await request(app)
       .get(`/field/explore?latitude=${randomLatitude}&longitude=${randomLongitude}`)
-      .set("Authorization", `Bearer ${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
@@ -75,7 +75,7 @@ describe("GET /fields/explore", () => {
 
     const response = await request(app)
       .get(`/field/explore?latitude=${randomLatitude}&longitude=${randomLongitude}&tag=${selectedTag.name}`)
-      .set("Authorization", `Bearer ${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
@@ -110,7 +110,7 @@ describe("GET /fields/explore", () => {
 
     const response = await request(app)
       .get(`/field/explore?latitude=${randomLatitude}&longitude=${randomLongitude}`)
-      .set("Authorization", `Bearer ${invalidToken}`);
+      .set("authorization", `Bearer ${invalidToken}`);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -120,7 +120,7 @@ describe("GET /fields/explore", () => {
   });
 
   it("should return error (400) coordinates not valid (longitude)", async () => {
-    const response = await request(app).get(`/field/explore?latitude=${randomLatitude}`).set("Authorization", `Bearer ${token}`);
+    const response = await request(app).get(`/field/explore?latitude=${randomLatitude}`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -133,7 +133,7 @@ describe("GET /fields/explore", () => {
   });
 
   it("should return error (400) coordinates not valid (latitude)", async () => {
-    const response = await request(app).get(`/field/explore?longitude=${randomLongitude}`).set("Authorization", `Bearer ${token}`);
+    const response = await request(app).get(`/field/explore?longitude=${randomLongitude}`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -146,7 +146,7 @@ describe("GET /fields/explore", () => {
   });
 
   it("should return error (400) coordinates not valid (both)", async () => {
-    const response = await request(app).get(`/field/explore?`).set("Authorization", `Bearer ${token}`);
+    const response = await request(app).get(`/field/explore?`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -187,7 +187,7 @@ describe("GET /fields/:fieldId", () => {
 
   it("should get selected field", async () => {
     const selectedField = fieldsDummy[Math.floor(Math.random() * fieldsDummy.length)];
-    const response = await request(app).get(`/field/${selectedField._id.toString()}`).set("Authorization", `Bearer ${token}`);
+    const response = await request(app).get(`/field/${selectedField._id.toString()}`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
@@ -215,7 +215,7 @@ describe("GET /fields/:fieldId", () => {
   // todo: 403, invalid token
   it("should return error (403)", async () => {
     const selectedField = fieldsDummy[Math.floor(Math.random() * fieldsDummy.length)];
-    const response = await request(app).get(`/field/${selectedField._id.toString()}`).set("Authorization", `Bearer ${token}`);
+    const response = await request(app).get(`/field/${selectedField._id.toString()}`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("statusCode", 403);
@@ -225,7 +225,7 @@ describe("GET /fields/:fieldId", () => {
 
   // todo: 404, field not found
   it("should return error (404)", async () => {
-    const response = await request(app).get(`/field/${mongoObjectId()}`).set("Authorization", `Bearer ${token}`);
+    const response = await request(app).get(`/field/${mongoObjectId()}`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("statusCode", 404);

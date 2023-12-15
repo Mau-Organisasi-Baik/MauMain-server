@@ -13,6 +13,7 @@ import {
   EndedCasualReservation,
   EndedReservation,
   PlayingReservation,
+  Reservation,
   ReservationGameType,
   UpcomingReservation,
 } from "../../types/reservation";
@@ -91,7 +92,7 @@ describe("GET /fields/:fieldId/reservations", () => {
   it("should return error (403) when form using invalid token", async () => {
     const invalidToken = "uihdiwdjdwdlads;llsdfklsdflkmsdflsdfkmmalskdm";
 
-    const response = await request(app).get(url).set("Authorization", `Bearer ${invalidToken}`);
+    const response = await request(app).get(url).set("authorization", `Bearer ${invalidToken}`);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -167,7 +168,7 @@ describe("GET /reservation/:reservationId", () => {
   it("should return error (403) when using invalid token", async () => {
     const invalidToken = "uihdiwdjdwdlads;llsdfklsdflkmsdflsdfkmmalskdm";
 
-    const response = await request(app).get(url).set("Authorization", `Bearer ${invalidToken}`);
+    const response = await request(app).get(url).set("authorization", `Bearer ${invalidToken}`);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
