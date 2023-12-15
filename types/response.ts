@@ -1,8 +1,8 @@
 import { Request } from "express"
-import { User } from "./user"
+import { Headers, User } from "./user"
 
 export interface UserRequest extends Request {
-    user?: User
+    user?: Headers
 }
 
 export interface ServerResponse {
