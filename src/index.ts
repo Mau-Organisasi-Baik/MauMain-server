@@ -11,9 +11,10 @@ import { authentication } from "./middlewares/authentication";
 import PublicController from "./controllers/PublicController";
 import { fieldAuthorization, playerAuthorization } from "./middlewares/authorization";
 import multer from "multer";
-import ReservationController from "./controllers/ReservationController";
+import ReservationController from "./controllers/player/ReservationController";
 import router from "./router";
 import { TagController } from "./controllers/TagController";
+import { setDummy } from "./controllers/dummyController";
 
 const app = express();
 
@@ -23,6 +24,8 @@ const upload = multer({ storage: storage });
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.get("/dummy", setDummy);
 
 app.post("/login", UserController.userLogin);
 

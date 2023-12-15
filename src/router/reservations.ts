@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { playerAuthorization } from "../../src/middlewares/authorization";
-import ReservationController from "../../src/controllers/ReservationController";
+import PlayerReservationController from "../controllers/player/ReservationController";
 
 const router = Router();
 
-router.post("/", playerAuthorization, ReservationController.postReservation);
-router.get("/:reservationId", playerAuthorization, ReservationController.getReservationById);
-router.put("/:reservationId/join", playerAuthorization, ReservationController.joinReservation);
-router.put("/:reservationId/leave", playerAuthorization, ReservationController.leaveReservation);
+router.post("/", playerAuthorization, PlayerReservationController.postReservation);
+router.get("/:reservationId", playerAuthorization, PlayerReservationController.getReservationById);
+router.put("/:reservationId/join", playerAuthorization, PlayerReservationController.joinReservation);
+router.put("/:reservationId/leave", playerAuthorization, PlayerReservationController.leaveReservation);
 
 export default router;

@@ -1,12 +1,12 @@
-import { client } from "../../config/db";
+import { client } from "../../../config/db";
 import { Db, ObjectId } from "mongodb";
 import { NextFunction, Response } from "express";
-import { ServerResponse, UserRequest } from "../../types/response";
-import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../config/names";
-import { Player, PlayerProfile, User, ValidField, ValidPlayer } from "../../types/user";
-import { Reservation } from "../../types/reservation";
-import { tag } from "../../types/tag";
-import { ReservationInput } from "../../types/inputs";
+import { ServerResponse, UserRequest } from "../../../types/response";
+import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../../config/names";
+import { Player, PlayerProfile, User, ValidField, ValidPlayer } from "../../../types/user";
+import { Reservation } from "../../../types/reservation";
+import { tag } from "../../../types/tag";
+import { ReservationInput } from "../../../types/inputs";
 import { Schedule } from "types/schedule";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
