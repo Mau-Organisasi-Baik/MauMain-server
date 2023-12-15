@@ -41,12 +41,6 @@ app.post("/profile", upload.array("photos"), PublicController.createProfile);
 
 app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile);
 
-app.get("/fields/explore", playerAuthorization, PublicController.getLocation);
-
-app.get("/fields/:fieldId", playerAuthorization, PublicController.getFieldById);
-
-app.get("/fields/:fieldId/reservations", playerAuthorization, ReservationController.getFieldReservations);
-
 app.use(errorHandler);
 
 export default app;
