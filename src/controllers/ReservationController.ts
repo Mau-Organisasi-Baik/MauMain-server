@@ -91,7 +91,7 @@ export default class ReservationController {
                 throw { name: "DataNotFound", field: "Tag" }
             }
 
-            const reservationn = await db.collection(RESERVATION_COLLECTION_NAME).updateOne({ _id: new ObjectId(reservationId) }, {
+            const reservation = await db.collection(RESERVATION_COLLECTION_NAME).updateOne({ _id: new ObjectId(reservationId) }, {
                 $set: {
                     status: "upcoming",
                     tag: tag,

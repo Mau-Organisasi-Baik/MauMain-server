@@ -5,7 +5,9 @@ import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { randomUUID } from "crypto";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME, TAGS_COLLECTION_NAME } from "../../config/names";
-import { Player, PlayerProfile, User } from "../../types/user";
+import { FieldProfile, Player, PlayerProfile, User, ValidField } from "../../types/user";
+import { FieldInput } from "../../types/inputs";
+import { tag } from "../../types/tag";
 
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
@@ -26,8 +28,8 @@ export default class PublicController {
             if(req.user.role === "player") {
                 const { name } = req.body;
                 let errorInputField = [] as string[];
-                if(!req.file) {
-                    errorInputField.push("profilePictureUrl");
+                if(!req.files[0]) {
+                    errorInputField.push("photo");
                 }
                 if(!name) {
                     errorInputField.push("name");
@@ -35,10 +37,10 @@ export default class PublicController {
                 if(errorInputField.length > 0) {
                     throw { name: "InvalidInput", statusCode: 400, fields: errorInputField };
                 }
-                const base64File = Buffer.from(req.file.buffer).toString("base64");
-                const dataURI = `data:${req.file.mimetype};base64,${base64File}`;
+                const base64File = Buffer.from(req.files[0].buffer).toString("base64");
+                const dataURI = `data:${req.files[0].mimetype};base64,${base64File}`;
                 const data = await cloudinary.uploader.upload(dataURI, {
-                    public_id: `${req.file.originalname}-${randomUUID()}`
+                    public_id: `${req.files[0].originalname}-${randomUUID()}`
                 });
                 const playerProfile = await db.collection(PLAYERS_COLLECTION_NAME).updateOne({
                     UserId: req.user._id
@@ -55,7 +57,62 @@ export default class PublicController {
                 } as ServerResponse);
             }
             else if(req.user.role === "field") {
+                const { name, address, coordinates, tagIds }: { name: string, address: string, coordinates: string, tagIds: string } = req.body;
+                const parsedCoordinates: number[] = JSON.parse(coordinates);
+                const parsedTagIds: string[] = JSON.parse(tagIds);
+                const files = req.files as Express.Multer.File[];
 
+                let errorInputField = [] as string[];
+                if(!name) {
+                    errorInputField.push("name");
+                }
+                if(!address) {
+                    errorInputField.push("address");
+                }
+                if(!coordinates) {
+                    errorInputField.push("coordinates");
+                }
+                if(!tagIds) {
+                    errorInputField.push("tagIds");
+                }
+                if(!files) {
+                    errorInputField.push("photos");
+                }
+
+                if(errorInputField.length > 0) {
+                    throw { name: "InvalidInput", statusCode: 400, fields: errorInputField };
+                }
+
+
+
+                const tags = await db.collection(TAGS_COLLECTION_NAME).find<tag>({}).toArray();
+
+                const chosenTags = tags.filter(tag => parsedTagIds.includes(String(tag._id)));
+                const photoUrls = await Promise.all(files.map(async (photo) => {
+                    const base64File = Buffer.from(photo.buffer).toString("base64");
+                    const dataURI = `data:${photo.mimetype};base64,${base64File}`;
+                    const data = await cloudinary.uploader.upload(dataURI, {
+                        public_id: `${photo.originalname}-${randomUUID()}`
+                    });
+                    return data.secure_url as string;
+                }));
+
+                const updateObj: FieldProfile = {
+                    name: name,
+                        address: address,
+                        coordinates: parsedCoordinates,
+                        tags: chosenTags,
+                        photoUrls: photoUrls,
+                }
+                const playerProfile = await db.collection(FIELDS_COLLECTION_NAME).updateOne({
+                    UserId: req.user._id
+                }, { $set: updateObj });
+    
+                return res.status(200).json({
+                    statusCode: 200,
+                    message: "Player profile updated successfully",
+                    data: {},
+                } as ServerResponse);                
             }
         }
         catch(error){

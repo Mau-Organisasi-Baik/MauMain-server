@@ -28,7 +28,7 @@ app.post("/register", UserController.userRegister);
 
 app.use(authentication);
 
-app.put("/profile", playerAuthorization, upload.single("profilePictureUrl"), PublicController.createProfile);
+app.post("/profile", upload.array("photos"), PublicController.createProfile);
 
 app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile);
 
@@ -43,6 +43,8 @@ app.get("/reservations/:reservationId", playerAuthorization, ReservationControll
 app.post("/reservations/:reservationId", playerAuthorization, ReservationController.postReservation);
 
 app.put("/reservation/:reservationId/join", playerAuthorization, ReservationController.joinReservation);
+
+app.put("/reservation/:reservationId/leave", playerAuthorization, ReservationController.leaveReservation);
 
 app.use(errorHandler);
 
