@@ -43,18 +43,10 @@ export interface FieldProfile {
 
 export interface ValidField extends Field, FieldProfile {}
 
-export interface PlayerHeader {
+export interface Header {
   _id: ObjectId,
-  playerId: ObjectId,
-  role: "player",
+  playerId?: ObjectId,
+  fieldId?: ObjectId
+  role: "player" | "field",
   username: string,
 }
-
-export interface FieldHeader {
-  _id: ObjectId,
-  fieldId: ObjectId,
-  role: "field",
-  username: string,
-}
-
-export type Headers = PlayerHeader | FieldHeader;

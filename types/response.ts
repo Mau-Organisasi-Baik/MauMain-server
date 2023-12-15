@@ -1,8 +1,9 @@
 import { Request } from "express"
-import { Headers, User } from "./user"
+import { Header, User } from "./user"
+import { ObjectId } from "mongodb"
 
 export interface UserRequest extends Request {
-    user?: Headers
+    user?: Header
 }
 
 export interface ServerResponse {

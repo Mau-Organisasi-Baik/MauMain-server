@@ -3,7 +3,7 @@ import { decodeToken } from "../helpers/jsonwebtoken";
 import { client } from "../../config/db";
 import { Db, ObjectId } from "mongodb";
 import { USERS_COLLECTION_NAME } from "../../config/names";
-import { Headers, User } from "../../types/user";
+import { Field, Header, User } from "../../types/user";
 import { UserRequest } from "../../types/response";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
@@ -39,7 +39,7 @@ export async function authentication(req: UserRequest, res: Response, next: Next
                 playerId: new ObjectId(payload.playerId as string),
                 role: user.role,
                 username: user.username,
-            } as Headers;
+            } as Header;
         }
         if(user.role === "field") {
             req.user = {
@@ -47,7 +47,7 @@ export async function authentication(req: UserRequest, res: Response, next: Next
                 fieldId: new ObjectId(payload.fieldId as string),
                 role: user.role,
                 username: user.username,
-            } as Headers;
+            } as Header;
         }
         next();
     }
