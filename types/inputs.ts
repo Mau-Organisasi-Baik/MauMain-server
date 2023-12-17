@@ -19,8 +19,8 @@ export interface PlayerProfileInput {
 export interface FieldProfileInput {
   name: string;
   address: string;
-  coordinates: number[];
-  tagIds: string[];
+  coordinates: string;
+  tagIds: string;
 }
 
 export type FriendRequestInput = {

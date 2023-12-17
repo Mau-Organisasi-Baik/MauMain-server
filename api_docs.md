@@ -455,7 +455,7 @@ Description:
 {
   "latitude": "number (required)",
   "longitude": "number (required)",
-  "tag": "string (required)"
+  "tagId": "string (required)"
 }
 ```
 
@@ -472,6 +472,13 @@ _Response (200 - OK)_
         "name": "string",
         "address": "string",
         "coordinates": "number[]",
+        "tags": [
+          {
+            "id": "string",
+            "name": "string",
+            "limit": "number",
+          }
+        ],
       }, ...
     ]
   }
@@ -683,7 +690,7 @@ _Response (200 - OK)_
       },
       "type?": "competitive" | "casual",
       "score?": "string",
-      "status": "empty" | "upcoming" | "playing" | "ended",
+      "status":  "upcoming" | "ended",
       "schedule": {
         "_id": "string",
         "TimeStart": "string",
@@ -724,7 +731,7 @@ _Response (404 - Not found)_
 }
 ```
 
-#### 3. POST /reservations/:reservationId
+#### 3. POST /reservations/
 
 Description:
 
@@ -809,7 +816,7 @@ _Response (404 - Not found)_
 }
 ```
 
-#### 4. PUT /reservation/reservationId/join
+#### 4. PUT /reservation/:reservationId/join
 
 Description:
 
@@ -857,16 +864,6 @@ _Response (403 - Forbidden)_
 {
   "statusCode": 403,
   "message": "Reservation full",
-  "data": {}
-}
-```
-
-_Response (403 - Forbidden)_
-
-```json
-{
-  "statusCode": 403,
-  "message": "Reservation already playing / ended",
   "data": {}
 }
 ```
@@ -1277,7 +1274,7 @@ _Response (200 - OK)_
 ```json
 {
   "statusCode": 200,
-  "message": "Player profile updated successfully",
+  "message": "Field profile updated successfully",
   "data": {}
 }
 ```
@@ -1304,5 +1301,41 @@ _Response (403 - Forbidden)_
 ```
 
 #### 2. PUT /profile
+
+Description:
+
+- updates field profile
+
+- body:
+
+```json
+{
+  "name": "string (optional)",
+  "address": "string (optional)",
+  "coordinates": "number[] (optional)",
+  "tagIds": "string[] (optional)",
+  "photos": "file[] (optional)"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Field profile updated successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
 
 #### 3. GET /profile/me

@@ -38,6 +38,7 @@ app.use(authentication);
 app.use(router);
 
 app.post("/profile", upload.array("photos"), PublicController.createProfile);
+app.put("/profile", upload.array("photos"), PublicController.updateProfile);
 
 app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile);
 

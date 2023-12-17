@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { Player, User, ValidField, ValidPlayer } from "../types/user";
 import { hashPass } from "../src/helpers/bcrypt";
-import { EmptyReservation, Reservation, UpcomingReservation } from "types/reservation";
+import { Reservation, UpcomingReservation } from "types/reservation";
 import { Schedule } from "types/schedule";
 import { UserLoginInput } from "types/inputs";
 
@@ -348,16 +348,6 @@ export const normalReservations: Reservation[] = [
   {
     _id: new ObjectId(mongoObjectId()),
     fieldId: fieldsDummy[1]._id,
-    tag: tagsDummy[0],
-    type: "casual",
-    status: "playing",
-    schedule: fieldsDummy[1].schedules[1],
-    date: "2023-12-18",
-    players: [...playersDummy.slice(0, 3), playersDummy[8], ...playersDummy.slice(5, 7), playersDummy[4]],
-  },
-  {
-    _id: new ObjectId(mongoObjectId()),
-    fieldId: fieldsDummy[1]._id,
     tag: tagsDummy[1],
     type: "casual",
     status: "upcoming",
@@ -366,15 +356,6 @@ export const normalReservations: Reservation[] = [
     players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
   },
 ];
-
-const emptyReservations: EmptyReservation = {
-  _id: new ObjectId(mongoObjectId()),
-  fieldId: fieldsDummy[0]._id,
-  status: "empty",
-  schedule: fieldsDummy[0].schedules[1],
-  date: "2023-12-18",
-  players: [],
-};
 
 const fullReservation: UpcomingReservation = {
   _id: new ObjectId(mongoObjectId()),
@@ -387,4 +368,4 @@ const fullReservation: UpcomingReservation = {
   players: [...playersDummy.slice(0, 10)],
 };
 
-export const reservationsDummy: Reservation[] = [...normalReservations, emptyReservations, fullReservation];
+export const reservationsDummy: Reservation[] = [...normalReservations, fullReservation];
