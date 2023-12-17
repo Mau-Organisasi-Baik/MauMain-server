@@ -12,9 +12,10 @@ import {
   TAGS_COLLECTION_NAME,
 } from "../../config/names";
 import { FieldProfile, Player, PlayerProfile, User, ValidField, ValidPlayer } from "../../types/user";
-import { FieldInput } from "../../types/inputs";
+import { FieldInput, InvitationInput } from "../../types/inputs";
 import { tag } from "../../types/tag";
 import { Invite } from "../../types/invite";
+import { Reservation } from "../../types/reservation";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
@@ -266,6 +267,49 @@ export default class PublicController {
       } as ServerResponse);
     } catch (error) {
       next(error);
+    }
+  }
+  static async postInvitation(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+        const { inviteeId, reservationId }: { inviteeId: string, reservationId: string } = req.body;
+
+        const { playerId } = req.user;
+
+        const targetReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne({ _id: new Object(reservationId) }) as Reservation;
+
+        if(!targetReservation) {
+            throw { name: "DataNotFound", field: "Reservation" };
+        }
+        const targetInvitee = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: new ObjectId(inviteeId) }) as ValidPlayer;
+
+        if(!targetInvitee) {
+            throw { name: "DataNotFound", field: "Invitee" };
+        }
+
+        const playerProfile = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: playerId })) as ValidPlayer;
+
+        const newInvitation = await db.collection(INVITATIONS_COLLECTION_NAME).insertOne({
+            inviterId: { _id: playerProfile._id, name: playerProfile.name },
+            inviteeId: { _id: targetInvitee._id, name: targetInvitee.name },
+            reservationId: targetReservation._id
+        } as InvitationInput);
+
+        return res.status(201).json({
+            statusCode: 201,
+            message: "Invitation sent successfully",
+            data: {},
+        });
+    }
+    catch(error) {
+        next(error);
+    }
+  }
+  static async getNotifications(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+
+    }
+    catch(error) {
+        next(error);
     }
   }
 }

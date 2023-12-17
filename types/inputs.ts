@@ -1,3 +1,4 @@
+import { Invite } from "./invite";
 import { Field, Player, User } from "./user";
 
 export type UserInput = Omit<User, "_id">;
@@ -33,3 +34,5 @@ export interface ReservationInput {
   fieldId: string;
   scheduleId: string;
 }
+
+export type InvitationInput = Omit<Invite, "_id">
