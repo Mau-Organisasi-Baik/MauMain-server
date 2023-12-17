@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { playerAuthorization } from "../../../src/middlewares/authorization";
-import { InviteController } from "../../../src/controllers/InviteController";
+import { InviteController } from "../../controllers/player/InviteController";
 
 const router = Router();
 

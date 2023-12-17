@@ -3,14 +3,9 @@ configDotenv();
 
 import express from "express";
 import cors from "cors";
-import { Request, Response } from "express";
-import IndexController from "./controllers";
 import { errorHandler } from "./middlewares/errorHandler";
 import UserController from "./controllers/UserController";
 import { authentication } from "./middlewares/authentication";
-import PublicController from "./controllers/PublicController";
-import { fieldAuthorization, playerAuthorization } from "./middlewares/authorization";
-import ReservationController from "./controllers/player/ReservationController";
 import router from "./router";
 import { TagController } from "./controllers/TagController";
 import { setDummy } from "./controllers/dummyController";

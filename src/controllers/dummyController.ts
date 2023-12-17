@@ -8,12 +8,14 @@ import { client } from "../../config/db";
 import {
   FIELDS_COLLECTION_NAME,
   FRIENDS_COLLECTION_NAME,
+  INVITATIONS_COLLECTION_NAME,
   PLAYERS_COLLECTION_NAME,
   RESERVATION_COLLECTION_NAME,
   TAGS_COLLECTION_NAME,
   USERS_COLLECTION_NAME,
 } from "../../config/names";
 import { Friend } from "../../types/friend";
+import { Invite } from "../../types/invite";
 
 var mongoObjectId = function () {
   var timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
@@ -463,6 +465,33 @@ const fullReservation: UpcomingReservation = {
 
 const reservationsDummy: Reservation[] = [...normalReservations, fullReservation];
 
+export const invitesDummy: Invite[] = [
+  {
+    _id: new ObjectId(mongoObjectId()),
+    invitee: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    inviter: {
+      _id: playersDummy[1]._id,
+      name: playersDummy[1].name,
+    },
+    reservationId: reservationsDummy[0]._id,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    invitee: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    inviter: {
+      _id: playersDummy[2]._id,
+      name: playersDummy[2].name,
+    },
+    reservationId: reservationsDummy[1]._id,
+  },
+];
+
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
   DATABASE_NAME = process.env.DATABASE_NAME_TEST;
@@ -476,6 +505,7 @@ export async function setDummy(req, res, next) {
   await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
   await db.collection(RESERVATION_COLLECTION_NAME).deleteMany({});
   await db.collection(FRIENDS_COLLECTION_NAME).deleteMany({});
+  await db.collection(INVITATIONS_COLLECTION_NAME).deleteMany({});
 
   await db.collection(TAGS_COLLECTION_NAME).insertMany(tagsDummy);
   await db.collection(USERS_COLLECTION_NAME).insertMany(usersDummy);
@@ -483,6 +513,7 @@ export async function setDummy(req, res, next) {
   await db.collection(FRIENDS_COLLECTION_NAME).insertMany(friendsDummy);
   await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldsDummy);
   await db.collection(RESERVATION_COLLECTION_NAME).insertMany(reservationsDummy);
+  await db.collection(INVITATIONS_COLLECTION_NAME).insertMany(invitesDummy);
 
   res.status(200).json({ message: "Dummy created successfully" });
 }

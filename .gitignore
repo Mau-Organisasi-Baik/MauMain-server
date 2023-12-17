@@ -4,3 +4,5 @@ dist/
 
 coverage
 .vscode
+
+ecosystem.config.js

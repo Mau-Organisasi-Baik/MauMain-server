@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { Db, ObjectId } from "mongodb";
-import { Friend, UserFriend } from "../../types/friend";
-import { FriendRequestInput } from "../../types/inputs";
-import { ServerResponse, UserRequest } from "../../types/response";
-import { client } from "../../config/db";
-import { FRIENDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME } from "../../config/names";
-import { ValidPlayer } from "../../types/user";
+import { Friend, UserFriend } from "../../../types/friend";
+import { FriendRequestInput } from "../../../types/inputs";
+import { ServerResponse, UserRequest } from "../../../types/response";
+import { client } from "../../../config/db";
+import { FRIENDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME } from "../../../config/names";
+import { ValidPlayer } from "../../../types/user";
 
 // const sampleFriendInstance: Friend = {
 //   _id: new ObjectId("abc"),

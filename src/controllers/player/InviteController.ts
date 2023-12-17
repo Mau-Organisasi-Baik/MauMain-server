@@ -1,12 +1,12 @@
-import { client } from "../../config/db";
+import { client } from "../../../config/db";
 import { Db, ObjectId } from "mongodb";
 import { NextFunction, Response } from "express";
-import { ServerResponse, UserRequest } from "../../types/response";
-import { INVITATIONS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME } from "../../config/names";
-import { ValidPlayer } from "../../types/user";
-import { InvitationInput } from "../../types/inputs";
-import { Invite } from "../../types/invite";
-import { Reservation } from "../../types/reservation";
+import { ServerResponse, UserRequest } from "../../../types/response";
+import { INVITATIONS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME } from "../../../config/names";
+import { ValidPlayer } from "../../../types/user";
+import { InvitationInput } from "../../../types/inputs";
+import { Invite } from "../../../types/invite";
+import { Reservation } from "../../../types/reservation";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
