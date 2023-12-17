@@ -304,12 +304,4 @@ export default class PublicController {
         next(error);
     }
   }
-  static async getNotifications(req: UserRequest, res: Response, next: NextFunction) {
-    try {
-
-    }
-    catch(error) {
-        next(error);
-    }
-  }
 }
