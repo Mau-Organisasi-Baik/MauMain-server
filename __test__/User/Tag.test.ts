@@ -32,8 +32,8 @@ describe("GET /tags", () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
     expect(response.body).toHaveProperty("message", "Tags retrieved successfully");
-    expect(response.body).toHaveProperty("data", expect(Object));
-    expect(response.body.data).toHaveProperty("tags", expect(Array));
+    expect(response.body).toHaveProperty("data", expect.any(Object));
+    expect(response.body.data).toHaveProperty("tags", expect.any(Array));
     expect(response.body.data.tags).toHaveLength(tagsDummy.length);
 
     response.body.data.tags.forEach((tag) => {

@@ -10,7 +10,6 @@ import UserController from "./controllers/UserController";
 import { authentication } from "./middlewares/authentication";
 import PublicController from "./controllers/PublicController";
 import { fieldAuthorization, playerAuthorization } from "./middlewares/authorization";
-import multer from "multer";
 import ReservationController from "./controllers/player/ReservationController";
 import router from "./router";
 import { TagController } from "./controllers/TagController";
@@ -18,8 +17,7 @@ import { setDummy } from "./controllers/dummyController";
 
 const app = express();
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -36,11 +34,6 @@ app.get("/tags", TagController.getTags);
 app.use(authentication);
 
 app.use(router);
-
-app.post("/profile", upload.array("photos"), PublicController.createProfile);
-app.put("/profile", upload.array("photos"), PublicController.updateProfile);
-
-app.get("/profile/:playerId", playerAuthorization, PublicController.getProfile);
 
 app.use(errorHandler);
 

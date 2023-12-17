@@ -227,7 +227,47 @@ _Response (200 - OK)_
 
 ### Profile Routes
 
-#### 1. POST /profile
+#### 1. GET /profile/
+
+Description:
+
+- Get profile of current logged in user
+
+- headers:
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Player profile retrieved successfully",
+  "data": {
+    "user": {
+      "name": "string",
+      "profilePictureUrl": "string",
+      "exp": "number"
+    }
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 2. POST /profile
 
 Description:
 
@@ -281,7 +321,7 @@ _Response (403 - Forbidden)_
 }
 ```
 
-#### 2. GET /profile/:playerId
+#### 3. GET /profile/:playerId
 
 Description:
 
@@ -339,7 +379,7 @@ _Response (404 - Not found)_
 }
 ```
 
-#### 3. PUT /profile
+#### 4. PUT /profile
 
 Description:
 
@@ -377,7 +417,7 @@ _Response (400 - Bad Request)_
 ```json
 {
   "statusCode": 400,
-  "message": "Please Fill any field field",
+  "message": "Please Fill any field",
   "data": {}
 }
 ```
@@ -392,45 +432,7 @@ _Response (403 - Forbidden)_
 }
 ```
 
-#### 4. GET /profile/me
 
-Description:
-
-- Get profile of current logged in user
-
-- headers:
-
-```json
-{
-  "authorization": "Bearer [token]"
-}
-```
-
-_Response (200 - OK)_
-
-```json
-{
-  "statusCode": 200,
-  "message": "Player profile retrieved successfully",
-  "data": {
-    "user": {
-      "name": "string",
-      "profilePictureUrl": "string",
-      "exp": "number"
-    }
-  }
-}
-```
-
-_Response (403 - Forbidden)_
-
-```json
-{
-  "statusCode": 403,
-  "message": "Invalid token",
-  "data": {}
-}
-```
 
 ### Explore Routes
 
@@ -1253,7 +1255,41 @@ _Response (404 - Not found)_
 
 ### Profile Routes
 
-#### 1. POST /profile
+#### 1. GET /admin/profile
+
+Description:
+
+- retrieves current field profile
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Field profile retrieved successfully",
+  "data": {
+    "field": {
+      "name": "string",
+      "address": "string",
+      "coordinates": "number[]",
+      "tags": "tag[]",
+      "photoUrls": "string[]"
+    }
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 2. POST /admin/profile
 
 Description:
 
@@ -1302,7 +1338,7 @@ _Response (403 - Forbidden)_
 }
 ```
 
-#### 2. PUT /profile
+#### 3. PUT /admin/profile
 
 Description:
 
@@ -1339,5 +1375,3 @@ _Response (403 - Forbidden)_
   "data": {}
 }
 ```
-
-#### 3. GET /profile/me
