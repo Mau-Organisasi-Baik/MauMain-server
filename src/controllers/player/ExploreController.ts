@@ -20,11 +20,11 @@ export default class ExploreController {
       const tagId = req.query.tagId as string;
 
       let errorInputField = [];
-      if (!longitude) {
-        errorInputField.push("longitude");
-      }
       if (!latitude) {
         errorInputField.push("latitude");
+      }
+      if (!longitude) {
+        errorInputField.push("longitude");
       }
 
       let selectedTagName: string;
@@ -100,7 +100,7 @@ export default class ExploreController {
 
       return res.status(200).json({
         statusCode: 200,
-        message: "Player profile retrieved successfully",
+        message: "Field detail retrieved successfully",
         data: {
           field: {
             _id,
