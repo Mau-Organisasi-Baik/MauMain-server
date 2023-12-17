@@ -432,8 +432,6 @@ _Response (403 - Forbidden)_
 }
 ```
 
-
-
 ### Explore Routes
 
 #### 1. GET /fields/explore
@@ -1372,6 +1370,359 @@ _Response (403 - Forbidden)_
 {
   "statusCode": 403,
   "message": "Invalid token",
+  "data": {}
+}
+```
+
+### Field Management routes
+
+#### 1. GET /admin/reservations
+
+Description:
+
+- retrieves all reservations
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Field reservations retrieved successfully",
+  "data": {
+    "reservations": [
+      {
+        "_id": "string",
+        "fieldId": "string",
+        "schedule": {
+          "TimeStart": "string",
+          "TimeEnd": "string",
+        },
+        "date": "yyyy-mm-dd",
+        "players": [
+          {
+            "_id": "string",
+            "name": "string",
+            "profilePictureUrl": "string"
+          }, ...
+        ],
+        "tag": {
+          "_id": "string",
+          "name": "string",
+          "limit": "number"
+        },
+        "status": "upcoming | ended",
+      }, ...
+    ]
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 2. GET /admin/reservations/:reservationId
+
+Description:
+
+- retrieves selected reservation
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Field reservations retrieved successfully",
+  "data": {
+    "reservations": {
+      "_id": "string",
+      "fieldId": "string",
+      "schedule": {
+        "TimeStart": "string",
+        "TimeEnd": "string",
+      },
+      "date": "yyyy-mm-dd",
+      "players": [
+        {
+          "_id": "string",
+          "name": "string",
+          "profilePictureUrl": "string"
+        }, ...
+      ],
+      "tag": {
+        "_id": "string",
+        "name": "string",
+        "limit": "number"
+      },
+      "status": "upcoming | ended",
+    }
+  }
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 3. PUT /admin/reservations/:reservationId/kick
+
+Description:
+
+- Kicks player from a reservation
+
+- body
+
+```json
+{
+  "selectedPlayerId": "string"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Player kicked successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation already ended",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Player not found",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+#### 4. PUT /admin/reservations/:reservationId/score
+
+Description:
+
+- Scores a competitive reservation
+
+- body
+
+```json
+{
+  "score": "number|number"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Score inputted successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Reservation type is not competitive",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Reservation already ended",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Please Fill the required field",
+  "field": ["score"],
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Invalid score format",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+#### 5. PUT /admin/reservations/:reservationId/end
+
+Description:
+
+- Ends a casual reservation
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Reservation ended successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Competitive Reservation needs to scored",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Reservation already ended",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+#### 6. DELETE /admin/reservations/:reservationId
+
+Description:
+
+- deletes / cancels any reservation
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Reservation deleted successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation already ended",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation not found",
   "data": {}
 }
 ```

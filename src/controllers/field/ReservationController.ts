@@ -79,13 +79,11 @@ export class FieldReservationController {
       }
 
       if (selectedReservation.status === "ended") {
-        return res.status(403).json({ message: "reservation already ended", statusCode: 403 });
+        return res.status(403).json({ message: "Reservation already ended", statusCode: 403, data: {} });
       }
 
       let playerFound = false;
       for (const player of selectedReservation.players) {
-        console.log(player._id.toString(), selectedPlayerId);
-
         if (player._id.toString() === selectedPlayerId) {
           playerFound = true;
           break;
@@ -134,11 +132,11 @@ export class FieldReservationController {
       }
 
       if (selectedReservation.type === "casual") {
-        return res.status(400).json({ statusCode: 400, message: "Reservation type is not competitive" });
+        return res.status(400).json({ statusCode: 400, message: "Reservation type is not competitive", data: {} });
       }
 
       if (selectedReservation.status === "ended") {
-        return res.status(400).json({ statusCode: 400, message: "Reservation already ended" });
+        return res.status(400).json({ statusCode: 400, message: "Reservation already ended", data: {} });
       }
 
       if (!score) {
@@ -149,7 +147,7 @@ export class FieldReservationController {
       const scorePattern = /^\d+\|\d+$/;
       if (!scorePattern.test(score)) {
         // todo: tambahkan errorHandler baru
-        return res.status(400).json({ statusCode: 400, message: "Invalid score format" });
+        return res.status(400).json({ statusCode: 400, message: "Invalid score format", data: {} });
       }
 
       await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
@@ -189,11 +187,11 @@ export class FieldReservationController {
       }
 
       if (selectedReservation.type === "competitive") {
-        return res.status(400).json({ statusCode: 400, message: "competitive Reservation needs to scored" });
+        return res.status(400).json({ statusCode: 400, message: "Competitive Reservation needs to scored", data: {} });
       }
 
       if (selectedReservation.status === "ended") {
-        return res.status(400).json({ statusCode: 400, message: "Reservation already ended" });
+        return res.status(400).json({ statusCode: 400, message: "Reservation already ended", data: {} });
       }
       await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
         {
@@ -219,32 +217,32 @@ export class FieldReservationController {
   static async cancelReservation(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { fieldId } = req.user;
-    const { reservationId } = req.params;
+      const { reservationId } = req.params;
 
-    const selectedReservation: Reservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
-      _id: new ObjectId(reservationId),
-      fieldId,
-    });
+      const selectedReservation: Reservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
+        _id: new ObjectId(reservationId),
+        fieldId,
+      });
 
-    if (selectedReservation.status === "ended") {
-      throw {};
-    }
+      if (!selectedReservation) {
+        throw { name: "DataNotFound", field: "Reservation" };
+      }
 
-    if (!selectedReservation) {
-      throw { name: "DataNotFound", field: "Reservation" };
-    }
+      if (selectedReservation.status === "ended") {
+        return res.status(403).json({ message: "Reservation already ended", statusCode: 403, data: {} });
+      }
 
-    await db.collection(RESERVATION_COLLECTION_NAME).deleteOne({
-      _id: new ObjectId(reservationId),
-    });
+      await db.collection(RESERVATION_COLLECTION_NAME).deleteOne({
+        _id: new ObjectId(reservationId),
+      });
 
-    return res.status(200).json({
-      statusCode: 200,
-      message: "Reservation deleted successfully",
-      data: {},
-    } as ServerResponse);
+      return res.status(200).json({
+        statusCode: 200,
+        message: "Reservation deleted successfully",
+        data: {},
+      } as ServerResponse);
     } catch (error) {
-      return next(error)
+      return next(error);
     }
   }
 }

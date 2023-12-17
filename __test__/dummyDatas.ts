@@ -355,6 +355,37 @@ export const normalReservations: Reservation[] = [
     date: "2023-12-18",
     players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
   },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    fieldId: fieldsDummy[1]._id,
+    tag: tagsDummy[1],
+    type: "casual",
+    status: "ended",
+    schedule: fieldsDummy[1].schedules[0],
+    date: "2023-12-18",
+    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    fieldId: fieldsDummy[1]._id,
+    tag: tagsDummy[1],
+    type: "competitive",
+    status: "upcoming",
+    schedule: fieldsDummy[1].schedules[1],
+    date: "2023-12-18",
+    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    fieldId: fieldsDummy[1]._id,
+    tag: tagsDummy[1],
+    type: "competitive",
+    status: "ended",
+    score: "20|10",
+    schedule: fieldsDummy[1].schedules[1],
+    date: "2023-12-20",
+    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
+  },
 ];
 
 const fullReservation: UpcomingReservation = {
