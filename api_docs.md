@@ -1,8 +1,8 @@
 # MauMain API Documentation
 
-GCP IP:
+GCP IP: 34.87.36.180
 
-DOMAIN:
+DOMAIN: https://maumain.iiopen.my.id/
 
 Test using Postman (import):
 
