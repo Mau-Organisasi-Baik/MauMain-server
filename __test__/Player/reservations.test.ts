@@ -935,7 +935,7 @@ describe("PUT /reservation/reservationId/leave", () => {
   });
 
   // todo: 404, not found
-  it("should leave the selected reservation", async () => {
+  it("shoudl return error (404) when reservation not found", async () => {
     const selectedReservation: UpcomingReservation = {
       _id: new ObjectId(mongoObjectId()),
       date: "2023-12-18",

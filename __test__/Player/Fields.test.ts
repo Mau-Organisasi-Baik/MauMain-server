@@ -41,10 +41,7 @@ describe("GET /fields/explore", () => {
     };
     const response = await request(app).post("/login").send(playerLogin);
 
-    console.log(response.status);
-
     token = response.body.data.access_token;
-    console.log(response.body.data, "ini token");
   });
 
   afterAll(async () => {
@@ -197,7 +194,7 @@ describe("GET /fields/:fieldId", () => {
   });
 
   // todo: 403, no token
-  it("should return error (403)", async () => {
+  it("should return error (403) when no token passed", async () => {
     const selectedField = fieldsDummy[Math.floor(Math.random() * fieldsDummy.length)];
     const response = await request(app).get(`/fields/${selectedField._id.toString()}`);
 
@@ -208,7 +205,7 @@ describe("GET /fields/:fieldId", () => {
   });
 
   // todo: 403, invalid token
-  it("should return error (403)", async () => {
+  it("should return error (403) when invalid token passed", async () => {
     const selectedField = fieldsDummy[Math.floor(Math.random() * fieldsDummy.length)];
     const response = await request(app).get(`/fields/${selectedField._id.toString()}`).set("authorization", `Bearer jkqwnekjnqwjkn32k3jnn123jn`);
 
@@ -219,7 +216,7 @@ describe("GET /fields/:fieldId", () => {
   });
 
   // todo: 404, field not found
-  it("should return error (404)", async () => {
+  it("should return error (404) when selected field not found", async () => {
     const response = await request(app).get(`/fields/${mongoObjectId()}`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(404);

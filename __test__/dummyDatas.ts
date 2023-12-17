@@ -1,9 +1,10 @@
 import { ObjectId } from "mongodb";
 import { Player, User, ValidField, ValidPlayer } from "../types/user";
 import { hashPass } from "../src/helpers/bcrypt";
-import { Reservation, UpcomingReservation } from "types/reservation";
-import { Schedule } from "types/schedule";
-import { UserLoginInput } from "types/inputs";
+import { Reservation, UpcomingReservation } from "../types/reservation";
+import { Schedule } from "../types/schedule";
+import { UserLoginInput } from "../types/inputs";
+import { Invite } from "../types/invite";
 
 var mongoObjectId = function () {
   var timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
@@ -353,7 +354,7 @@ export const normalReservations: Reservation[] = [
     status: "upcoming",
     schedule: fieldsDummy[1].schedules[2],
     date: "2023-12-18",
-    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
+    players: [...playersDummy.slice(5, 7), playersDummy[4]],
   },
   {
     _id: new ObjectId(mongoObjectId()),
@@ -400,3 +401,30 @@ const fullReservation: UpcomingReservation = {
 };
 
 export const reservationsDummy: Reservation[] = [...normalReservations, fullReservation];
+
+export const invitesDummy: Invite[] = [
+  {
+    _id: new ObjectId(mongoObjectId()),
+    invitee: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    inviter: {
+      _id: playersDummy[1]._id,
+      name: playersDummy[1].name,
+    },
+    reservationId: reservationsDummy[0]._id,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    invitee: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    inviter: {
+      _id: playersDummy[2]._id,
+      name: playersDummy[2].name,
+    },
+    reservationId: reservationsDummy[1]._id,
+  },
+];

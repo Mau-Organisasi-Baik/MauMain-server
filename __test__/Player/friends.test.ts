@@ -648,7 +648,7 @@ describe("DELETE /friends/:friendId/reject", () => {
   });
 
   // todo: 404, friend request not found
-  it("should reject friend request", async () => {
+  it("should return error(404) when friend request not found", async () => {
     const response = await request(app).delete(`/friends/${mongoObjectId()}/reject`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(404);

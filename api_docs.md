@@ -806,8 +806,6 @@ _Response (403 - Forbidden)_
 }
 ```
 
-
-
 _Response (404 - Not found)_
 
 ```json
@@ -1245,11 +1243,145 @@ _Response (404 - Not found)_
 }
 ```
 
-#### 6. GET /invite
+### Invite Routes
 
-#### 7. POST /invite
+#### 1. GET /invite
 
-#### 8. PUT /notification
+Description:
+
+- Get all invites from other players
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Invitation requests retrieved successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+#### 2. POST /invite
+
+Description:
+
+- Send Invite to other player on selected reservation
+
+- headers
+
+```json
+{
+  "authorization": "Bearer [token]"
+}
+```
+
+- body
+
+```json
+{
+  "inviteeId": "string",
+  "reservationId": "string"
+}
+```
+
+_Response (201 - Created)_
+
+```json
+{
+  "statusCode": 201,
+  "message": "Invitation sent successfully",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Please Fill the required field",
+  "fields" : ["inviteeId" | "reservationId"],
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Reservation already ended",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Can't invite yourself",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Reservation is full",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Player not found",
+  "data": {}
+}
+```
+
+_Response (404 - Not found)_
+
+```json
+{
+  "statusCode": 404,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
 
 ## Field Endpoints
 

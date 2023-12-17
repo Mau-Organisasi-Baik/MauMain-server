@@ -229,7 +229,7 @@ describe("PUT /admin/reservations/:id/kick", () => {
   });
 
   // todo: 403, already ended
-  it("should kick selected player", async () => {
+  it("should return error (403) when reservation already ended", async () => {
     selectedReservation = reservationsDummy.filter((reservation) => {
       if (reservation.fieldId === selectedField._id) {
         if (reservation.players.length > 0) {
@@ -254,7 +254,7 @@ describe("PUT /admin/reservations/:id/kick", () => {
   });
 
   // todo: 403, no token
-  it("should kick selected player", async () => {
+  it("should return error (403) when no token passed", async () => {
     const selectedPlayerId = selectedReservation.players[0]._id.toString();
 
     const response = await request(app)
@@ -271,7 +271,7 @@ describe("PUT /admin/reservations/:id/kick", () => {
   });
 
   // todo: 403, Invalid token
-  it("should kick selected player", async () => {
+  it("should return error (403) when passed invalid token", async () => {
     const selectedPlayerId = selectedReservation.players[0]._id.toString();
 
     const response = await request(app)
@@ -289,7 +289,7 @@ describe("PUT /admin/reservations/:id/kick", () => {
   });
 
   // todo: 404, player not found
-  it("should kick selected player", async () => {
+  it("should return error (404) when player not found", async () => {
     const selectedPlayerId = mongoObjectId();
 
     const response = await request(app)
@@ -307,7 +307,7 @@ describe("PUT /admin/reservations/:id/kick", () => {
   });
 
   // todo: 404, reservation not found
-  it("should kick selected player", async () => {
+  it("should return error (404) when reservation not found", async () => {
     const selectedPlayerId = selectedReservation.players[0]._id.toString();
 
     const response = await request(app)
@@ -719,7 +719,7 @@ describe("DELETE /admin/reservations/:id", () => {
   });
 
   // todo: 404, not found
-  it("should return error(404) when invalid token is passed", async () => {
+  it("should return error(404) when reservation not found", async () => {
     const response = await request(app).delete(`/admin/reservations/${mongoObjectId()}`).set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(404);

@@ -47,8 +47,6 @@ export default class ExploreController {
 
       const fields = await db.collection(FIELDS_COLLECTION_NAME).find<ValidField>({}).toArray();
 
-      console.log(fields);
-
       let fieldsAroundUser: Pick<ValidField, "_id" | "name" | "address" | "coordinates" | "tags">[] = [];
       for (let i = 0; i < fields.length; i++) {
         let earthRadius = 6371;
