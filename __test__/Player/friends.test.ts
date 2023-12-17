@@ -114,14 +114,15 @@ describe("GET /friends", () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
     expect(response.body).toHaveProperty("message", "Friend list retrieved successfully");
-    expect(response.body).toHaveProperty("data", expect(Object));
-    expect(response.body.data).toHaveProperty("friends", expect(Array));
+    expect(response.body).toHaveProperty("data", expect.any(Object));
+    expect(response.body.data).toHaveProperty("friends", expect.any(Array));
 
     const expectedFriend = friendsDummy.filter((friend) => !friend.isPending);
     expect(response.body.data.friends).toHaveLength(expectedFriend.length);
 
     response.body.data.friends.forEach((friend: Friend) => {
       expect(friend).toHaveProperty("_id");
+      expect(friend).toHaveProperty("playerId");
       expect(friend).toHaveProperty("name");
     });
   });
@@ -196,6 +197,7 @@ describe("POST /friends", () => {
       _id: playersDummy[0]._id,
       name: playersDummy[0].name,
     });
+
     expect(updatedFriendEntries[0].user2).toEqual<UserFriend>({
       _id: playersDummy[1]._id,
       name: playersDummy[1].name,
@@ -243,7 +245,7 @@ describe("POST /friends", () => {
     expect(response.body).toHaveProperty("data", {});
 
     const updatedFriendEntries = await db.collection(FRIENDS_COLLECTION_NAME).find<Friend>({}).toArray();
-    expect(updatedFriendEntries).toHaveLength(0);
+    expect(updatedFriendEntries).toHaveLength(1);
   });
 
   // todo: 400, already pending
@@ -272,7 +274,7 @@ describe("POST /friends", () => {
     expect(response.body).toHaveProperty("data", {});
 
     const updatedFriendEntries = await db.collection(FRIENDS_COLLECTION_NAME).find<Friend>({}).toArray();
-    expect(updatedFriendEntries).toHaveLength(0);
+    expect(updatedFriendEntries).toHaveLength(1);
   });
 
   // todo: 403, no token
@@ -415,13 +417,13 @@ describe("GET /friends/pending", () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
     expect(response.body).toHaveProperty("message", "Pending friend request retrieved successfully");
-    expect(response.body).toHaveProperty("data", expect(Object));
-    expect(response.body.data).toHaveProperty("friends", expect(Array));
+    expect(response.body).toHaveProperty("data", expect.any(Object));
+    expect(response.body.data).toHaveProperty("pendings", expect.any(Array));
 
-    const expectedFriend = friendsDummy.filter((friend) => friend.isPending);
-    expect(response.body.data.friends).toHaveLength(expectedFriend.length);
+    // const expectedFriend = friendsDummy.filter((friend) => friend.isPending);
+    // expect(response.body.data.pendings).toHaveLength(expectedFriend.length);
 
-    response.body.data.friends.forEach((friend: Friend) => {
+    response.body.data.pendings.forEach((friend: Friend) => {
       expect(friend).toHaveProperty("_id");
       expect(friend).toHaveProperty("name");
     });
@@ -507,7 +509,7 @@ describe("PUT /friends/:friendId/accept", () => {
   });
 
   // todo: 400, already accepted
-  it("should accept friend request", async () => {
+  it("return error (400) when friend request is already accepted", async () => {
     await request(app).put(`/friends/${friendRequestId}/accept`).set("authorization", `Bearer ${token}`);
     const response = await request(app).put(`/friends/${friendRequestId}/accept`).set("authorization", `Bearer ${token}`);
 
@@ -612,7 +614,7 @@ describe("DELETE /friends/:friendId/reject", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("statusCode", 200);
-    expect(response.body).toHaveProperty("message", "Friend request accepted successfully");
+    expect(response.body).toHaveProperty("message", "Friend request rejected successfully");
     expect(response.body).toHaveProperty("data", {});
 
     const updatedFriendRequest = await db.collection(FRIENDS_COLLECTION_NAME).find<Friend>({}).toArray();

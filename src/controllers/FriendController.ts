@@ -1,25 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import { Db, ObjectId } from "mongodb";
-import { Friend } from "../../types/friend";
+import { Friend, UserFriend } from "../../types/friend";
 import { FriendRequestInput } from "../../types/inputs";
 import { ServerResponse, UserRequest } from "../../types/response";
 import { client } from "../../config/db";
 import { FRIENDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME } from "../../config/names";
 import { ValidPlayer } from "../../types/user";
 
-
-const sampleFriendInstance: Friend = {
-  _id: new ObjectId("abc"),
-  isPending: false,
-  user1: {
-    _id: new ObjectId("player1"),
-    name: "player1",
-  },
-  user2: {
-    _id: new ObjectId("player2"),
-    name: "player2",
-  },
-};
+// const sampleFriendInstance: Friend = {
+//   _id: new ObjectId("abc"),
+//   isPending: false,
+//   user1: {
+//     _id: new ObjectId("player1"),
+//     name: "player1",
+//   },
+//   user2: {
+//     _id: new ObjectId("player2"),
+//     name: "player2",
+//   },
+// };
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
@@ -28,31 +27,42 @@ if (process.env.NODE_ENV) {
 const db: Db = client.db(DATABASE_NAME);
 
 export class FriendController {
+  // todo: endpoint: GET /friends
   static async getFriends(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { playerId } = req.user;
 
-      const friends = await db.collection(FRIENDS_COLLECTION_NAME).find(
-        { $or: [
-          { user1: playerId }, 
-          { user2: playerId }
-        ]}).toArray();
+      const friends = await db
+        .collection(FRIENDS_COLLECTION_NAME)
+        .find<Friend>({
+          $or: [{ "user1._id": new ObjectId(playerId) }, { "user2._id": new ObjectId(playerId) }],
+          isPending: false,
+        })
+        .toArray();
+
+      const friendsOutput = friends.map((friendData) => {
+        const { user1, _id } = friendData;
+
+        return {
+          _id,
+          playerId: user1._id,
+          name: user1.name,
+        };
+      });
       return res.status(200).json({
         statusCode: 200,
         message: "Friend list retrieved successfully",
         data: {
-          friends: friends
-        }
+          friends: friendsOutput,
+        },
       } as ServerResponse);
 
-      // todo: endpoint: GET /friends
       // todo: get all friends (non-pending) of logged in user
       // todo: 200, friend list
       // todo: 403, no token
       // todo: 403, invalid token
-    }
-    catch(error) {
-      next(error);
+    } catch (error) {
+      return next(error);
     }
   }
 
@@ -61,47 +71,50 @@ export class FriendController {
       const { targetPlayerId }: FriendRequestInput = req.body;
       const { playerId } = req.user;
 
-      const currentUser = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: playerId }) as ValidPlayer;
-  
-      if(new ObjectId(targetPlayerId) === playerId) {
-        throw { name: "SelfFriendError" };
-      }
-      const friendListValidation = await db.collection(FRIENDS_COLLECTION_NAME).findOne<Friend>({ $or: [
-        { $and: [{ user1: playerId }, { user2: new ObjectId(targetPlayerId) }] },
-        { $and: [{ user1: new ObjectId(targetPlayerId) }, { user2: playerId }]}
-      ]});
+      const currentUser = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: playerId })) as ValidPlayer;
 
-      if(friendListValidation.isPending) {
-        throw { name: "AlreadyRequesting" };
+      if (targetPlayerId === playerId.toString()) {
+        return res.status(400).json({ statusCode: 400, message: "Can't send friend request to yourself", data: {} });
       }
-      if(!friendListValidation.isPending) {
-        throw { name: "AlreadyFriends" };
+      const friendListValidation = await db.collection(FRIENDS_COLLECTION_NAME).findOne<Friend>({
+        $or: [
+          { $and: [{ "user1._id": playerId }, { "user2._id": new ObjectId(targetPlayerId) }] },
+          { $and: [{ "user1._id": new ObjectId(targetPlayerId) }, { "user2._id": playerId }] },
+        ],
+      });
+
+      if (friendListValidation) {
+        if (friendListValidation.isPending) {
+          return res.status(400).json({ statusCode: 400, message: "Already requesting", data: {} });
+        }
+        if (!friendListValidation.isPending) {
+          return res.status(400).json({ statusCode: 400, message: "Already friends", data: {} });
+        }
       }
 
-      const targetUser = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: new ObjectId(targetPlayerId) }) as ValidPlayer;
+      const targetUser = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: new ObjectId(targetPlayerId) })) as ValidPlayer;
 
-      if(!targetUser) {
+      if (!targetUser) {
         throw { name: "DataNotFound", field: "Player" };
       }
       const sendFriendRequest = await db.collection(FRIENDS_COLLECTION_NAME).insertOne({
         user1: {
           _id: playerId,
-          name: currentUser.name
+          name: currentUser.name,
         },
         user2: {
           _id: new ObjectId(targetPlayerId),
-          name: currentUser.name
+          name: targetUser.name,
         },
-        isPending: true
+        isPending: true,
       } as Omit<Friend, "_id">);
 
       return res.status(201).json({
         statusCode: 201,
         message: "Friend request sent successfully",
-        data: {}
+        data: {},
       });
-    }
-    catch(error) {
+    } catch (error) {
       next(error);
     }
   }
@@ -110,22 +123,37 @@ export class FriendController {
     try {
       const { playerId } = req.user;
 
-      const friendRequest = await db.collection(FRIENDS_COLLECTION_NAME).find<Friend>({ $and: [{ user2: playerId }, { isPending: true }] }).toArray();
+      const friendRequest = await db
+        .collection(FRIENDS_COLLECTION_NAME)
+        .find<Friend>({
+          "user2._id": playerId,
+          isPending: true,
+        })
+        .toArray();
 
-      return res.status(200).json({ 
+      const pendingFriendRequests = friendRequest.map((friendData) => {
+        const { _id, user1 } = friendData;
+
+        return {
+          _id,
+          playerId: user1._id,
+          name: user1.name,
+        };
+      });
+
+      return res.status(200).json({
         statusCode: 200,
         message: "Pending friend request retrieved successfully",
         data: {
-          pending: friendRequest
-        }
+          pendings: pendingFriendRequests,
+        },
       });
       // todo: endpoint: POST /friends/pending
       // todo (main): get all pending friend request to logged player
       // todo: 200, pending friend list
       // todo: 403, no token
       // todo: 403, invalid token
-    }
-    catch(error) {
+    } catch (error) {
       next(error);
     }
   }
@@ -133,29 +161,30 @@ export class FriendController {
   static async acceptFriendRequest(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { friendId } = req.params;
-      
-      const friendRequest = await db.collection(FRIENDS_COLLECTION_NAME).findOne({ _id: new ObjectId(friendId) }) as Friend;
 
-      if(!friendRequest) {
+      const friendRequest = (await db.collection(FRIENDS_COLLECTION_NAME).findOne({ _id: new ObjectId(friendId) })) as Friend;
+
+      if (!friendRequest) {
         throw { name: "DataNotFound", field: "Friend request" };
       }
 
-      if(!friendRequest.isPending) {
-        throw { name: "AlreadyAccepted" };
+      if (!friendRequest.isPending) {
+        return res.status(400).json({ statusCode: 400, message: "Already accepted", data: {} });
       }
 
       const acceptFriendRequest = await db.collection(FRIENDS_COLLECTION_NAME).updateOne(
-        { _id: new ObjectId(friendId) }, 
+        { _id: new ObjectId(friendId) },
         {
           $set: {
-            isPending: true
-          }
-      });
+            isPending: false,
+          },
+        }
+      );
 
       return res.status(200).json({
         statusCode: 200,
         message: "Friend request accepted successfully",
-        data: {}
+        data: {},
       });
       // todo: endpoint: PUT /friends/:friendsId/pending
       // todo (main): accept friend request by friends ID
@@ -164,8 +193,7 @@ export class FriendController {
       // todo: 403, no token
       // todo: 403, invalid token
       // todo: 404, friend request not found
-    }
-    catch(error) {
+    } catch (error) {
       next(error);
     }
   }
@@ -173,10 +201,10 @@ export class FriendController {
   static async rejectFriendRequest(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { friendId } = req.params;
-      
-      const friendRequest = await db.collection(FRIENDS_COLLECTION_NAME).findOne({ _id: new ObjectId(friendId) }) as Friend;
 
-      if(!friendRequest) {
+      const friendRequest = (await db.collection(FRIENDS_COLLECTION_NAME).findOne({ _id: new ObjectId(friendId) })) as Friend;
+
+      if (!friendRequest) {
         throw { name: "DataNotFound", field: "Friend request" };
       }
 
@@ -185,7 +213,7 @@ export class FriendController {
       return res.status(200).json({
         statusCode: 200,
         message: "Friend request rejected successfully",
-        data: {}
+        data: {},
       });
       // todo: endpoint: DELETE /friends/:friendsId/reject
       // todo (main): reject friend request by friends ID
@@ -193,8 +221,7 @@ export class FriendController {
       // todo: 403, no token
       // todo: 403, invalid token
       // todo: 404, friend request not found
-    }
-    catch(error) {
+    } catch (error) {
       next(error);
     }
   }

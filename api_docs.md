@@ -986,6 +986,7 @@ _Response (200 - OK)_
     "friends": [
       {
         "_id": "string",
+        "playerId": "string",
         "name": "string"
       },...
     ]
@@ -1109,6 +1110,7 @@ _Response (200 - OK)_
     "pendings": [
       {
         "_id": "string",
+        "playerId": "string",
         "name": "string"
       },
       ...

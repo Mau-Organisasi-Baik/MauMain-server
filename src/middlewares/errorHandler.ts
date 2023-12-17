@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { ErrorResponse } from "types/response";
 
 export function errorHandler(error, req: Request, res: Response, next: NextFunction) {
-    console.log(error)
     switch(error.name) {
         case "InvalidInput":
             res.status(error.statusCode).json({ statusCode: error.statusCode, fields: error.fields, message: "Please Fill the required field", data: {} } as ErrorResponse);

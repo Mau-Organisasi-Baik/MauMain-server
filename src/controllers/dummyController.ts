@@ -1,5 +1,5 @@
-import { Db, ObjectId } from "mongodb";
 import { Player, User, ValidField, ValidPlayer } from "../../types/user";
+import { Db, ObjectId } from "mongodb";
 import { hashPass } from "../../src/helpers/bcrypt";
 import { Reservation, UpcomingReservation } from "../../types/reservation";
 import { Schedule } from "../../types/schedule";
@@ -7,11 +7,13 @@ import { UserLoginInput } from "../../types/inputs";
 import { client } from "../../config/db";
 import {
   FIELDS_COLLECTION_NAME,
+  FRIENDS_COLLECTION_NAME,
   PLAYERS_COLLECTION_NAME,
   RESERVATION_COLLECTION_NAME,
   TAGS_COLLECTION_NAME,
   USERS_COLLECTION_NAME,
 } from "../../config/names";
+import { Friend } from "../../types/friend";
 
 var mongoObjectId = function () {
   var timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
@@ -242,6 +244,69 @@ const playersDummy: ValidPlayer[] = [
   },
 ];
 
+const friendsDummy: Friend[] = [
+  {
+    _id: new ObjectId(mongoObjectId()),
+    user1: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    user2: {
+      _id: playersDummy[1]._id,
+      name: playersDummy[1].name,
+    },
+    isPending: false,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    user1: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    user2: {
+      _id: playersDummy[2]._id,
+      name: playersDummy[2].name,
+    },
+    isPending: true,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    user1: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    user2: {
+      _id: playersDummy[3]._id,
+      name: playersDummy[3].name,
+    },
+    isPending: false,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    user1: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    user2: {
+      _id: playersDummy[4]._id,
+      name: playersDummy[4].name,
+    },
+    isPending: false,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    user1: {
+      _id: playersDummy[0]._id,
+      name: playersDummy[0].name,
+    },
+    user2: {
+      _id: playersDummy[5]._id,
+      name: playersDummy[5].name,
+    },
+    isPending: true,
+  },
+];
+
 interface tag {
   _id: ObjectId;
   name: string;
@@ -410,10 +475,12 @@ export async function setDummy(req, res, next) {
   await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
   await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
   await db.collection(RESERVATION_COLLECTION_NAME).deleteMany({});
+  await db.collection(FRIENDS_COLLECTION_NAME).deleteMany({});
 
   await db.collection(TAGS_COLLECTION_NAME).insertMany(tagsDummy);
   await db.collection(USERS_COLLECTION_NAME).insertMany(usersDummy);
   await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playersDummy);
+  await db.collection(FRIENDS_COLLECTION_NAME).insertMany(friendsDummy);
   await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldsDummy);
   await db.collection(RESERVATION_COLLECTION_NAME).insertMany(reservationsDummy);
 
