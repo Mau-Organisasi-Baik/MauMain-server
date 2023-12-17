@@ -735,7 +735,7 @@ _Response (404 - Not found)_
 
 Description:
 
-- Get make reservation from empty and change the reservation content
+- Creates a reservation based on schedule
 
 - headers
 
@@ -781,7 +781,17 @@ _Response (400 - Bad Request)_
 ```json
 {
   "statusCode": 409,
-  "message": "Invalid [tag | type]",
+  "message": "Invalid [tag | type | schedule]",
+  "data": {}
+}
+```
+
+_Response (400 - Bad Request)_
+
+```json
+{
+  "statusCode": 400,
+  "message": "Duplicate reservation",
   "data": {}
 }
 ```
@@ -796,15 +806,7 @@ _Response (403 - Forbidden)_
 }
 ```
 
-_Response (403 - Forbidden)_
 
-```json
-{
-  "statusCode": 403,
-  "message": "Reservation already made before",
-  "data": {}
-}
-```
 
 _Response (404 - Not found)_
 
@@ -820,7 +822,7 @@ _Response (404 - Not found)_
 
 Description:
 
-- Get make reservation from empty and change the reservation content
+- Joins player into selected reservation
 
 - headers
 
@@ -893,7 +895,7 @@ _Response (404 - Not found)_
 Description:
 
 - leave user from selected reservation
-- (note) resets a reservation into empty when there are no users in reservation
+- (note) deletes a reservation when there are no users in reservation
 
 - headers
 

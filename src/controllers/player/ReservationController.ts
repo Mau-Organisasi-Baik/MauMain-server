@@ -7,7 +7,7 @@ import { Player, PlayerProfile, User, ValidField, ValidPlayer } from "../../../t
 import { Reservation } from "../../../types/reservation";
 import { tag } from "../../../types/tag";
 import { ReservationInput } from "../../../types/inputs";
-import { Schedule } from "types/schedule";
+import { Schedule } from "../../../types/schedule";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
@@ -16,6 +16,7 @@ if (process.env.NODE_ENV) {
 const db: Db = client.db(DATABASE_NAME);
 
 export default class ReservationController {
+  // todo: GET /fields/:fieldId/reservations
   static async getFieldReservations(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { fieldId } = req.params;
@@ -39,6 +40,8 @@ export default class ReservationController {
       next(error);
     }
   }
+
+  // todo: GET /reservations/:reservationId
   static async getReservationById(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { reservationId } = req.params;
@@ -52,16 +55,18 @@ export default class ReservationController {
         statusCode: 200,
         message: "Field reservations retrieved successfully",
         data: {
-          reservations: reservation,
+          reservation: reservation,
         },
       } as ServerResponse);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
+
+  // todo: POST /reservations/
   static async postReservation(req: UserRequest, res: Response, next: NextFunction) {
     try {
-      const { fieldId, tagId, type, scheduleId }: ReservationInput = req.body;
+      const { fieldId, tagId, type, scheduleId } = req.body;
 
       let errorInputField = [];
       if (!fieldId) {
@@ -84,7 +89,11 @@ export default class ReservationController {
       const tag = (await db.collection(TAGS_COLLECTION_NAME).findOne({ _id: new ObjectId(tagId) })) as tag;
 
       if (!tag) {
-        throw { name: "DataNotFound", field: "Tag" };
+        return res.status(400).json({ message: "Invalid tag", statusCode: 400, data: {} });
+      }
+
+      if (type !== "casual" && type !== "competitive") {
+        return res.status(400).json({ message: "Invalid type", statusCode: 400, data: {} });
       }
 
       const schedules = (await db.collection(FIELDS_COLLECTION_NAME).findOne<ValidField>({ _id: new ObjectId(fieldId) })).schedules;
@@ -95,15 +104,26 @@ export default class ReservationController {
       }
 
       if (!selectedSchedule) {
-        throw { name: "DataNotFound", field: "Schedule" };
+        return res.status(400).json({ message: "Invalid schedule", statusCode: 400, data: {} });
       }
 
-      await db.collection(RESERVATION_COLLECTION_NAME).insertOne({});
+      const duplicateReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
+        date: new Date().toISOString().split("T")[0],
+        fieldId: new ObjectId(fieldId),
+        schedule: selectedSchedule,
+      });
+
+      if (duplicateReservation) {
+        return res.status(400).json({ message: "Duplicate reservation", statusCode: 400, data: {} });
+      }
+
+      const { playerId } = req.user;
+      const playerProfile = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: new ObjectId(playerId) })) as Omit<ValidPlayer, "user">;
 
       const newReservationObj: Omit<Reservation, "_id"> = {
-        date: new Date().toLocaleDateString(),
+        date: new Date().toISOString().split("T")[0],
         fieldId: new ObjectId(fieldId),
-        players: [],
+        players: [playerProfile],
         schedule: selectedSchedule,
         status: "upcoming",
         tag,
@@ -121,12 +141,14 @@ export default class ReservationController {
       next(error);
     }
   }
+
+  // todo: PUT /reservations/:reservationId/join
   static async joinReservation(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { reservationId } = req.params;
-      const { _id } = req.user;
+      const { playerId } = req.user;
 
-      const targetReservation = (await db.collection(RESERVATION_COLLECTION_NAME).findOne({ _id: new Object(reservationId) })) as Reservation;
+      const targetReservation = (await db.collection(RESERVATION_COLLECTION_NAME).findOne({ _id: new ObjectId(reservationId) })) as Reservation;
 
       if (!targetReservation) {
         throw { name: "DataNotFound", field: "Reservation" };
@@ -134,7 +156,7 @@ export default class ReservationController {
 
       let userValidation = false;
       targetReservation.players.forEach((player) => {
-        if (player.UserId === new ObjectId(_id)) {
+        if (player._id.toString() === playerId.toString()) {
           userValidation = true;
         }
       });
@@ -145,7 +167,11 @@ export default class ReservationController {
         throw { name: "AlreadyFull" };
       }
 
-      const playerProfile = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ UserId: new ObjectId(_id) })) as Omit<ValidPlayer, "user">;
+      if (targetReservation.status === "ended") {
+        return res.status(403).json({ message: "Reservation already ended", statusCode: 403, data: {} });
+      }
+
+      const playerProfile = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: playerId })) as Omit<ValidPlayer, "user">;
 
       await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
         { _id: new ObjectId(reservationId) },
@@ -165,10 +191,12 @@ export default class ReservationController {
       next(error);
     }
   }
+
+  // todo: PUT /reservations/:reservationId/leave
   static async leaveReservation(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { reservationId } = req.params;
-      const { _id } = req.user;
+      const { playerId } = req.user;
 
       const targetReservation = (await db.collection(RESERVATION_COLLECTION_NAME).findOne({ _id: new ObjectId(reservationId) })) as Reservation;
 
@@ -176,25 +204,35 @@ export default class ReservationController {
         throw { name: "DataNotFound", field: "Reservation" };
       }
 
+      if (targetReservation.status === "ended") {
+        return res.status(403).json({ message: "Reservation already ended", statusCode: 403, data: {} });
+      }
+
       let userValidation = false;
       targetReservation.players.forEach((player) => {
-        if (player.UserId === new Object(_id)) {
+        if (player._id.toString() === playerId.toString()) {
           userValidation = true;
         }
       });
       if (!userValidation) {
         throw { name: "NotJoined" };
       }
-      await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
-        { _id: new ObjectId(reservationId) },
-        {
-          $pull: {
-            players: {
-              UserId: new ObjectId(_id),
+
+      if (targetReservation.players.length === 1) {
+        await db.collection(RESERVATION_COLLECTION_NAME).deleteOne({ _id: new ObjectId(reservationId) });
+      } else {
+        await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
+          { _id: new ObjectId(reservationId) },
+          {
+            $pull: {
+              players: {
+                _id: playerId,
+              },
             },
-          },
-        }
-      );
+          }
+        );
+      }
+
       return res.status(200).json({
         statusCode: 200,
         message: "Left successfully from reservation",

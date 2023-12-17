@@ -30,6 +30,7 @@ export interface UpcomingReservation extends BaseReservation {
 // }
 
 export interface EndedReservation extends BaseReservation {
+  type: "competitive" | "casual";
   status: "ended";
   tag: tag;
 }
