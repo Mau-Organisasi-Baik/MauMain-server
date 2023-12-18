@@ -13,9 +13,10 @@ export interface BaseReservation {
 
 export type ReservationGameType = "competitive" | "casual";
 
-// export interface EmptyReservation extends BaseReservation {
-//   status: "empty";
-// }
+export interface EmptyReservation  {
+  status: "empty";
+  schedule: Schedule;
+}
 
 export interface UpcomingReservation extends BaseReservation {
   status: "upcoming";

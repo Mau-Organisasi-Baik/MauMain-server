@@ -3,7 +3,7 @@ import { Db, ObjectId } from "mongodb";
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../../types/response";
 import { FIELDS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME } from "../../../config/names";
-import { Reservation } from "../../../types/reservation";
+import { EmptyReservation, Reservation } from "../../../types/reservation";
 import { ValidField } from "../../../types/user";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
@@ -17,20 +17,47 @@ export class FieldReservationController {
     // todo: ambil fieldId dari user
     try {
       const { fieldId } = req.user;
+      
+      const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId }) as ValidField;
+      const reservations = await db.collection(RESERVATION_COLLECTION_NAME).find<Reservation>({ 
+        fieldId: field._id,
+        date: new Date().toISOString().split("T")[0],
+      }).toArray();
+      
+      let reservationBySchedule = [] as (Reservation | EmptyReservation)[];
+      field.schedules.forEach(schedule => {
+        reservations.forEach((reservation, index) => {
+          if(reservation.schedule._id === schedule._id) {
+            reservationBySchedule.push(reservation);
+          }
+          else if(index === reservations.length) {
+            reservationBySchedule.push({
+              status: "empty",
+              schedule: schedule
+            } as EmptyReservation);
+          }
+        });
+      });
 
-      const reservations: Reservation[] = await db
-        .collection(RESERVATION_COLLECTION_NAME)
-        .find<Reservation>({
-          fieldId,
-        })
-        .toArray();
+      const timeString2Date = (string) => {
+        let regExTime = /([0-9]?[0-9]):([0-9][0-9])/;
+        let regExTimeArr: any[] = regExTime.exec(string)!;
 
+        return regExTimeArr[1] * 3600 * 1000 + regExTimeArr[2] * 60 * 1000;
+      }
+
+      
       return res.status(200).json({
         statusCode: 200,
-        message: "Field reservations retrieved successfully",
+        message: "Empty reservation retrieved successfully",
         data: {
-          reservations,
-        },
+          reservations: reservationBySchedule.sort((a, b) => {
+            let regExTime = /([0-9]?[0-9]):([0-9][0-9])/;
+            let regExTimeArr = regExTime.exec(a.schedule.TimeStart);
+
+            return (timeString2Date(a.schedule.TimeStart) - timeString2Date(b.schedule.TimeStart));
+          })
+        }
       } as ServerResponse);
     } catch (error) {
       return next(error);
@@ -251,24 +278,46 @@ export class FieldReservationController {
       const { fieldId } = req.user;
       
       const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId }) as ValidField;
-      const reservation = await db.collection(RESERVATION_COLLECTION_NAME).find<Reservation>({ fieldId: field._id }).toArray();
+      const reservations = await db.collection(RESERVATION_COLLECTION_NAME).find<Reservation>({ 
+        fieldId: field._id,
+        date: new Date().toISOString().split("T")[0],
+      }).toArray();
       
-      let filledReservation = [] as Reservation[];
-      reservation.map(el => {
-        field.schedules.forEach(schedule => {
-          if(schedule._id === el._id) {
-            filledReservation.push(el);
+      let reservationBySchedule = [] as (Reservation | EmptyReservation)[];
+      field.schedules.forEach(schedule => {
+        reservations.forEach((reservation, index) => {
+          if(reservation.schedule._id === schedule._id) {
+            reservationBySchedule.push(reservation);
+          }
+          else if(index === reservations.length) {
+            reservationBySchedule.push({
+              status: "empty",
+              schedule: schedule
+            } as EmptyReservation);
           }
         });
       });
 
-      let emptyReservation = reservation.filter(el => !filledReservation.includes(el)) as Reservation[];
+      const timeString2Date = (string) => {
+        let regExTime = /([0-9]?[0-9]):([0-9][0-9])/;
+        let regExTimeArr: any[] = regExTime.exec(string)!;
 
+        return regExTimeArr[1] * 3600 * 1000 + regExTimeArr[2] * 60 * 1000;
+      }
+
+      
       return res.status(200).json({
         statusCode: 200,
         message: "Empty reservation retrieved successfully",
-        data: emptyReservation
-      } as ServerResponse)
+        data: {
+          reservations: reservationBySchedule.sort((a, b) => {
+            let regExTime = /([0-9]?[0-9]):([0-9][0-9])/;
+            let regExTimeArr = regExTime.exec(a.schedule.TimeStart);
+
+            return (timeString2Date(a.schedule.TimeStart) - timeString2Date(b.schedule.TimeStart));
+          })
+        }
+      } as ServerResponse);
     }
     catch(error) {
       return next(error);
