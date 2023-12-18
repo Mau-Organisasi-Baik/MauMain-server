@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ErrorResponse } from "types/response";
+import { ErrorResponse } from "../../types/response";
 
 export function errorHandler(error, req: Request, res: Response, next: NextFunction) {
     switch(error.name) {
