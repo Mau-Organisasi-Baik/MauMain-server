@@ -3,7 +3,7 @@ import { Header, User } from "./user"
 import { ObjectId } from "mongodb"
 
 export interface UserRequest extends Request {
-    user?: Header
+    user: Header
 }
 
 export interface ServerResponse {

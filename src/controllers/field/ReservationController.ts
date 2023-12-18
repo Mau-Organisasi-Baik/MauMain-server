@@ -2,8 +2,9 @@ import { client } from "../../../config/db";
 import { Db, ObjectId } from "mongodb";
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../../types/response";
-import { RESERVATION_COLLECTION_NAME } from "../../../config/names";
+import { FIELDS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME } from "../../../config/names";
 import { Reservation } from "../../../types/reservation";
+import { ValidField } from "../../../types/user";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
@@ -122,7 +123,7 @@ export class FieldReservationController {
     const { score } = req.body;
 
     try {
-      const selectedReservation: Reservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
+      const selectedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
         _id: new ObjectId(reservationId),
         fieldId,
       });
@@ -177,7 +178,7 @@ export class FieldReservationController {
       const { fieldId } = req.user;
       const { reservationId } = req.params;
 
-      const selectedReservation: Reservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
+      const selectedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
         _id: new ObjectId(reservationId),
         fieldId,
       });
@@ -219,7 +220,7 @@ export class FieldReservationController {
       const { fieldId } = req.user;
       const { reservationId } = req.params;
 
-      const selectedReservation: Reservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
+      const selectedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
         _id: new ObjectId(reservationId),
         fieldId,
       });
@@ -242,6 +243,34 @@ export class FieldReservationController {
         data: {},
       } as ServerResponse);
     } catch (error) {
+      return next(error);
+    }
+  }
+  static async getEmptyReservation(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { fieldId } = req.user;
+      
+      const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId }) as ValidField;
+      const reservation = await db.collection(RESERVATION_COLLECTION_NAME).find<Reservation>({ fieldId: field._id }).toArray();
+      
+      let filledReservation = [] as Reservation[];
+      reservation.map(el => {
+        field.schedules.forEach(schedule => {
+          if(schedule._id === el._id) {
+            filledReservation.push(el);
+          }
+        });
+      });
+
+      let emptyReservation = reservation.filter(el => !filledReservation.includes(el)) as Reservation[];
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: "Empty reservation retrieved successfully",
+        data: emptyReservation
+      } as ServerResponse)
+    }
+    catch(error) {
       return next(error);
     }
   }
