@@ -322,8 +322,8 @@ export default class ReservationController {
             }
           );
         } else if (type === "competitive") {
-          const availablePlayers = players.filter((player) => player._id.toString() === playerId.toString());
-
+          const availablePlayers = players.filter((player) => player._id.toString() !== playerId.toString());
+          console.log(availablePlayers)
           let newTeams = [];
 
           let teamA = 0;
