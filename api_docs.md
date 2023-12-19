@@ -253,6 +253,19 @@ _Response (200 - OK)_
     "user": {
       "name": "string",
       "profilePictureUrl": "string",
+      "history": [
+        {
+          "win": "boolean",
+          "ReservationId": "string",
+          "fieldName": "string",
+          "tag": {
+            "_id": "string",
+            "name": "string",
+            "limit": "number"
+          },
+          "type": "competitive" | "casual"
+        }
+      ]
       "exp": "number"
     }
   }
@@ -1862,3 +1875,132 @@ _Response (404 - Not Found)_
   "data": {}
 }
 ```
+
+#### 7. GET /admin/schedules
+
+Description:
+
+- retrieves field schedules
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Reservation deleted successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation already ended",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+#### 8. POST /admin/schedules
+
+Description:
+
+- retrieves field schedules
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Reservation deleted successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation already ended",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Reservation not found",
+  "data": {}
+}
+```
+
+#### 9. DELETE /admin/schedules/:scheduleId
+
+Description:
+
+- delete field schedules
+
+_Response (200 - OK)_
+
+```json
+{
+  "statusCode": 200,
+  "message": "Schedule deleted successfully",
+  "data": {}
+}
+```
+
+_Response (403 - Forbidden)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Invalid token",
+  "data": {}
+}
+```
+
+_Response (404 - Not Found)_
+
+```json
+{
+  "statusCode": 403,
+  "message": "Schedule not found",
+  "data": {}
+}
+```
+

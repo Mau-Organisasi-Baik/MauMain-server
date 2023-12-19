@@ -24,7 +24,7 @@ export default class ScheduleController {
       const { fieldId } = req.user;
 
       const selectedField = await db.collection(FIELDS_COLLECTION_NAME).findOne<ValidField>({
-        _id: new ObjectId(fieldId),
+        _id: fieldId,
       });
 
       const schedules = selectedField.schedules;
