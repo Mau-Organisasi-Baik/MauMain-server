@@ -25,15 +25,15 @@ export class FieldReservationController {
           fieldId: field._id,
           date: new Date().toISOString().split("T")[0],
         })
-        .toArray();
+        .toArray() as any;
 
       reservations = reservations.map((reservation) => {
         const { _id, date, fieldId, players, schedule, status, tag, type } = reservation;
 
         const filteredPlayers = players.map((player) => {
-          const { _id: playerId, UserId, exp, name, profilePictureUrl } = player;
+          const { _id: playerId, UserId, exp, name, profilePictureUrl, history } = player;
 
-          return { _id: playerId, UserId, exp, name, profilePictureUrl };
+          return { _id: playerId, UserId, exp, name, profilePictureUrl, history };
         });
 
         if (status === "upcoming") {
@@ -66,16 +66,22 @@ export class FieldReservationController {
 
       let reservationBySchedule = [] as (Reservation | EmptyReservation)[];
       field.schedules.forEach((schedule) => {
-        reservations.forEach((reservation, index) => {
-          if (reservation.schedule._id === schedule._id) {
+        let isReservationFound = false;
+
+        for (const reservation of reservations) {
+          if (reservation.schedule._id.toString() === schedule._id.toString()) {
             reservationBySchedule.push(reservation);
-          } else if (index === reservations.length) {
-            reservationBySchedule.push({
-              status: "empty",
-              schedule: schedule,
-            } as EmptyReservation);
+            isReservationFound = true;
+            break;
           }
-        });
+        }
+
+        if (!isReservationFound) {
+          reservationBySchedule.push({
+            status: "empty",
+            schedule: schedule,
+          } as EmptyReservation);
+        }
       });
 
       const timeString2Date = (string) => {

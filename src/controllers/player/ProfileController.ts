@@ -30,10 +30,11 @@ export class PlayerProfileController {
         throw { name: "DataNotFound", field: "Player" };
       }
 
-      const { exp, name, profilePictureUrl } = profile;
+      const { exp, name, profilePictureUrl, history } = profile;
       const resultPlayer = {
         exp,
         name,
+        history,
         profilePictureUrl,
       };
 
@@ -83,9 +84,9 @@ export class PlayerProfileController {
 
       let errorInputField = [] as string[];
 
-      // if (!req.file) {
-      //   errorInputField.push("photo");
-      // }
+      if (!req.file) {
+        errorInputField.push("photo");
+      }
 
       if (!name) {
         errorInputField.push("name");

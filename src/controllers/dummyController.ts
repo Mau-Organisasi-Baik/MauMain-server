@@ -162,6 +162,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[0],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player1",
   },
   {
@@ -170,6 +171,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[1],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player2",
   },
   {
@@ -178,6 +180,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[4],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player3",
   },
   {
@@ -186,6 +189,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[5],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player4",
   },
   {
@@ -194,6 +198,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[6],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player5",
   },
   {
@@ -202,6 +207,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[7],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player6",
   },
   {
@@ -210,6 +216,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[8],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player7",
   },
   {
@@ -218,6 +225,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[9],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player8",
   },
   {
@@ -226,6 +234,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[10],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player9",
   },
   {
@@ -234,6 +243,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[11],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player10",
   },
   {
@@ -242,6 +252,7 @@ const playersDummy: ValidPlayer[] = [
     user: usersDummy[12],
     profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     exp: 1000,
+    history: [],
     name: "player11",
   },
 ];

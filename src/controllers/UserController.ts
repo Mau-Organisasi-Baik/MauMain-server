@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { client } from "../../config/db"
 import { Db } from "mongodb";
-import { FieldInput, PlayerInput, UserLoginInput, UserRegisterInput } from "types/inputs";
+import { FieldInput, PlayerInput, UserLoginInput, UserRegisterInput } from "../../types/inputs";
 import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { comparePass, hashPass } from "../helpers/bcrypt";
 import { createToken } from "../helpers/jsonwebtoken";
@@ -120,7 +120,7 @@ export default class UserController {
 
             const userValidation = await db.collection(USERS_COLLECTION_NAME).findOne({ $or: [{ email: email }, { username: username }] });
 
-            let errorUniqueField = [];
+            let errorUniqueField = [] as string[];
             if(userValidation && userValidation.username === username) {
                 errorUniqueField.push("username");
             }
@@ -158,6 +158,7 @@ export default class UserController {
                         _id: registeredUser.insertedId,
                         ...userInfo
                     },
+                    history: [],
                     exp: 0
                 }
                 const registerPlayer = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);

@@ -11,11 +11,16 @@ export interface User {
   password: string;
 }
 
+interface History {
+  win: boolean
+}
+
 // todo: tambahkan history
 export interface Player {
   _id: ObjectId;
   UserId: ObjectId;
   user: User;
+  history: History[];
   exp: number;
 }
 
