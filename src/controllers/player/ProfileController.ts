@@ -30,8 +30,9 @@ export class PlayerProfileController {
         throw { name: "DataNotFound", field: "Player" };
       }
 
-      const { exp, name, profilePictureUrl, history } = profile;
+      const {_id, exp, name, profilePictureUrl, history } = profile;
       const resultPlayer = {
+        _id,
         exp,
         name,
         history,
