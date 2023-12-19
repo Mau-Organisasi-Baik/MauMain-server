@@ -120,7 +120,9 @@ _Response (200 - OK)_
   "data": {
     "access_token": "string",
     "username": "string",
-    "role": "string"
+    "role": "string",
+    "playerId?": "string",
+    "fieldId?": "string"
   }
 }
 ```
@@ -609,7 +611,7 @@ _Response (200 - OK)_
         },
         "type?": "competitive" | "casual",
         "score?": "string",
-        "status": "empty" | "upcoming" | "playing" | "ended",
+        "status": "empty" | "upcoming" | "ended",
         "schedule": {
           "_id": "string",
           "TimeStart": "string",

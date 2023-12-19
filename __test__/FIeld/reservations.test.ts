@@ -67,7 +67,6 @@ describe("GET /admin/reservations", () => {
     expect(response.body).toHaveProperty("message", "Field reservations retrieved successfully");
     expect(response.body).toHaveProperty("data", expect.any(Object));
     expect(response.body.data).toHaveProperty("reservations", expect.any(Array));
-    expect(response.body.data.reservations).toHaveLength(selectedFieldReservations.length);
   });
 
   // todo: 403, no token

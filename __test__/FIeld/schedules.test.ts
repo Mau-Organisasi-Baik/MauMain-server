@@ -10,7 +10,6 @@ import { FIELDS_COLLECTION_NAME, TAGS_COLLECTION_NAME, USERS_COLLECTION_NAME } f
 import { ValidField } from "../../types/user";
 import app from "../../src";
 import { fieldsDummy, tagsDummy, usersDummy } from "../dummyDatas";
-import { fieldImageBuffers } from "../images";
 import { mongoObjectId } from "../helper";
 import { tag } from "../../types/tag";
 import ScheduleController from "../../src/controllers/field/ScheduleController";

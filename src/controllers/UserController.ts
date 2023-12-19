@@ -54,6 +54,17 @@ export default class UserController {
                     role: userByEmailOrUsername.role,
                     playerId: String(player._id)
                 });
+
+                return res.status(200).json({
+                    statusCode: 200,
+                    message: "User logged in successfully",
+                    data: {
+                        access_token: access_token,
+                        username: userByEmailOrUsername.username,
+                        role: userByEmailOrUsername.role,
+                        playerId: player._id.toString()
+                    }
+                } as LoginSuccess);
             }
             if(userByEmailOrUsername.role === "field") {
                 const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ UserId: userByEmailOrUsername._id }) as Field;
@@ -63,17 +74,21 @@ export default class UserController {
                     role: userByEmailOrUsername.role,
                     fieldId: String(field._id)
                 });
+
+                return res.status(200).json({
+                    statusCode: 200,
+                    message: "User logged in successfully",
+                    data: {
+                        access_token: access_token,
+                        username: userByEmailOrUsername.username,
+                        role: userByEmailOrUsername.role,
+                        fieldId: field._id.toString()
+                    }
+                } as LoginSuccess);
             }
 
-            return res.status(200).json({
-                statusCode: 200,
-                message: "User logged in successfully",
-                data: {
-                    access_token: access_token,
-                    username: userByEmailOrUsername.username,
-                    role: userByEmailOrUsername.role
-                }
-            } as LoginSuccess);
+
+            
         }
         catch(error) {
             next(error);

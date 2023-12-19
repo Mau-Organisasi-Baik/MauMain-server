@@ -6,11 +6,11 @@ import request from "supertest";
 import { FieldInput, FieldProfileInput, UserInput, UserLoginInput } from "../../types/inputs";
 import { hashPass as hash } from "../../src/helpers/bcrypt";
 import { client } from "../../config/db";
-import { FIELDS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
+import { FIELDS_COLLECTION_NAME, TAGS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { ValidField } from "../../types/user";
 import app from "../../src";
 import { tagsDummy } from "../dummyDatas";
-import { fieldImageBuffers } from "../images";
+import { fieldImageFilepaths } from "../images";
 import { mongoObjectId } from "../helper";
 import { tag } from "../../types/tag";
 
@@ -22,12 +22,15 @@ afterAll(() => {
   client.close();
 });
 
-describe("POST /admin/admin/profile", () => {
+describe("POST /admin/profile", () => {
   let token: string;
 
   beforeEach(async () => {
+    await db.collection(TAGS_COLLECTION_NAME).deleteMany({});
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+
+    await db.collection(TAGS_COLLECTION_NAME).insertMany(tagsDummy);
 
     // seeds an user and a field
     const newUserField: UserInput = {
@@ -61,6 +64,7 @@ describe("POST /admin/admin/profile", () => {
   });
 
   afterAll(async () => {
+    await db.collection(TAGS_COLLECTION_NAME).deleteMany({});
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
   });
@@ -77,8 +81,8 @@ describe("POST /admin/admin/profile", () => {
       .post("/admin/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .attach("photos", fieldImageBuffers[0])
-      .attach("photos", fieldImageBuffers[1])
+      .attach("photos", fieldImageFilepaths[0])
+      .attach("photos", fieldImageFilepaths[1])
       .field("name", fieldProfile["name"])
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
@@ -94,14 +98,11 @@ describe("POST /admin/admin/profile", () => {
     expect(updatedField.name).toBe(fieldProfile.name);
     expect(updatedField.address).toBe(fieldProfile.address);
 
-    // expect(updatedField.photoUrls).toBe(expect.any(Array));
-    // expect(updatedField.photoUrls).toHaveLength(2);
+    expect(Array.isArray(updatedField.photoUrls)).toBe(true);
+    expect(updatedField.photoUrls).toHaveLength(2);
 
-    // expect(updatedField.tags).toBe(expect.any(Array));
-    // expect(updatedField.tags).toHaveLength(2);
-
-    // expect(updatedField.coordinates).toBe(expect.any(Array));
-    // expect(updatedField.tags).toHaveLength(2);
+    expect(Array.isArray(updatedField.tags)).toBe(true);
+    expect(updatedField.tags).toHaveLength(2);
   });
 
   it("should return error (400) when form not filled (name)", async () => {
@@ -115,7 +116,7 @@ describe("POST /admin/admin/profile", () => {
       .post("/admin/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .attach("photos", fieldImageBuffers[0])
+      .attach("photos", fieldImageFilepaths[0])
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
       .field("tagIds", fieldProfile["tagIds"]);
@@ -144,7 +145,7 @@ describe("POST /admin/admin/profile", () => {
       .field("name", fieldProfile["name"])
       .field("coordinates", fieldProfile["coordinates"])
       .field("tagIds", fieldProfile["tagIds"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -170,7 +171,7 @@ describe("POST /admin/admin/profile", () => {
       .field("name", fieldProfile["name"])
       .field("address", fieldProfile["address"])
       .field("tagIds", fieldProfile["tagIds"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -198,7 +199,7 @@ describe("POST /admin/admin/profile", () => {
       .field("name", fieldProfile["name"])
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -222,7 +223,7 @@ describe("POST /admin/admin/profile", () => {
       .set("Content-Type", "application/json")
       .field("name", fieldProfile["name"])
       .field("coordinates", fieldProfile["coordinates"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -250,7 +251,7 @@ describe("POST /admin/admin/profile", () => {
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
       .field("tagIds", fieldProfile["tagIds"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -277,7 +278,7 @@ describe("POST /admin/admin/profile", () => {
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
       .field("tagIds", fieldProfile["tagIds"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -299,8 +300,11 @@ describe("PUT /admin/profile", () => {
   };
 
   beforeEach(async () => {
+    await db.collection(TAGS_COLLECTION_NAME).deleteMany({});
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+
+    await db.collection(TAGS_COLLECTION_NAME).insertMany(tagsDummy);
 
     // seeds an user and a field
     const newUserField: UserInput = {
@@ -352,8 +356,8 @@ describe("PUT /admin/profile", () => {
       .put("/admin/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .attach("photos", fieldImageBuffers[0])
-      .attach("photos", fieldImageBuffers[1])
+      .attach("photos", fieldImageFilepaths[0])
+      .attach("photos", fieldImageFilepaths[1])
       .field("name", fieldProfile["name"])
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
@@ -369,14 +373,9 @@ describe("PUT /admin/profile", () => {
     expect(updatedField.name).toBe(fieldProfile.name);
     expect(updatedField.address).toBe(fieldProfile.address);
 
-    // expect(updatedField.photoUrls).toBe(expect.any(Array));
-    // expect(updatedField.photoUrls).toHaveLength(2);
-
-    // expect(updatedField.tags).toBe(expect.any(Array));
-    // expect(updatedField.tags).toHaveLength(2);
-
-    // expect(updatedField.coordinates).toBe(expect.any(Array));
-    // expect(updatedField.tags).toHaveLength(2);
+    expect(updatedField.photoUrls).toHaveLength(2);
+    expect(updatedField.tags).toHaveLength(2);
+    expect(updatedField.tags).toHaveLength(2);
   });
 
   it("should return error (403) when form not using headers", async () => {
@@ -394,7 +393,7 @@ describe("PUT /admin/profile", () => {
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
       .field("tagIds", fieldProfile["tagIds"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -421,7 +420,7 @@ describe("PUT /admin/profile", () => {
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
       .field("tagIds", fieldProfile["tagIds"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -439,6 +438,9 @@ describe("GET /admin/profile", () => {
   beforeEach(async () => {
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+    await db.collection(TAGS_COLLECTION_NAME).deleteMany({});
+
+    await db.collection(TAGS_COLLECTION_NAME).insertMany(tagsDummy);
 
     // seeds an user and a field
     const newUserField: UserInput = {
@@ -478,6 +480,7 @@ describe("GET /admin/profile", () => {
   });
 
   afterAll(async () => {
+    await db.collection(TAGS_COLLECTION_NAME).deleteMany({});
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
   });
@@ -491,7 +494,7 @@ describe("GET /admin/profile", () => {
     expect(response.body).toHaveProperty("message", "Field profile retrieved successfully");
 
     expect(response.body.data).toBeInstanceOf(Object);
-    expect(response.body.data).toHaveProperty('field', expect.any(Object))
+    expect(response.body.data).toHaveProperty("field", expect.any(Object));
     expect(response.body.data.field).toHaveProperty("name", selectedField.name);
     expect(response.body.data.field).toHaveProperty("address", selectedField.address);
     expect(response.body.data.field).toHaveProperty("coordinates", selectedField.coordinates);
@@ -540,7 +543,7 @@ describe("GET /admin/profile", () => {
       .field("address", fieldProfile["address"])
       .field("coordinates", fieldProfile["coordinates"])
       .field("tagIds", fieldProfile["tagIds"])
-      .attach("photos", fieldImageBuffers[0]);
+      .attach("photos", fieldImageFilepaths[0]);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);

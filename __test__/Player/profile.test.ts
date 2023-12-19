@@ -9,8 +9,10 @@ import { client } from "../../config/db";
 import { PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import { ValidPlayer } from "../../types/user";
 import app from "../../src";
-import { playerImageBuffer } from "../images";
+import { playerFilepath } from "../images";
 import { mongoObjectId } from "../helper";
+
+const supertest = request(app);
 
 const DATABASE_NAME = process.env.DATABASE_NAME_TEST;
 
@@ -57,7 +59,7 @@ describe("GET /profile", () => {
       password: "12345678",
     };
 
-    const response = await request(app).post("/login").send(playerLogin);
+    const response = await supertest.post("/login").send(playerLogin);
     token = response.body.data.access_token;
   });
 
@@ -68,7 +70,7 @@ describe("GET /profile", () => {
 
   // todo: 200, user profile
   it("should retrieve user profile ", async () => {
-    const response = await request(app).get("/profile").set("authorization", `Bearer ${token}`);
+    const response = await supertest.get("/profile").set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Object);
@@ -85,7 +87,7 @@ describe("GET /profile", () => {
 
   // todo: 403, no token
   it("should return error (403) when form not using headers", async () => {
-    const response = await request(app).get("/profile");
+    const response = await supertest.get("/profile");
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -97,7 +99,7 @@ describe("GET /profile", () => {
   // todo: 403, invalid token
   it("should return error (403) when form using invalid token", async () => {
     const invalidToken = "uihdiwdjdwdlads;llsdfklsdflkmsdflsdfkmmalskdm";
-    const response = await request(app).get("/profile").set("authorization", `Bearer ${invalidToken}`);
+    const response = await supertest.get("/profile").set("authorization", `Bearer ${invalidToken}`);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -172,7 +174,7 @@ describe("GET /profile/:playerId", () => {
       password: "12345678",
     };
 
-    const response = await request(app).post("/login").send(playerLogin);
+    const response = await supertest.post("/login").send(playerLogin);
     token = response.body.data.access_token;
   });
 
@@ -184,7 +186,7 @@ describe("GET /profile/:playerId", () => {
   it("should get other player profile", async () => {
     const targetId = player1ID.toString();
 
-    const response = await request(app)
+    const response = await supertest
       .get("/profile/" + targetId)
       .set("authorization", `Bearer ${token}`);
 
@@ -204,7 +206,7 @@ describe("GET /profile/:playerId", () => {
   it("should return error (403) when form not using headers", async () => {
     const targetId = player1ID.toString();
 
-    const response = await request(app)
+    const response = await supertest
       .get("/profile/" + targetId)
       .set("Content-Type", "application/json");
 
@@ -218,7 +220,7 @@ describe("GET /profile/:playerId", () => {
   it("should return error (403) when form using invalid token", async () => {
     const targetId = player1ID.toString();
 
-    const response = await request(app)
+    const response = await supertest
       .get("/profile/" + targetId)
       .set("Content-Type", "application/json");
 
@@ -232,7 +234,7 @@ describe("GET /profile/:playerId", () => {
   it("should return error (404) when player not found", async () => {
     const unknownPlayerId = mongoObjectId();
 
-    const response = await request(app)
+    const response = await supertest
       .get("/profile/" + unknownPlayerId)
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json");
@@ -279,7 +281,7 @@ describe("POST /profile", () => {
       password: "12345678",
     };
 
-    const response = await request(app).post("/login").send(playerLogin);
+    const response = await supertest.post("/login").send(playerLogin);
     token = response.body.data.access_token;
   });
 
@@ -293,11 +295,11 @@ describe("POST /profile", () => {
       name: "playerName",
     };
 
-    const response = await request(app)
+    const response = await supertest
       .post("/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "multipart/form-data")
-      .attach("photo", playerImageBuffer)
+      .attach("photo", playerFilepath)
       .field("name", playerProfile["name"]);
 
     expect(response.status).toBe(200);
@@ -315,11 +317,11 @@ describe("POST /profile", () => {
   it("should return error (400) when form not filled (name)", async () => {
     const playerProfile: Omit<PlayerProfileInput, "name"> = {};
 
-    const response = await request(app)
+    const response = await supertest
       .post("/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .attach("photo", playerImageBuffer);
+      .attach("photo", playerFilepath);
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -336,7 +338,7 @@ describe("POST /profile", () => {
   //     name: "playerName",
   //   };
 
-  //   const response = await request(app)
+  //   const response = await supertest
   //     .post("/profile")
   //     .set("authorization", `Bearer ${token}`)
   //     .set("Content-Type", "application/json")
@@ -355,7 +357,7 @@ describe("POST /profile", () => {
   // it("should return error (400) when form not filled (both)", async () => {
   //   const playerProfile = {};
 
-  //   const response = await request(app).post("/profile").set("authorization", `Bearer ${token}`).set("Content-Type", "application/json");
+  //   const response = await supertest.post("/profile").set("authorization", `Bearer ${token}`).set("Content-Type", "application/json");
 
   //   expect(response.status).toBe(400);
   //   expect(response.body).toBeInstanceOf(Object);
@@ -373,11 +375,11 @@ describe("POST /profile", () => {
       name: "playerName",
     };
 
-    const response = await request(app)
+    const response = await supertest
       .post("/profile")
       .set("Content-Type", "application/json")
       .field("name", playerProfile["name"])
-      .attach("photo", playerImageBuffer);
+      .attach("photo", playerFilepath);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -393,11 +395,11 @@ describe("POST /profile", () => {
 
     const invalidToken = "uihdiwdjdwdlads;llsdfklsdflkmsdflsdfkmmalskdm";
 
-    const response = await request(app)
+    const response = await supertest
       .post("/profile")
       .set("authorization", `Bearer ${invalidToken}`)
       .set("Content-Type", "application/json")
-      .attach("photo", playerImageBuffer)
+      .attach("photo", playerFilepath)
       .field("name", playerProfile["name"]);
 
     expect(response.status).toBe(403);
@@ -409,7 +411,7 @@ describe("POST /profile", () => {
 });
 
 // todo: PUT /profile
-describe.only("PUT /profile", () => {
+describe("PUT /profile", () => {
   let token: string;
 
   let initialPlayerInfo = {
@@ -451,7 +453,7 @@ describe.only("PUT /profile", () => {
       password: "12345678",
     };
 
-    const response = await request(app).post("/login").send(playerLogin);
+    const response = await supertest.post("/login").send(playerLogin);
     token = response.body.data.access_token;
   });
 
@@ -465,11 +467,11 @@ describe.only("PUT /profile", () => {
       name: "playerName",
     };
 
-    const response = await request(app)
+    const response = await supertest
       .put("/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .attach("photo", playerImageBuffer)
+      .attach("photo", playerFilepath)
       .field("name", playerProfile["name"]);
 
     expect(response.status).toBe(200);
@@ -478,7 +480,7 @@ describe.only("PUT /profile", () => {
     expect(response.body).toHaveProperty("message", "Player profile updated successfully");
     expect(response.body).toHaveProperty("data", {});
 
-    const updatedPlayer = await db.collection(PLAYERS_COLLECTION_NAME).findOne<ValidPlayer>({ username: "player" });
+    const updatedPlayer = await db.collection(PLAYERS_COLLECTION_NAME).findOne<ValidPlayer>({ 'user.username': "player" });
     expect(updatedPlayer.name).toBe(playerProfile.name);
     // expect(updatedPlayer.profilePictureUrl).toBe(expect.any(String));
   });
@@ -488,7 +490,7 @@ describe.only("PUT /profile", () => {
       name: "playerName",
     };
 
-    const response = await request(app)
+    const response = await supertest
       .put("/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
@@ -500,7 +502,7 @@ describe.only("PUT /profile", () => {
     expect(response.body).toHaveProperty("message", "Player profile updated successfully");
     expect(response.body).toHaveProperty("data", {});
 
-    const updatedPlayer = await db.collection(PLAYERS_COLLECTION_NAME).findOne<ValidPlayer>({ username: "player" });
+    const updatedPlayer = await db.collection(PLAYERS_COLLECTION_NAME).findOne<ValidPlayer>({ 'user.username': "player" });
     expect(updatedPlayer.name).toBe(playerProfile.name);
     expect(updatedPlayer.profilePictureUrl).toBe(initialPlayerInfo.profilePictureUrl);
   });
@@ -510,11 +512,11 @@ describe.only("PUT /profile", () => {
       name: "playerName",
     };
 
-    const response = await request(app)
+    const response = await supertest
       .put("/profile")
       .set("authorization", `Bearer ${token}`)
       .set("Content-Type", "application/json")
-      .attach("photo", playerImageBuffer);
+      .attach("photo", playerFilepath);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Object);
@@ -522,7 +524,7 @@ describe.only("PUT /profile", () => {
     expect(response.body).toHaveProperty("message", "Player profile updated successfully");
     expect(response.body).toHaveProperty("data", {});
 
-    const updatedPlayer = await db.collection(PLAYERS_COLLECTION_NAME).findOne<ValidPlayer>({ username: "player" });
+    const updatedPlayer = await db.collection(PLAYERS_COLLECTION_NAME).findOne<ValidPlayer>({ 'user.username': "player" });
     expect(updatedPlayer.name).toBe(initialPlayerInfo.name);
     // expect(updatedPlayer.profilePictureUrl).not.toBe(initialPlayerInfo.profilePictureUrl);
   });
@@ -530,7 +532,7 @@ describe.only("PUT /profile", () => {
   it("should return error (400) when form not filled (both)", async () => {
     const playerProfile = {};
 
-    const response = await request(app).put("/profile").set("authorization", `Bearer ${token}`).set("Content-Type", "application/json");
+    const response = await supertest.put("/profile").set("authorization", `Bearer ${token}`).set("Content-Type", "application/json");
 
     expect(response.status).toBe(400);
     expect(response.body).toBeInstanceOf(Object);
@@ -544,11 +546,11 @@ describe.only("PUT /profile", () => {
       name: "playerName",
     };
 
-    const response = await request(app)
+    const response = await supertest
       .put("/profile")
       .set("Content-Type", "application/json")
       .field("name", playerProfile["name"])
-      .attach("photo", playerImageBuffer);
+      .attach("photo", playerFilepath);
 
     expect(response.status).toBe(403);
     expect(response.body).toBeInstanceOf(Object);
@@ -564,11 +566,11 @@ describe.only("PUT /profile", () => {
 
     const invalidToken = "uihdiwdjdwdlads;llsdfklsdflkmsdflsdfkmmalskdm";
 
-    const response = await request(app)
+    const response = await supertest
       .put("/profile")
       .set("authorization", `Bearer ${invalidToken}`)
       .set("Content-Type", "application/json")
-      .attach("photo", playerImageBuffer)
+      .attach("photo", playerFilepath)
       .field("name", playerProfile["name"]);
 
     expect(response.status).toBe(403);

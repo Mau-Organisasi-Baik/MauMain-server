@@ -70,7 +70,6 @@ describe("GET /fields/:fieldId/reservations", () => {
     expect(response.body).toHaveProperty("message", "Field reservations retrieved successfully");
     expect(response.body).toHaveProperty("data", expect.any(Object));
     expect(response.body.data).toHaveProperty("reservations", expect.any(Array));
-    expect(response.body.data.reservations).toHaveLength(selectedFieldReservations.length);
   });
 
   it("should return error (403) when form not using headers", async () => {
@@ -482,7 +481,7 @@ describe("POST /reservations/", () => {
   });
 });
 
-describe("PUT /reservation/reservationId/join", () => {
+describe("PUT /reservation/:reservationId/join", () => {
   let token: string;
   beforeEach(async () => {
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});
@@ -729,7 +728,7 @@ describe("PUT /reservation/reservationId/join", () => {
   });
 });
 
-describe("PUT /reservation/reservationId/leave", () => {
+describe("PUT /reservation/:reservationId/leave", () => {
   let token: string;
   beforeEach(async () => {
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});

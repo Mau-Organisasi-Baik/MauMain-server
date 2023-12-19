@@ -20,30 +20,75 @@ export default class ReservationController {
   static async getFieldReservations(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { fieldId } = req.params;
-      
-      const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: new ObjectId(fieldId) }) as ValidField;
 
-      if(!field) {
+      const field = (await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: new ObjectId(fieldId) })) as ValidField;
+
+      if (!field) {
         throw { name: "DataNotFound", field: "Field" };
       }
-      const reservations = await db.collection(RESERVATION_COLLECTION_NAME).find<Reservation>({ 
-        fieldId: field._id,
-        date: new Date().toISOString().split("T")[0],
-      }).toArray();
-      
-      let reservationBySchedule = [] as (Reservation | EmptyReservation)[];
-      field.schedules.forEach(schedule => {
-        reservations.forEach((reservation, index) => {
-          if(reservation.schedule._id === schedule._id) {
-            reservationBySchedule.push(reservation);
-          }
-          else if(index === reservations.length) {
-            reservationBySchedule.push({
-              status: "empty",
-              schedule: schedule
-            } as EmptyReservation);
-          }
+      let reservations = await db
+        .collection(RESERVATION_COLLECTION_NAME)
+        .find<Reservation>({
+          fieldId: field._id,
+          date: new Date().toISOString().split("T")[0],
+        })
+        .toArray();
+
+      reservations = reservations.map((reservation) => {
+        const { _id, date, fieldId, players, schedule, status, tag, type } = reservation;
+
+        const filteredPlayers = players.map((player) => {
+          const { _id: playerId, UserId, exp, name, profilePictureUrl } = player;
+
+          return { _id: playerId, UserId, exp, name, profilePictureUrl };
         });
+
+        if (status === "upcoming") {
+          return {
+            _id,
+            date,
+            fieldId,
+            players: filteredPlayers,
+            schedule,
+            status,
+            tag,
+            type,
+          };
+        } else if (status === "ended" && type === "competitive") {
+          const { score } = reservation;
+
+          return {
+            _id,
+            date,
+            fieldId,
+            players: filteredPlayers,
+            schedule,
+            status,
+            tag,
+            type,
+            score,
+          };
+        }
+      });
+
+      let reservationBySchedule = [] as (Reservation | EmptyReservation)[];
+      field.schedules.forEach((schedule) => {
+        let isReservationFound = false;
+
+        for (const reservation of reservations) {
+          if (reservation.schedule._id.toString() === schedule._id.toString()) {
+            reservationBySchedule.push(reservation);
+            isReservationFound = true;
+            break;
+          }
+        }
+
+        if (!isReservationFound) {
+          reservationBySchedule.push({
+            status: "empty",
+            schedule: schedule,
+          } as EmptyReservation);
+        }
       });
 
       const timeString2Date = (string) => {
@@ -51,22 +96,16 @@ export default class ReservationController {
         let regExTimeArr: any[] = regExTime.exec(string)!;
 
         return regExTimeArr[1] * 3600 * 1000 + regExTimeArr[2] * 60 * 1000;
-        
-        
-      }
+      };
 
-      
       return res.status(200).json({
         statusCode: 200,
-        message: "Empty reservation retrieved successfully",
+        message: "Field reservations retrieved successfully",
         data: {
           reservations: reservationBySchedule.sort((a, b) => {
-            let regExTime = /([0-9]?[0-9]):([0-9][0-9])/;
-            let regExTimeArr = regExTime.exec(a.schedule.TimeStart);
-
-            return (timeString2Date(a.schedule.TimeStart) - timeString2Date(b.schedule.TimeStart));
-          })
-        }
+            return timeString2Date(a.schedule.TimeStart) - timeString2Date(b.schedule.TimeStart);
+          }),
+        },
       } as ServerResponse);
     } catch (error) {
       next(error);
@@ -272,58 +311,6 @@ export default class ReservationController {
       } as ServerResponse);
     } catch (error) {
       next(error);
-    }
-  }
-  static async getEmptyReservation(req: UserRequest, res: Response, next: NextFunction) {
-    try {
-      const { fieldId } = req.params;
-      
-      const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: new ObjectId(fieldId) }) as ValidField;
-      const reservations = await db.collection(RESERVATION_COLLECTION_NAME).find<Reservation>({ 
-        fieldId: field._id,
-        date: new Date().toISOString().split("T")[0],
-      }).toArray();
-      
-      let reservationBySchedule = [] as (Reservation | EmptyReservation)[];
-      field.schedules.forEach(schedule => {
-        reservations.forEach((reservation, index) => {
-          if(reservation.schedule._id === schedule._id) {
-            reservationBySchedule.push(reservation);
-          }
-          else if(index === reservations.length) {
-            reservationBySchedule.push({
-              status: "empty",
-              schedule: schedule
-            } as EmptyReservation);
-          }
-        });
-      });
-
-      const timeString2Date = (string) => {
-        let regExTime = /([0-9]?[0-9]):([0-9][0-9])/;
-        let regExTimeArr: any[] = regExTime.exec(string)!;
-
-        return regExTimeArr[1] * 3600 * 1000 + regExTimeArr[2] * 60 * 1000;
-        
-        
-      }
-
-      
-      return res.status(200).json({
-        statusCode: 200,
-        message: "Empty reservation retrieved successfully",
-        data: {
-          reservations: reservationBySchedule.sort((a, b) => {
-            let regExTime = /([0-9]?[0-9]):([0-9][0-9])/;
-            let regExTimeArr = regExTime.exec(a.schedule.TimeStart);
-
-            return (timeString2Date(a.schedule.TimeStart) - timeString2Date(b.schedule.TimeStart));
-          })
-        }
-      } as ServerResponse);
-    }
-    catch(error) {
-      return next(error);
     }
   }
 }
