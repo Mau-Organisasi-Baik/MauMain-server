@@ -76,8 +76,8 @@ export default class ScheduleController {
       const newScheduleObject: Schedule = {
         _id: new ObjectId(mongoObjectId()),
         repeat: repeat,
-        TimeStart: timeStart,
-        TimeEnd: timeEnd,
+        TimeStart: `T${timeStart}:00.000Z`,
+        TimeEnd: `T${timeEnd}:00.000Z`,
       };
 
       await db.collection(FIELDS_COLLECTION_NAME).updateOne(
