@@ -11,8 +11,12 @@ export interface User {
   password: string;
 }
 
-interface History {
-  win: boolean
+export interface History {
+  win?: boolean;
+  ReservationId: ObjectId;
+  fieldName: string;
+  tag: tag;
+  type: "competitive" | "casual";
 }
 
 export interface Player {

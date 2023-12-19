@@ -2,9 +2,9 @@ import { client } from "../../../config/db";
 import { Db, ObjectId } from "mongodb";
 import { NextFunction, Response } from "express";
 import { ServerResponse, UserRequest } from "../../../types/response";
-import { FIELDS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME } from "../../../config/names";
-import { EmptyReservation, Reservation } from "../../../types/reservation";
-import { ValidField } from "../../../types/user";
+import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, RESERVATION_COLLECTION_NAME } from "../../../config/names";
+import { CompetitivePlayer, EmptyReservation, Reservation } from "../../../types/reservation";
+import { History, ValidField } from "../../../types/user";
 
 let DATABASE_NAME = process.env.DATABASE_NAME;
 if (process.env.NODE_ENV) {
@@ -230,6 +230,97 @@ export class FieldReservationController {
           },
         }
       );
+      
+      const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId }) as ValidField;
+
+      let winHistory = {
+        win: true,
+        ReservationId: selectedReservation._id,
+        fieldName: field.name,
+        tag: selectedReservation.tag,
+        type: "competitive"
+      } as History
+      const winHistoryInput = {
+        history: winHistory
+      } as Record<string, any>;
+
+      let loseHistory = {
+        win: false,
+        ReservationId: selectedReservation._id,
+        fieldName: field.name,
+        tag: selectedReservation.tag,
+        type: "competitive"
+      }
+      const loseHistoryInput = {
+        history: loseHistory
+      } as Record<string, any>;
+
+      let teamA = [] as ObjectId[];
+      let teamB = [] as ObjectId[];
+      selectedReservation.players.forEach((player) => {
+        if(player.team === "A") {
+          teamA.push(player._id);
+        }
+        else if(player.team === "B") {
+          teamB.push(player._id);
+        }
+      });
+      let scoreOutput = score.split("|") as string[];
+
+      if(Number(scoreOutput[0]) > Number(scoreOutput[1])) {
+        await db.collection(PLAYERS_COLLECTION_NAME).updateMany({
+          _id: {
+            $in: teamA
+          }
+        }, {
+          $push: winHistoryInput,
+          $inc: {
+            exp: 500
+          },
+        });
+        await db.collection(PLAYERS_COLLECTION_NAME).updateMany(
+          { _id: { $in: teamB } }, {
+          $push: loseHistoryInput,
+          $inc: {
+            exp: 100
+          },
+        });
+      }
+      else if(Number(scoreOutput[0]) < Number(scoreOutput[1])) {
+        await db.collection(PLAYERS_COLLECTION_NAME).updateMany({
+          _id: {
+            $in: teamB
+          }
+        }, {
+          $push: winHistoryInput,
+          $inc: {
+            exp: 500
+          },
+        });
+        await db.collection(PLAYERS_COLLECTION_NAME).updateMany(
+          { _id: { $in: teamA } }, {
+          $push: loseHistoryInput,
+          $inc: {
+            exp: 100
+          },
+        });
+      }
+      else if(Number(scoreOutput[0]) === Number(scoreOutput[1])) {
+        await db.collection(PLAYERS_COLLECTION_NAME).updateMany(
+          { _id: { $in: teamA } }, {
+          $push: loseHistoryInput,
+          $inc: {
+            exp: 100
+          },
+        });
+        await db.collection(PLAYERS_COLLECTION_NAME).updateMany(
+          { _id: { $in: teamB } }, {
+          $push: loseHistoryInput,
+          $inc: {
+            exp: 100
+          },
+        });
+      }
 
       return res.status(200).json({
         statusCode: 200,
