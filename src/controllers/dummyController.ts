@@ -1,7 +1,7 @@
 import { Player, User, ValidField, ValidPlayer } from "../../types/user";
 import { Db, ObjectId } from "mongodb";
 import { hashPass } from "../../src/helpers/bcrypt";
-import { Reservation, UpcomingReservation } from "../../types/reservation";
+import { CompetitivePlayer, Reservation, UpcomingReservation } from "../../types/reservation";
 import { Schedule } from "../../types/schedule";
 import { UserLoginInput } from "../../types/inputs";
 import { client } from "../../config/db";
@@ -418,8 +418,34 @@ const fieldsDummy: ValidField[] = [
     schedules: schedulesDummyField2,
   },
 ];
+function createCompetitivePlayers(players: ValidPlayer[]): CompetitivePlayer[] {
+  let aCount = 0;
+  let bCount = 0;
 
-const normalReservations: Reservation[] = [
+  let playerResult = [];
+
+  for (const player of players) {
+    let team = "A";
+    if (aCount > bCount) {
+      team = "B";
+    }
+
+    if (team === "A") {
+      aCount++;
+    } else {
+      bCount++;
+    }
+
+    playerResult.push({
+      ...player,
+      team,
+    });
+  }
+
+  return playerResult;
+}
+
+export const normalReservations: Reservation[] = [
   {
     _id: new ObjectId(mongoObjectId()),
     fieldId: fieldsDummy[0]._id,
@@ -429,17 +455,7 @@ const normalReservations: Reservation[] = [
     status: "ended",
     schedule: fieldsDummy[0].schedules[0],
     date: "2023-12-18",
-    players: [...playersDummy.slice(0, 8)],
-  },
-  {
-    _id: new ObjectId(mongoObjectId()),
-    fieldId: fieldsDummy[0]._id,
-    tag: tagsDummy[1],
-    type: "casual",
-    status: "ended",
-    schedule: fieldsDummy[0].schedules[0],
-    date: "2023-12-19",
-    players: [...playersDummy.slice(0, 8)],
+    players: createCompetitivePlayers([...playersDummy.slice(0, 8)]),
   },
   {
     _id: new ObjectId(mongoObjectId()),
@@ -449,6 +465,16 @@ const normalReservations: Reservation[] = [
     status: "upcoming",
     schedule: fieldsDummy[1].schedules[2],
     date: "2023-12-18",
+    players: [...playersDummy.slice(5, 7), playersDummy[4]],
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    fieldId: fieldsDummy[1]._id,
+    tag: tagsDummy[1],
+    type: "casual",
+    status: "ended",
+    schedule: fieldsDummy[1].schedules[0],
+    date: "2023-12-18",
     players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
   },
   {
@@ -457,9 +483,20 @@ const normalReservations: Reservation[] = [
     tag: tagsDummy[1],
     type: "competitive",
     status: "upcoming",
-    schedule: fieldsDummy[1].schedules[2],
-    date: "2023-12-19",
-    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
+    schedule: fieldsDummy[1].schedules[1],
+    date: "2023-12-18",
+    players: createCompetitivePlayers([...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]]),
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    fieldId: fieldsDummy[1]._id,
+    tag: tagsDummy[1],
+    type: "competitive",
+    status: "ended",
+    score: "20|10",
+    schedule: fieldsDummy[1].schedules[1],
+    date: "2023-12-20",
+    players: createCompetitivePlayers([...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]]),
   },
 ];
 

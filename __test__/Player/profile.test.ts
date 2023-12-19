@@ -48,6 +48,7 @@ describe("GET /profile", () => {
         ...newUserPlayer,
       },
       exp: 0,
+      history: [],
       name: "player1",
       profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
     };
@@ -137,6 +138,7 @@ describe("GET /profile/:playerId", () => {
         _id: playerId,
         ...newUserPlayer,
       },
+      history: [],
       exp: 0,
       name: "player1",
       profilePictureUrl: "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg",
@@ -161,6 +163,7 @@ describe("GET /profile/:playerId", () => {
         _id: playerId2,
         ...newUserPlayer,
       },
+      history: [],
       exp: 0,
       name: "player2",
       profilePictureUrl: "player2.com",
@@ -272,6 +275,7 @@ describe("POST /profile", () => {
         ...newUserPlayer,
       },
       exp: 0,
+      history: [],
     };
 
     await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer);
@@ -441,6 +445,7 @@ describe("PUT /profile", () => {
         _id: playerId,
         ...newUserPlayer,
       },
+      history: [],
       exp: 0,
       name: initialPlayerInfo.name,
       profilePictureUrl: initialPlayerInfo.profilePictureUrl,

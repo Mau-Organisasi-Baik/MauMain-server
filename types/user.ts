@@ -15,7 +15,6 @@ interface History {
   win: boolean
 }
 
-// todo: tambahkan history
 export interface Player {
   _id: ObjectId;
   UserId: ObjectId;

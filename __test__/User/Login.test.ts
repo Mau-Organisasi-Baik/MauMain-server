@@ -43,7 +43,8 @@ describe("POST /login", () => {
           ...newUser,
         },
         exp: 0,
-      };
+      history: [],
+    };
 
       await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer);
     });
@@ -160,7 +161,8 @@ describe("POST /login", () => {
           _id: insertedId,
           ...newUser,
         },
-        exp: 0,
+      history: [],
+      exp: 0,
       };
 
       await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer);

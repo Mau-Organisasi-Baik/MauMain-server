@@ -19,7 +19,7 @@ export class FieldReservationController {
       const { fieldId } = req.user;
 
       const field = (await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId })) as ValidField;
-      let reservations = await db
+      let reservations: any = await db
         .collection(RESERVATION_COLLECTION_NAME)
         .find<Reservation>({
           fieldId: field._id,

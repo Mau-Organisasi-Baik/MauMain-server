@@ -42,10 +42,7 @@ describe("POST /register", () => {
         password: "12345678",
       };
 
-      const response = await request(app)
-        .post("/register")
-        .set("Content-Type", "application/json")
-        .send(userRegister);
+      const response = await request(app).post("/register").set("Content-Type", "application/json").send(userRegister);
 
       expect(response.status).toBe(201);
       expect(response.body).toBeInstanceOf(Object);
@@ -213,6 +210,7 @@ describe("POST /register", () => {
             ...newUser,
           },
           exp: 0,
+          history: [],
         };
 
         await db.collection(PLAYERS_COLLECTION_NAME).insertOne(newPlayer);
@@ -481,6 +479,7 @@ describe("POST /register", () => {
             _id: insertedId,
             ...newUser,
           },
+          history: [],
           exp: 0,
         };
 

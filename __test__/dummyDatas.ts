@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { Player, User, ValidField, ValidPlayer } from "../types/user";
 import { hashPass } from "../src/helpers/bcrypt";
-import { Reservation, UpcomingReservation } from "../types/reservation";
+import { CompetitivePlayer, Reservation, UpcomingReservation } from "../types/reservation";
 import { Schedule } from "../types/schedule";
 import { UserLoginInput } from "../types/inputs";
 import { Invite } from "../types/invite";
@@ -345,6 +345,33 @@ export const fieldsDummy: ValidField[] = [
   },
 ];
 
+function createCompetitivePlayers(players: ValidPlayer[]): CompetitivePlayer[] {
+  let aCount = 0;
+  let bCount = 0;
+
+  let playerResult = [];
+
+  for (const player of players) {
+    let team = "A";
+    if (aCount > bCount) {
+      team = "B";
+    }
+
+    if (team === "A") {
+      aCount++;
+    } else {
+      bCount++;
+    }
+
+    playerResult.push({
+      ...player,
+      team,
+    });
+  }
+
+  return playerResult;
+}
+
 export const normalReservations: Reservation[] = [
   {
     _id: new ObjectId(mongoObjectId()),
@@ -355,7 +382,7 @@ export const normalReservations: Reservation[] = [
     status: "ended",
     schedule: fieldsDummy[0].schedules[0],
     date: "2023-12-18",
-    players: [...playersDummy.slice(0, 8)],
+    players: createCompetitivePlayers([...playersDummy.slice(0, 8)]),
   },
   {
     _id: new ObjectId(mongoObjectId()),
@@ -385,7 +412,7 @@ export const normalReservations: Reservation[] = [
     status: "upcoming",
     schedule: fieldsDummy[1].schedules[1],
     date: "2023-12-18",
-    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
+    players: createCompetitivePlayers([...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]]),
   },
   {
     _id: new ObjectId(mongoObjectId()),
@@ -396,7 +423,7 @@ export const normalReservations: Reservation[] = [
     score: "20|10",
     schedule: fieldsDummy[1].schedules[1],
     date: "2023-12-20",
-    players: [...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]],
+    players: createCompetitivePlayers([...playersDummy.slice(1, 3), ...playersDummy.slice(5, 7), playersDummy[4]]),
   },
 ];
 

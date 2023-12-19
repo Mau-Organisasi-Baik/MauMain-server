@@ -26,15 +26,15 @@ export default class ReservationController {
       if (!field) {
         throw { name: "DataNotFound", field: "Field" };
       }
-      let reservations = await db
+      let reservations: any = (await db
         .collection(RESERVATION_COLLECTION_NAME)
         .find<Reservation>({
           fieldId: field._id,
-          date: new Date().toISOString().split("T")[0],
+          // date: new Date().toISOString().split("T")[0],
         })
-        .toArray() as any;
+        .toArray()) as any;
 
-      reservations = reservations.map((reservation) => {
+      reservations = reservations.map((reservation: Reservation) => {
         const { _id, date, fieldId, players, schedule, status, tag, type } = reservation;
 
         const filteredPlayers = players.map((player) => {
@@ -76,6 +76,7 @@ export default class ReservationController {
         let isReservationFound = false;
 
         for (const reservation of reservations) {
+          if (!reservation) continue;
           if (reservation.schedule._id.toString() === schedule._id.toString()) {
             reservationBySchedule.push(reservation);
             isReservationFound = true;
@@ -108,6 +109,8 @@ export default class ReservationController {
         },
       } as ServerResponse);
     } catch (error) {
+      console.log(error);
+
       next(error);
     }
   }
@@ -241,14 +244,28 @@ export default class ReservationController {
       if (targetReservation.status === "ended") {
         return res.status(403).json({ message: "Reservation already ended", statusCode: 403, data: {} });
       }
+      const playerProfile = await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: playerId });
+      const { _id, exp, name, profilePictureUrl } = playerProfile;
+      const { type, players } = targetReservation;
 
-      const playerProfile = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: playerId })) as Omit<ValidPlayer, "user">;
+      const joinPlayer: any = { _id, exp, name, profilePictureUrl };
+      if (type === "competitive") {
+        let team = "A";
+        const playerA = players.filter((player) => player.team === "A").length;
+        const playerB = players.filter((player) => player.team === "B").length;
+
+        if (playerA > playerB) {
+          team = "B";
+        }
+
+        joinPlayer.team = team;
+      }
 
       await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
         { _id: new ObjectId(reservationId) },
         {
           $push: {
-            players: playerProfile,
+            players: joinPlayer,
           },
         }
       );
@@ -292,16 +309,52 @@ export default class ReservationController {
       if (targetReservation.players.length === 1) {
         await db.collection(RESERVATION_COLLECTION_NAME).deleteOne({ _id: new ObjectId(reservationId) });
       } else {
-        await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
-          { _id: new ObjectId(reservationId) },
-          {
-            $pull: {
-              players: {
-                _id: playerId,
+        const { players, type } = targetReservation;
+        if (type === "casual") {
+          await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
+            { _id: new ObjectId(reservationId) },
+            {
+              $pull: {
+                players: {
+                  _id: playerId,
+                },
               },
-            },
+            }
+          );
+        } else if (type === "competitive") {
+          const availablePlayers = players.filter((player) => player._id.toString() === playerId.toString());
+
+          let newTeams = [];
+
+          let teamA = 0;
+          let teamB = 0;
+
+          for (const player of availablePlayers) {
+            let team: "A" | "B" = "A";
+
+            if (teamA > teamB) {
+              team = "B";
+            }
+
+            player.team = team;
+
+            if (team === "A") {
+              teamA++;
+            } else {
+              teamB++;
+            }
+
+            newTeams.push(player);
           }
-        );
+          await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
+            { _id: new ObjectId(reservationId) },
+            {
+              $set: {
+                players: newTeams,
+              },
+            }
+          );
+        }
       }
 
       return res.status(200).json({
