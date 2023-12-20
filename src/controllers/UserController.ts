@@ -155,7 +155,7 @@ export default class UserController {
             ...userInfo,
           },
           history: [],
-          exp: 0,
+          exp: 1000,
         };
         const registerPlayer = await db.collection(PLAYERS_COLLECTION_NAME).insertOne(playerInfo);
       }
