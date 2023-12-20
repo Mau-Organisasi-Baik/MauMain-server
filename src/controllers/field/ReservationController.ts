@@ -114,7 +114,7 @@ export class FieldReservationController {
         _id: new ObjectId(reservationId),
         fieldId,
       });
-
+      console.log(reservationId, fieldId, selectedReservation)
       if (!selectedReservation) {
         throw { name: "DataNotFound", field: "Reservation" };
       }

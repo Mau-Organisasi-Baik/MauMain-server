@@ -65,6 +65,7 @@ export class PlayerProfileController {
         exp,
         name,
         profilePictureUrl,
+        history
       };
 
       return res.status(200).json({
