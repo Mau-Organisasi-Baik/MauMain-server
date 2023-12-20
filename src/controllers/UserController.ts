@@ -170,6 +170,16 @@ export default class UserController {
           role: userInfo.role,
           playerId: String(player._id),
         });
+        return res.status(201).json({
+            statusCode: 201,
+            message: "User registered successfully",
+            data: {
+              access_token: access_token,
+              username: userInfo.username,
+              role: userInfo.role,
+              playerId: player._id.toString()
+            },
+          } as LoginSuccess);
       }
       if (userInfo.role === "field") {
         const field = (await db.collection(FIELDS_COLLECTION_NAME).findOne({ UserId: registeredUser.insertedId })) as Field;
@@ -179,17 +189,18 @@ export default class UserController {
           role: userInfo.role,
           fieldId: String(field._id),
         });
+        return res.status(201).json({
+          statusCode: 201,
+          message: "User registered successfully",
+          data: {
+            access_token: access_token,
+            username: userInfo.username,
+            role: userInfo.role,
+            fieldId: String(field._id)
+          },
+        } as LoginSuccess);
       }
 
-      return res.status(201).json({
-        statusCode: 201,
-        message: "User registered successfully",
-        data: {
-          access_token: access_token,
-          username: userInfo.username,
-          role: userInfo.role,
-        },
-      } as LoginSuccess);
     } catch (error) {
       next(error);
     }
