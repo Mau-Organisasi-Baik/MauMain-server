@@ -8,7 +8,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "serve": "node dist/index.js",
-    "test": "jest --detectOpenHandles --runInBand --watch"
+    "test": "jest --detectOpenHandles --runInBand --watch --coverage"
   },
   "keywords": [],
   "author": "",

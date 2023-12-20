@@ -153,6 +153,30 @@ const usersDummy: User[] = [
     role: "player",
     phoneNumber: "+6281570001000",
   },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    username: "testadmin3",
+    email: "admin4@email.com",
+    password: hashPass("TestAdmin"),
+    role: "field",
+    phoneNumber: "+6281570001329",
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    username: "testadmin4",
+    email: "admin4@email.com",
+    password: hashPass("TestAdmin"),
+    role: "field",
+    phoneNumber: "+6281570001329",
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    username: "testadmin5",
+    email: "admin5@email.com",
+    password: hashPass("TestAdmin"),
+    role: "field",
+    phoneNumber: "+6281570001329",
+  },
 ];
 
 const playersDummy: ValidPlayer[] = [
@@ -342,6 +366,11 @@ const tagsDummy: tag[] = [
     name: "Volley",
     limit: 12,
   },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    name: "Baseball",
+    limit: 18,
+  },
 ];
 
 const schedulesDummyField1: Schedule[] = [
@@ -415,6 +444,51 @@ const fieldsDummy: ValidField[] = [
       "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
     ],
     tags: [tagsDummy[0], tagsDummy[1]],
+    schedules: schedulesDummyField2,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    UserId: usersDummy[13]._id,
+    user: usersDummy[13],
+    name: "Lapangan Gokil",
+    address: "Jl. Lap. Banteng Barat No.3, RW.4, Ps. Baru, Kecamatan Sawah Besar, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10710",
+    coordinates: [-6.1803204, 106.8399775],
+    photoUrls: [
+      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
+    ],
+    tags: [tagsDummy[0], tagsDummy[2]],
+    schedules: schedulesDummyField2,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    UserId: usersDummy[14]._id,
+    user: usersDummy[14],
+    name: "Lapangan BaseBasket",
+    address: "Jl. Lap. Banteng Barat No.3, RW.4, Ps. Baru, Kecamatan Sawah Besar, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10710",
+    coordinates: [-6.1809408, 106.8400775],
+    photoUrls: [
+      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
+    ],
+    tags: [tagsDummy[0], tagsDummy[3]],
+    schedules: schedulesDummyField2,
+  },
+  {
+    _id: new ObjectId(mongoObjectId()),
+    UserId: usersDummy[15]._id,
+    user: usersDummy[15],
+    name: "Lapangan Baseball",
+    address: "Jl. Lap. Banteng Barat No.3, RW.4, Ps. Baru, Kecamatan Sawah Besar, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10710",
+    coordinates: [-6.1809008, 106.7400975],
+    photoUrls: [
+      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no",
+    ],
+    tags: [tagsDummy[3]],
     schedules: schedulesDummyField2,
   },
 ];
