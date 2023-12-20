@@ -18,6 +18,7 @@ export default class ExploreController {
       const latitude = req.query.latitude;
       const longitude = req.query.longitude;
       const tagId = req.query.tagId as string;
+      console.log("location");
 
       let errorInputField = [];
       if (!latitude) {
@@ -34,10 +35,6 @@ export default class ExploreController {
           _id: new ObjectId(tagId),
         });
 
-        if (!selectedTag) {
-          throw { name: "DataNotFound", field: "Field" };
-        }
-
         selectedTagName = selectedTag.name;
       }
 
@@ -47,18 +44,7 @@ export default class ExploreController {
 
       const fields = await db.collection(FIELDS_COLLECTION_NAME).find<ValidField>({}).toArray();
 
-      let fieldsAroundUser: Pick<ValidField, "_id" | "name" | "address" | "coordinates" | "tags">[] = [];
-      for (let i = 0; i < fields.length; i++) {
-        let earthRadius = 6371;
-        let field = fields[i];
-        let x = (field.coordinates[1] - Number(longitude)) * Math.cos((Number(latitude) + field.coordinates[0]) / 2);
-        let y = field.coordinates[0] - Number(latitude);
-        let distance = (Math.sqrt(x * x + y * y) * earthRadius) / 1000;
-
-        if (distance <= 10) {
-          fieldsAroundUser.push(field);
-        }
-      }
+      let fieldsAroundUser: Pick<ValidField, "_id" | "name" | "address" | "coordinates" | "tags">[] = fields;
 
       if (selectedTagName) {
         fieldsAroundUser = fieldsAroundUser.filter((field) => {

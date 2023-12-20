@@ -6,7 +6,7 @@ import request from "supertest";
 import { UserLoginInput } from "../../types/inputs";
 import { ValidField } from "../../types/user";
 import { client } from "../../config/db";
-import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
+import { FIELDS_COLLECTION_NAME, PLAYERS_COLLECTION_NAME, TAGS_COLLECTION_NAME, USERS_COLLECTION_NAME } from "../../config/names";
 import app from "../../src";
 import { fieldsDummy, playerLoginDummy, playersDummy, tagsDummy, usersDummy } from "../dummyDatas";
 import { mongoObjectId } from "../helper";
@@ -30,7 +30,9 @@ describe("GET /fields/explore", () => {
     await db.collection(USERS_COLLECTION_NAME).deleteMany({});
     await db.collection(PLAYERS_COLLECTION_NAME).deleteMany({});
     await db.collection(FIELDS_COLLECTION_NAME).deleteMany({});
+    await db.collection(TAGS_COLLECTION_NAME).deleteMany({});
 
+    await db.collection(TAGS_COLLECTION_NAME).insertMany(tagsDummy);
     await db.collection(USERS_COLLECTION_NAME).insertMany(usersDummy);
     await db.collection(PLAYERS_COLLECTION_NAME).insertMany(playersDummy);
     await db.collection(FIELDS_COLLECTION_NAME).insertMany(fieldsDummy);
@@ -75,7 +77,7 @@ describe("GET /fields/explore", () => {
     const selectedTag = tagsDummy[Math.floor(Math.random() * tagsDummy.length)];
 
     const response = await request(app)
-      .get(`/fields/explore?latitude=${randomLatitude}&longitude=${randomLongitude}&tag=${selectedTag.name}`)
+      .get(`/fields/explore?latitude=${randomLatitude}&longitude=${randomLongitude}&tagId=${selectedTag._id}`)
       .set("authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);

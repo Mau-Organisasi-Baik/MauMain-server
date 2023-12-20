@@ -22,33 +22,29 @@ cloudinary.config({
 
 export class FieldProfileController {
   static async getCurrentProfile(req: UserRequest, res: Response, next: NextFunction) {
-    try {
-      const { fieldId } = req.user;
+    const { fieldId } = req.user;
 
-      const selectedField = await db.collection(FIELDS_COLLECTION_NAME).findOne<ValidField>({
-        _id: fieldId,
-      });
+    const selectedField = await db.collection(FIELDS_COLLECTION_NAME).findOne<ValidField>({
+      _id: fieldId,
+    });
 
-      const { address, coordinates, photoUrls, name, tags } = selectedField;
+    const { address, coordinates, photoUrls, name, tags } = selectedField;
 
-      const fieldResult = {
-        address,
-        coordinates,
-        photoUrls,
-        tags: tags.map((tag) => tag.name),
-        name,
-      };
+    const fieldResult = {
+      address,
+      coordinates,
+      photoUrls,
+      tags: tags.map((tag) => tag.name),
+      name,
+    };
 
-      return res.status(200).json({
-        statusCode: 200,
-        message: "Field profile retrieved successfully",
-        data: {
-          field: fieldResult
-        },
-      } as ServerResponse);
-    } catch (error) {
-      return next(error);
-    }
+    return res.status(200).json({
+      statusCode: 200,
+      message: "Field profile retrieved successfully",
+      data: {
+        field: fieldResult,
+      },
+    } as ServerResponse);
   }
 
   static async createProfile(req: UserRequest, res: Response, next: NextFunction) {
@@ -103,72 +99,6 @@ export class FieldProfileController {
         tags: chosenTags,
         photoUrls: photoUrls,
       };
-      const playerProfile = await db.collection(FIELDS_COLLECTION_NAME).updateOne(
-        {
-          UserId: req.user._id,
-        },
-        { $set: updateObj }
-      );
-
-      return res.status(200).json({
-        statusCode: 200,
-        message: "Field profile updated successfully",
-        data: {},
-      } as ServerResponse);
-    } catch (error) {
-      return next(error);
-    }
-  }
-
-  static async updateProfile(req: UserRequest, res: Response, next: NextFunction) {
-    try {
-      const { name, address, coordinates, tagIds }: { name: string; address: string; coordinates: string; tagIds: string } = req.body;
-
-      const updateObj: any = {};
-
-      if (name) {
-        updateObj.name = name;
-      }
-
-      if (address) {
-        updateObj.address = address;
-      }
-
-      if (coordinates) {
-        const parsedCoordinates: number[] = coordinates.split(", ").map((coordinate) => {
-          return Number(coordinate);
-        });
-
-        updateObj.coordinates = parsedCoordinates;
-      }
-
-      if (tagIds) {
-        const parsedTagIds: string[] = tagIds.split(", ");
-
-        const tags = await db.collection(TAGS_COLLECTION_NAME).find<tag>({}).toArray();
-        const chosenTags = tags.filter((tag) => {
-          return parsedTagIds.includes(String(tag._id));
-        });
-
-        updateObj.tags = chosenTags;
-      }
-
-      const files = req.files as Express.Multer.File[];
-      if (files) {
-        const photoUrls = await Promise.all(
-          files.map(async (photo) => {
-            const base64File = Buffer.from(photo.buffer).toString("base64");
-            const dataURI = `data:${photo.mimetype};base64,${base64File}`;
-            const data = await cloudinary.uploader.upload(dataURI, {
-              public_id: `${photo.originalname}-${randomUUID()}`,
-            });
-            return data.secure_url as string;
-          })
-        );
-
-        updateObj.photoUrls = photoUrls;
-      }
-
       const playerProfile = await db.collection(FIELDS_COLLECTION_NAME).updateOne(
         {
           UserId: req.user._id,
