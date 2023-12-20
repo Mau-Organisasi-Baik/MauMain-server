@@ -54,20 +54,32 @@ export default class ReservationController {
             tag,
             type,
           };
-        } else if (status === "ended" && type === "competitive") {
-          const { score } = reservation;
-
-          return {
-            _id,
-            date,
-            fieldId,
-            players: filteredPlayers,
-            schedule,
-            status,
-            tag,
-            type,
-            score,
-          };
+        } else if (status === "ended") {
+          if (type === "competitive") {
+            const { score } = reservation;
+            return {
+              _id,
+              date,
+              fieldId,
+              players: filteredPlayers,
+              schedule,
+              status,
+              tag,
+              type,
+              score,
+            };
+          } else {
+            return {
+              _id,
+              date,
+              fieldId,
+              players: filteredPlayers,
+              schedule,
+              status,
+              tag,
+              type,
+            };
+          }
         }
       });
 
@@ -197,11 +209,10 @@ export default class ReservationController {
       const { _id, exp, name, profilePictureUrl } = playerProfile;
 
       const joinPlayer: any = { _id, exp, name, profilePictureUrl };
-      if(type === "competitive") {
+      if (type === "competitive") {
         let team = "A";
         joinPlayer.team = team;
       }
-
 
       const newReservationObj: Omit<Reservation, "_id"> = {
         date: new Date().toISOString().split("T")[0],
@@ -332,7 +343,7 @@ export default class ReservationController {
           );
         } else if (type === "competitive") {
           const availablePlayers = players.filter((player) => player._id.toString() !== playerId.toString());
-          console.log(availablePlayers)
+          console.log(availablePlayers);
           let newTeams = [];
 
           let teamA = 0;
