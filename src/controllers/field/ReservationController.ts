@@ -47,20 +47,32 @@ export class FieldReservationController {
             tag,
             type,
           };
-        } else if (status === "ended" && type === "competitive") {
-          const { score } = reservation;
-
-          return {
-            _id,
-            date,
-            fieldId,
-            players: filteredPlayers,
-            schedule,
-            status,
-            tag,
-            type,
-            score,
-          };
+        } else if (status === "ended") {
+          if (type === "competitive") {
+            const { score } = reservation;
+            return {
+              _id,
+              date,
+              fieldId,
+              players: filteredPlayers,
+              schedule,
+              status,
+              tag,
+              type,
+              score,
+            };
+          } else {
+            return {
+              _id,
+              date,
+              fieldId,
+              players: filteredPlayers,
+              schedule,
+              status,
+              tag,
+              type,
+            };
+          }
         }
       });
 
