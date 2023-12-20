@@ -69,6 +69,7 @@ export class FieldReservationController {
         let isReservationFound = false;
 
         for (const reservation of reservations) {
+          if (!reservation) continue
           if (reservation.schedule._id.toString() === schedule._id.toString()) {
             reservationBySchedule.push(reservation);
             isReservationFound = true;
@@ -114,7 +115,7 @@ export class FieldReservationController {
         _id: new ObjectId(reservationId),
         fieldId,
       });
-      console.log(reservationId, fieldId, selectedReservation)
+
       if (!selectedReservation) {
         throw { name: "DataNotFound", field: "Reservation" };
       }
@@ -187,8 +188,8 @@ export class FieldReservationController {
   static async scoreReservation(req: UserRequest, res: Response, next: NextFunction) {
     const { fieldId } = req.user;
     const { reservationId } = req.params;
-
     const { score } = req.body;
+    
 
     try {
       const selectedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
