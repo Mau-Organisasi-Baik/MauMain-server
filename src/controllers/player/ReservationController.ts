@@ -30,7 +30,7 @@ export default class ReservationController {
         .collection(RESERVATION_COLLECTION_NAME)
         .find<Reservation>({
           fieldId: field._id,
-          // date: new Date().toISOString().split("T")[0],
+          date: new Date().toISOString().split("T")[0],
         })
         .toArray()) as any;
 
