@@ -1,0 +1,60 @@
+Public
+[x] POST 	/login
+[x] POST	/register
+[X] GET /tags
+
+User - Explore
+[X] GET	/fields/explore?longitude&latitude&tag (todo: add search by type) (todo: add -1 fields)
+[X] GET /fields/:id
+
+User - Reservations
+[X]  GET 	/fields/:id/reservations
+[X]  GET	/reservations/:id
+[X]  POST	/reservations/:id (cancelled)
+[ ]  POST	/reservations/
+[ ]  GET /schedules/:fieldId
+[X]  PUT /reservations/:id/join
+[X]  PUT /reservations/:id/leave
+
+User - Chat / notification
+[X]  GET	/friends
+[X]  POST	/friends
+[X]  GET	/friends/pending
+[X]  PUT	/friends/:friendsId/accept
+[X]  DELETE	/friends/:friendsId/reject
+
+[ ]  GET	/invite
+[ ]  POST	/invite
+
+[ ]  GET 	/notifications
+
+User - Profile
+[X] POST /profile/ 
+[X] GET	 /profile/:playerId
+[X] GET	 /profile/me
+[X] PUT  /profile
+
+--------------------------
+
+Field - Reservations
+[ ] GET	/admin/reservations
+[ ] GET	/admin/reservations/:id
+[ ] PUT /admin/reservations/:id/kick
+[ ] PUT /admin/reservations/:id/score
+[ ] DELETE /admin/reservations/:id
+
+Field - Schedules
+[ ] GET /admin/schedules
+[ ] POST /admin/schedules
+[ ] DELETE /admin/schedules/:scheduleId
+
+Field - Profile
+[X] POST /profile/ 
+[ ] GET /profile/me 
+[X] PUT  /profile
+
+
+
+TODO:
+player history
+add all schedules into reservation list

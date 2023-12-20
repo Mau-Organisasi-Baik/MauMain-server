@@ -41,12 +41,18 @@ export class FriendController {
         .toArray();
 
       const friendsOutput = friends.map((friendData) => {
-        const { user1, _id } = friendData;
+        
+        const { user1, user2, _id } = friendData;
+        let otherPlayer= user1;
+
+        if (otherPlayer._id.toString() === playerId.toString()) {
+          otherPlayer = user2
+        }
 
         return {
           _id,
-          playerId: user1._id,
-          name: user1.name,
+          playerId: otherPlayer._id,
+          name: otherPlayer.name,
         };
       });
       return res.status(200).json({
