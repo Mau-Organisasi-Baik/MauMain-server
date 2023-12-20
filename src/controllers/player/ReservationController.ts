@@ -194,10 +194,19 @@ export default class ReservationController {
       const { playerId } = req.user;
       const playerProfile = (await db.collection(PLAYERS_COLLECTION_NAME).findOne({ _id: new ObjectId(playerId) })) as Omit<ValidPlayer, "user">;
 
+      const { _id, exp, name, profilePictureUrl } = playerProfile;
+
+      const joinPlayer: any = { _id, exp, name, profilePictureUrl };
+      if(type === "competitive") {
+        let team = "A";
+        joinPlayer.team = team;
+      }
+
+
       const newReservationObj: Omit<Reservation, "_id"> = {
         date: new Date().toISOString().split("T")[0],
         fieldId: new ObjectId(fieldId),
-        players: [playerProfile],
+        players: [joinPlayer],
         schedule: selectedSchedule,
         status: "upcoming",
         tag,
