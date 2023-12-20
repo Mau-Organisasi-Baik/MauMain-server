@@ -19,13 +19,13 @@ export class FieldReservationController {
       const { fieldId } = req.user;
 
       const field = (await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId })) as ValidField;
-      let reservations: any = await db
+      let reservations: any = (await db
         .collection(RESERVATION_COLLECTION_NAME)
         .find<Reservation>({
           fieldId: field._id,
           date: new Date().toISOString().split("T")[0],
         })
-        .toArray() as any;
+        .toArray()) as any;
 
       reservations = reservations.map((reservation) => {
         const { _id, date, fieldId, players, schedule, status, tag, type } = reservation;
@@ -69,7 +69,7 @@ export class FieldReservationController {
         let isReservationFound = false;
 
         for (const reservation of reservations) {
-          if (!reservation) continue
+          if (!reservation) continue;
           if (reservation.schedule._id.toString() === schedule._id.toString()) {
             reservationBySchedule.push(reservation);
             isReservationFound = true;
@@ -164,16 +164,20 @@ export class FieldReservationController {
         throw { name: "DataNotFound", field: "Player" };
       }
 
-      await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
-        { _id: new ObjectId(reservationId) },
-        {
-          $pull: {
-            players: {
-              _id: new ObjectId(selectedPlayerId),
+      if (selectedReservation.players.length === 1) {
+        await db.collection(RESERVATION_COLLECTION_NAME).deleteOne({ _id: new ObjectId(reservationId) });
+      } else {
+        await db.collection(RESERVATION_COLLECTION_NAME).updateOne(
+          { _id: new ObjectId(reservationId) },
+          {
+            $pull: {
+              players: {
+                _id: new ObjectId(selectedPlayerId),
+              },
             },
-          },
-        }
-      );
+          }
+        );
+      }
 
       res.status(200).json({
         statusCode: 200,
@@ -189,7 +193,6 @@ export class FieldReservationController {
     const { fieldId } = req.user;
     const { reservationId } = req.params;
     const { score } = req.body;
-    
 
     try {
       const selectedReservation = await db.collection(RESERVATION_COLLECTION_NAME).findOne<Reservation>({
@@ -231,18 +234,18 @@ export class FieldReservationController {
           },
         }
       );
-      
-      const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId }) as ValidField;
+
+      const field = (await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId })) as ValidField;
 
       let winHistory = {
         win: true,
         ReservationId: selectedReservation._id,
         fieldName: field.name,
         tag: selectedReservation.tag,
-        type: "competitive"
-      } as History
+        type: "competitive",
+      } as History;
       const winHistoryInput = {
-        history: winHistory
+        history: winHistory,
       } as Record<string, any>;
 
       let loseHistory = {
@@ -250,25 +253,24 @@ export class FieldReservationController {
         ReservationId: selectedReservation._id,
         fieldName: field.name,
         tag: selectedReservation.tag,
-        type: "competitive"
-      } as History
+        type: "competitive",
+      } as History;
       const loseHistoryInput = {
-        history: loseHistory
+        history: loseHistory,
       } as Record<string, any>;
 
       let teamA = [] as ObjectId[];
       let teamB = [] as ObjectId[];
       selectedReservation.players.forEach((player) => {
-        if(player.team === "A") {
+        if (player.team === "A") {
           teamA.push(player._id);
-        }
-        else if(player.team === "B") {
+        } else if (player.team === "B") {
           teamB.push(player._id);
         }
       });
       let scoreOutput = score.split("|") as string[];
 
-      if(Number(scoreOutput[0]) > Number(scoreOutput[1])) {
+      if (Number(scoreOutput[0]) > Number(scoreOutput[1])) {
         // await db.collection(PLAYERS_COLLECTION_NAME).updateMany({
         //   _id: {
         //     $in: teamA
@@ -286,28 +288,33 @@ export class FieldReservationController {
         //     exp: 100
         //   },
         // });
-        teamA.forEach( async (playerId) => {
-          await db.collection(PLAYERS_COLLECTION_NAME).updateOne({_id: playerId }, {
+        teamA.forEach(async (playerId) => {
+          await db.collection(PLAYERS_COLLECTION_NAME).updateOne(
+            { _id: playerId },
+            {
               $push: {
-                history: winHistory
+                history: winHistory,
               },
               $inc: {
-                exp: 500
+                exp: 500,
               },
-            });
+            }
+          );
         });
-        teamB.forEach( async (playerId) => {
-          await db.collection(PLAYERS_COLLECTION_NAME).updateOne({_id: playerId }, {
+        teamB.forEach(async (playerId) => {
+          await db.collection(PLAYERS_COLLECTION_NAME).updateOne(
+            { _id: playerId },
+            {
               $push: {
-                history: loseHistory
+                history: loseHistory,
               },
               $inc: {
-                exp: 100
+                exp: 100,
               },
-            });
+            }
+          );
         });
-      }
-      else if(Number(scoreOutput[0]) < Number(scoreOutput[1])) {
+      } else if (Number(scoreOutput[0]) < Number(scoreOutput[1])) {
         // await db.collection(PLAYERS_COLLECTION_NAME).updateMany({
         //   _id: {
         //     $in: teamB
@@ -325,28 +332,33 @@ export class FieldReservationController {
         //     exp: 100
         //   },
         // });
-        teamB.forEach( async (playerId) => {
-          await db.collection(PLAYERS_COLLECTION_NAME).updateOne({_id: playerId }, {
+        teamB.forEach(async (playerId) => {
+          await db.collection(PLAYERS_COLLECTION_NAME).updateOne(
+            { _id: playerId },
+            {
               $push: {
-                history: winHistory
+                history: winHistory,
               },
               $inc: {
-                exp: 500
+                exp: 500,
               },
-            });
+            }
+          );
         });
-        teamA.forEach( async (playerId) => {
-          await db.collection(PLAYERS_COLLECTION_NAME).updateOne({_id: playerId }, {
+        teamA.forEach(async (playerId) => {
+          await db.collection(PLAYERS_COLLECTION_NAME).updateOne(
+            { _id: playerId },
+            {
               $push: {
-                history: loseHistory
+                history: loseHistory,
               },
               $inc: {
-                exp: 100
+                exp: 100,
               },
-            });
+            }
+          );
         });
-      }
-      else if(Number(scoreOutput[0]) === Number(scoreOutput[1])) {
+      } else if (Number(scoreOutput[0]) === Number(scoreOutput[1])) {
         // await db.collection(PLAYERS_COLLECTION_NAME).updateMany(
         //   { _id: { $in: teamA } }, {
         //   $push: loseHistoryInput,
@@ -361,25 +373,31 @@ export class FieldReservationController {
         //     exp: 100
         //   },
         // });
-        teamA.forEach( async (playerId) => {
-          await db.collection(PLAYERS_COLLECTION_NAME).updateOne({_id: playerId }, {
+        teamA.forEach(async (playerId) => {
+          await db.collection(PLAYERS_COLLECTION_NAME).updateOne(
+            { _id: playerId },
+            {
               $push: {
-                history: loseHistory
+                history: loseHistory,
               },
               $inc: {
-                exp: 100
+                exp: 100,
               },
-            });
+            }
+          );
         });
-        teamB.forEach( async (playerId) => {
-          await db.collection(PLAYERS_COLLECTION_NAME).updateOne({_id: playerId }, {
+        teamB.forEach(async (playerId) => {
+          await db.collection(PLAYERS_COLLECTION_NAME).updateOne(
+            { _id: playerId },
+            {
               $push: {
-                history: loseHistory
+                history: loseHistory,
               },
               $inc: {
-                exp: 100
+                exp: 100,
               },
-            });
+            }
+          );
         });
       }
 
@@ -425,34 +443,36 @@ export class FieldReservationController {
         }
       );
 
-      const field = await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId }) as ValidField;
+      const field = (await db.collection(FIELDS_COLLECTION_NAME).findOne({ _id: fieldId })) as ValidField;
 
       let matchHistory = {
         ReservationId: selectedReservation._id,
         fieldName: field.name,
         tag: selectedReservation.tag,
-        type: "casual"
-      } as History
+        type: "casual",
+      } as History;
       const historyInput = {
-        history: matchHistory
+        history: matchHistory,
       } as Record<string, any>;
-
 
       let playerIds = [] as ObjectId[];
       selectedReservation.players.forEach((player) => {
         playerIds.push(player._id);
       });
-      
+
       playerIds.forEach(async (playerId) => {
-        await db.collection(PLAYERS_COLLECTION_NAME).updateOne({ _id: playerId }, {
-          $push: {
-            history: matchHistory
-          },
-          $inc: {
-            exp: 100
+        await db.collection(PLAYERS_COLLECTION_NAME).updateOne(
+          { _id: playerId },
+          {
+            $push: {
+              history: matchHistory,
+            },
+            $inc: {
+              exp: 100,
+            },
           }
-        })
-      })
+        );
+      });
 
       // await db.collection(PLAYERS_COLLECTION_NAME).updateMany({
       //   _id: {
