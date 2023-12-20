@@ -44,11 +44,12 @@ export default class ScheduleController {
   static async createSchedule(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { fieldId } = req.user;
-      const { repeat, timeStart, timeEnd } = req.body;
+      const { timeStart, timeEnd } = req.body;
+      let repeat = req.body.repeat;
       let errorInputField = [];
 
       // todo: 400, no repeat
-      if (!repeat) {
+      if (repeat === undefined) {
         errorInputField.push("repeat");
       }
 
@@ -66,7 +67,9 @@ export default class ScheduleController {
       if (errorInputField.length > 0) {
         throw { name: "InvalidInput", statusCode: 400, fields: errorInputField };
       }
-
+      if(repeat === null) {
+        repeat = false
+      }
       // todo: 400, invalid format
       const timePattern = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
       if (!timePattern.test(timeStart) || !timePattern.test(timeEnd)) {
