@@ -1,0 +1,57 @@
+[
+  {
+    "_id": 1,
+    "UserId": 3,
+    "User": {
+      "username": "testadmin",
+      "email": "admin@email.com",
+      "password": "TestAdmin",
+      "role": "field"
+    },
+    "name": "Futsal Court Cilandak Sport Centre",
+    "address": "Jl. TB Simatupang No.Kav. 17, Cilandak Bar., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12430",
+    "coordinate": [-6.2898551, 106.8002198],
+    "photosUrl": [
+      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no"
+    ],
+    "tags": [
+      {
+        "_id": 1,
+        "name": "Basketball",
+        "limit": 10
+      },
+      {
+        "_id": 2,
+        "name": "Futsal",
+        "limit": 10
+      }
+    ]
+  },
+  {
+    "_id": 2,
+    "UserId": 4,
+    "User": {
+      "username": "testadmin2",
+      "email": "admin2@email.com",
+      "password": "TestAdmin",
+      "role": "field"
+    },
+    "name": "Basket Court Lapangan Banteng",
+    "address": "Jl. Lap. Banteng Barat No.3, RW.4, Ps. Baru, Kecamatan Sawah Besar, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10710",
+    "coordinate": [-6.1703204, 106.8309775],
+    "photosUrl": [
+      "https://lh5.googleusercontent.com/p/AF1QipOkLXBTYhhcJKa16WiQWBi298DLWAR2bZugeGzk=s644-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipNJnCqmN9pad85KsQDGc0oFVcmiWBV_KMHmUE5f=w203-h152-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipPxgj-PlQzCNcanXn2a83qUIqfOivXUqM8Itvs=s483-k-no"
+    ],
+    "tags": [
+      {
+        "_id": 1,
+        "name": "Basketball",
+        "limit": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,26 @@
+[
+    {
+        "_id": 1,
+        "username": "ibra",
+        "email": "warissoon@email.com",
+        "password": "TestAdmin",
+        "role": "player", 
+        "phoneNumber": "+6281570000000"
+    },
+    {
+        "_id": 2,
+        "username": "anakbaik",
+        "email": "anakbaik@email.com",
+        "password": "TestAdmin",
+        "role": "player",
+        "phoneNumber": "+6281570001000"
+    },
+    {
+        "_id": 3,
+        "username": "testadmin",
+        "email": "admin@email.com",
+        "password": "TestAdmin",
+        "role": "field",
+        "phoneNumber": "+6281570001329"
+    }
+]
